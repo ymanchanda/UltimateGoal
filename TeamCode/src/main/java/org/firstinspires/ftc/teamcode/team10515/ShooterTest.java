@@ -8,6 +8,7 @@ import org.firstinspires.ftc.teamcode.team10515.control.EnhancedGamepad;
 import org.firstinspires.ftc.teamcode.team10515.control.ShooterPhysics;
 
 import static java.lang.System.currentTimeMillis;
+import static org.firstinspires.ftc.teamcode.team10515.Robot.getEnhancedGamepad1;
 import static org.firstinspires.ftc.teamcode.team10515.Robot.setEnhancedGamepad1;
 
 
@@ -15,6 +16,8 @@ import static org.firstinspires.ftc.teamcode.team10515.Robot.setEnhancedGamepad1
 
 public class ShooterTest extends OpMode{
     public double shooterSpeed = 0;
+    public double shooterSpeedPole = 0;
+
     public boolean moveShooter = false;
 
 //    private static EnhancedGamepad enhancedGamepad1;
@@ -23,8 +26,8 @@ public class ShooterTest extends OpMode{
     public long lastTimeA = 0;
     public long lastTimeY = 0;
 
-    public ElapsedTime btnPressedA;
-    public ElapsedTime btnPressedY;
+    //public ElapsedTime btnPressedA;
+    //public ElapsedTime btnPressedY;
 
     public ShooterPhysics shooterPhysics;
 
@@ -39,14 +42,15 @@ public class ShooterTest extends OpMode{
     public void init(){
         /* Initialize the hardware map*/
         robot.init(hardwareMap);
+        shooterSpeed = 0.53;
+        shooterSpeedPole = 0.45;
 
         // Send telemetry message to signify robot waiting;
         telemetry.addData("Init", "Hello Storm Trooper");    //
         updateTelemetry(telemetry);
-
         setEnhancedGamepad1(new EnhancedGamepad(gamepad1));
-        btnPressedA = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
-        btnPressedY = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+        //btnPressedA = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+        //btnPressedY = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
 
         shooterPhysics = new ShooterPhysics();
     }
@@ -117,14 +121,26 @@ public class ShooterTest extends OpMode{
 //        }
 
         // Trial 4
-        shooterSpeed = shooterPhysics.getShooterSpeed(1.444625, 0.9, 1);
+        double shooterSpeed2 = shooterPhysics.getShooterSpeed(1.444625, 0.9, 1);
 
-        robot.Shooter1.setPower(shooterSpeed);
-        robot.Shooter2.setPower(shooterSpeed);
+        if (getEnhancedGamepad1().isDpad_up()) {
+            robot.Shooter1.setPower(shooterSpeed);
+            robot.Shooter2.setPower(shooterSpeed);
+        }
+        else if (getEnhancedGamepad1().isDpad_down()){
+            robot.Shooter1.setPower(shooterSpeedPole);
+            robot.Shooter2.setPower(shooterSpeedPole);
+        }
+//        if(getEnhancedGamepad1().isyJustPressed())
+//            shooterSpeed += 0.05;
+//        else if (getEnhancedGamepad1().isaJustPressed())
+//            shooterSpeed -= 0.5;
 
-        telemetry.addLine("Shooter speed: " + shooterSpeed);
+
+        telemetry.addLine("Shooter Phsyics Speed: " + shooterSpeed2);
+        telemetry.addLine("Actual Speed is: " + shooterSpeed);
         telemetry.addLine("Shooter angle: " + shooterPhysics.getShooterAngle(1.444625, 0.9));
-
+        telemetry.update();
         currentTime = currentTimeMillis();
     }
 

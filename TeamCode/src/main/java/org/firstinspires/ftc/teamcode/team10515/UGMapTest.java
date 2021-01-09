@@ -72,7 +72,7 @@ public class UGMapTest
         forkliftMotor = hwMap.dcMotor.get(FORKLIFTMOTOR);
 
         Shooter2.setDirection(DcMotor.Direction.REVERSE);
-        Shooter1.setDirection(DcMotor.Direction.FORWARD);
+        Shooter1.setDirection(DcMotor.Direction.REVERSE);
         intakeMotor.setDirection(DcMotor.Direction.FORWARD);
         forkliftMotor.setDirection(DcMotor.Direction.FORWARD);
 //        RL.setDirection(DcMotor.Direction.REVERSE);
@@ -82,8 +82,8 @@ public class UGMapTest
 
 
         //set motor power behaviour
-        Shooter2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        Shooter1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        //Shooter2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        //Shooter1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         forkliftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 //        RL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
