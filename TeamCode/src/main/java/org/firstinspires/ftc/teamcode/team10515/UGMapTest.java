@@ -24,6 +24,7 @@ public class UGMapTest
 //    public DcMotor INR = null;  //Intake
 //    public DcMotor INL = null;  //Intake
     //public DcMotor  AA = null;  //AccessArm
+    public Servo intakeServo = null; //IntakeServo
     public DcMotor forkliftMotor = null; //Wobble goal
     public DcMotor intakeMotor = null;
 
@@ -36,9 +37,7 @@ public class UGMapTest
 //    static private final String REARLEFT       = "RL";
     static private final String FORKLIFTMOTOR  = "Forklift Motor";
     static private final String INTAKEMOTOR = "Intake Motor";
-
-
-    //static private final String  DEPOSITLIFT    = "DL";
+    static private final String INTAKESERVO    = "Intake Servo";
 
 //    static final String  IMU_SENSOR = "imu";
 
@@ -61,6 +60,7 @@ public class UGMapTest
         // Define and Initialize Motors
         Shooter2 = hwMap.dcMotor.get(SHOOTER_2);
         Shooter1 = hwMap.dcMotor.get(SHOOTER_1);
+        intakeServo = hwMap.servo.get(INTAKESERVO);
 //        RL      = hwMap.dcMotor.get(REARLEFT);
 //        RR      = hwMap.dcMotor.get(REARRIGHT);
 
