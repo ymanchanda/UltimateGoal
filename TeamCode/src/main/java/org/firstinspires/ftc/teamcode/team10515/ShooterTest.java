@@ -85,7 +85,6 @@ public class ShooterTest extends OpMode{
 //        else if(gamepad1.right_bumper){
 //            shooterSpeed = 0;
 //        }
-
         /*
         // Trial 2
 
@@ -121,15 +120,22 @@ public class ShooterTest extends OpMode{
 //        }
 
         // Trial 4
-        double shooterSpeed2 = shooterPhysics.getShooterSpeed(1.444625, 0.9, 1);
+        double physicsShooterSpeed = shooterPhysics.getShooterSpeed(1.5748, 0.6604, 1);//62 inches
+        double physicsShooterSpeed2 = shooterPhysics.getShooterSpeed(1.8668, 0.6604, 1);//73.5 inches
+        double physicsShooterSpeed3 = shooterPhysics.getShooterSpeed(2.2098, 0.6604, 1);//87 inches
+
 
         if (getEnhancedGamepad1().isDpad_up()) {
-            robot.Shooter1.setPower(shooterSpeed);
-            robot.Shooter2.setPower(shooterSpeed);
+            robot.Shooter1.setPower(physicsShooterSpeed);
+            robot.Shooter2.setPower(physicsShooterSpeed);
         }
-        else if (getEnhancedGamepad1().isDpad_down()){
-            robot.Shooter1.setPower(shooterSpeedPole);
-            robot.Shooter2.setPower(shooterSpeedPole);
+        else if (getEnhancedGamepad1().isDpad_right()){
+            robot.Shooter1.setPower(physicsShooterSpeed2);
+            robot.Shooter2.setPower(physicsShooterSpeed2);
+        }
+        else if(getEnhancedGamepad1().isDpad_down()){
+            robot.Shooter1.setPower(physicsShooterSpeed3);
+            robot.Shooter2.setPower(physicsShooterSpeed3);
         }
 //        if(getEnhancedGamepad1().isyJustPressed())
 //            shooterSpeed += 0.05;
@@ -137,9 +143,12 @@ public class ShooterTest extends OpMode{
 //            shooterSpeed -= 0.5;
 
 
-        telemetry.addLine("Shooter Phsyics Speed: " + shooterSpeed2);
-        telemetry.addLine("Actual Speed is: " + shooterSpeed);
-        telemetry.addLine("Shooter angle: " + shooterPhysics.getShooterAngle(1.444625, 0.9));
+        telemetry.addLine("Shooter Physics Speed 1: " + physicsShooterSpeed);
+        telemetry.addLine("Shooter Physics Speed 2: " + physicsShooterSpeed2);
+        telemetry.addLine("Shooter Physics Speed 3: " + physicsShooterSpeed3);
+
+//        telemetry.addLine("Actual Speed is: " + shooterSpeed);
+        telemetry.addLine("Shooter angle: " + shooterPhysics.getShooterAngle(1.524, 0.6604));
         telemetry.update();
         currentTime = currentTimeMillis();
     }

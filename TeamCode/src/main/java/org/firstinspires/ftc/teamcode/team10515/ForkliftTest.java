@@ -87,7 +87,7 @@ public class ForkliftTest extends OpMode {
 
 //        int target = robot.forkliftMotor.getCurrentPosition() + (int) (0.5 * WHEEL_DIAMETER_INCHES * Math.PI);
         int target = robot.forkliftMotor.getCurrentPosition() + (int)(0.75*COUNTS_PER_MOTOR_REV);
-        telemetry.addLine("Running to: " + target);
+        telemetry.addData("Hi", target);
 
         robot.forkliftMotor.setTargetPosition(target);
 
@@ -109,7 +109,7 @@ public class ForkliftTest extends OpMode {
 
         telemetry.addLine("Forklift Power: " + forkliftPower);
         telemetry.addLine("Current Position: " + robot.forkliftMotor.getCurrentPosition());
-
+        telemetry.update();
     }
 }
 

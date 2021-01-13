@@ -35,7 +35,7 @@ public class ShooterPhysics {
         omega *= 60.0/(2*Math.PI);
 
         double flywheelRPM = omega;
-        flywheelRPM *= 4; // Account for outside factors
+        flywheelRPM *= 2 * 1.7; // Account for outside factors
 
         return (flywheelRPM/gearRatio)/6000.0;
 
