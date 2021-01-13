@@ -31,7 +31,7 @@ public class ShooterSubsystem implements ISubsystem<ShooterStateMachine, Shooter
 
     @Override
     public void stop() {
-        getIntakeWheels().setPower(0d);
+        getShooterWheels().setPower(0d);
 
     }
 
@@ -48,7 +48,7 @@ public class ShooterSubsystem implements ISubsystem<ShooterStateMachine, Shooter
     @Override
     public void update(double dt) {
         getStateMachine().update(dt);
-        getIntakeWheels().setPower(getState().getPower());
+        getShooterWheels().setPower(getState().getPower());
     }
 
     private static void setShooterStateMachine(ShooterStateMachine ShooterStateMachine){
@@ -59,7 +59,7 @@ public class ShooterSubsystem implements ISubsystem<ShooterStateMachine, Shooter
         this.ShooterWheels = intakeMotor;
     }
 
-    private RevMotor getIntakeWheels(){
+    private RevMotor getShooterWheels(){
         return ShooterWheels;
     }
 }

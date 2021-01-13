@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.team10515.subsystems;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.lib.drivers.RevServo;
 import org.firstinspires.ftc.teamcode.team10515.states.ForkliftStateMachine;
 
 public class ForkliftSubsystem implements ISubsystem<ForkliftStateMachine, ForkliftStateMachine.State> {
@@ -48,7 +47,7 @@ public class ForkliftSubsystem implements ISubsystem<ForkliftStateMachine, Forkl
     @Override
     public void update(double dt) {
         getStateMachine().update(dt);
-        getForkliftMotor().setPower(getState().getPosition());
+        getForkliftMotor().setPower(getState().getPower());
     }
 
     public DcMotor getForkliftMotor(){

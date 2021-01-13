@@ -4,6 +4,7 @@ import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 
 import org.firstinspires.ftc.teamcode.lib.drivers.Motor;
 import org.firstinspires.ftc.teamcode.lib.drivers.RevMotor;
+import org.firstinspires.ftc.teamcode.lib.drivers.RevServo;
 import org.firstinspires.ftc.teamcode.lib.geometry.Pose2d;
 import org.firstinspires.ftc.teamcode.lib.util.TimeProfiler;
 import org.firstinspires.ftc.teamcode.team10515.control.StackTracker;
@@ -20,6 +21,7 @@ import org.firstinspires.ftc.teamcode.team10515.subsystems.RobotStateEstimator;
 import org.firstinspires.ftc.teamcode.team10515.subsystems.ShooterSubsystem;
 import org.openftc.revextensions2.ExpansionHubEx;
 import org.openftc.revextensions2.ExpansionHubMotor;
+import org.openftc.revextensions2.ExpansionHubServo;
 
 import java.util.Arrays;
 
@@ -63,7 +65,7 @@ public abstract class UltimateGoalRobot extends Robot {
     public void init() {
         super.init();
         setExpansionHubs(new ExpansionHubs(this,
-                hardwareMap.get(ExpansionHubEx.class, "Expansion Hub 1"),
+                hardwareMap.get(ExpansionHubEx.class, "Control Hub"),
                 hardwareMap.get(ExpansionHubEx.class, "Expansion Hub 2"))
         );
 
@@ -71,22 +73,25 @@ public abstract class UltimateGoalRobot extends Robot {
                 new RevMotor((ExpansionHubMotor)(hardwareMap.get("RL")), true, true, true, true, Motor.GOBILDA_435_RPM.getENCODER_TICKS_PER_REVOLUTION(), getWheelDiameter(), 2d),
                 new RevMotor((ExpansionHubMotor)(hardwareMap.get("FL")), true, true, true, true, Motor.GOBILDA_435_RPM.getENCODER_TICKS_PER_REVOLUTION(), getWheelDiameter(), 2d),
                 new RevMotor((ExpansionHubMotor)(hardwareMap.get("RR")), false, true, true, false, Motor.GOBILDA_435_RPM.getENCODER_TICKS_PER_REVOLUTION(), getWheelDiameter(), 2d),
-                new RevMotor((ExpansionHubMotor)(hardwareMap.get("Shooter")), false, true, true, false, Motor.GOBILDA_435_RPM.getENCODER_TICKS_PER_REVOLUTION(), getWheelDiameter(), 2d),
-//                new RevMotor((ExpansionHubMotor)(hardwareMap.get("INL")), true, false, false, false),
-//                new RevMotor((ExpansionHubMotor)(hardwareMap.get("INR")), false, false, false, true),
+                new RevMotor((ExpansionHubMotor)(hardwareMap.get("FR")), false, true, true, false, Motor.GOBILDA_435_RPM.getENCODER_TICKS_PER_REVOLUTION(), getWheelDiameter(), 2d),
+                new RevMotor((ExpansionHubMotor)(hardwareMap.get("Shooter 1 ")), false, false, false, true, Motor.GOBILDA_435_RPM.getENCODER_TICKS_PER_REVOLUTION(), getWheelDiameter(), 1d),
+                new RevMotor((ExpansionHubMotor)(hardwareMap.get("Shooter 2")), false, false, false, true, Motor.GOBILDA_435_RPM.getENCODER_TICKS_PER_REVOLUTION(), getWheelDiameter(), 1d),
+
+                new RevMotor((ExpansionHubMotor)(hardwareMap.get("Intake Motor")), true, false, false, false),
+                new RevMotor((ExpansionHubMotor)(hardwareMap.get("Forklift Motor")), false, false, false, true),
 //                new RevMotor((ExpansionHubMotor)(hardwareMap.get("LL")), true, true, false, true, Motor.GOBILDA_312_RPM.getENCODER_TICKS_PER_REVOLUTION(), 38d / 25.4d),
 //                new RevMotor((ExpansionHubMotor)(hardwareMap.get("LR")), false, true, false, false, Motor.GOBILDA_312_RPM.getENCODER_TICKS_PER_REVOLUTION(), 38d / 25.4d)
         });
 
-//        setServos(new RevServo[] {
-//                new RevServo((ExpansionHubServo)(hardwareMap.get("FSL"))),
-//                new RevServo((ExpansionHubServo)(hardwareMap.get("FSR"))),
-//                new RevServo((ExpansionHubServo)(hardwareMap.get("OL"))),
-//                new RevServo((ExpansionHubServo)(hardwareMap.get("OR"))),
-//                new RevServo((ExpansionHubServo)(hardwareMap.get("F"))),
-//                new RevServo((ExpansionHubServo)(hardwareMap.get("CS"))),
-//                new RevServo((ExpansionHubServo)(hardwareMap.get("EXT")))
-//        });
+        setServos(new RevServo[] {
+                new RevServo((ExpansionHubServo)(hardwareMap.get("FSL"))),
+                new RevServo((ExpansionHubServo)(hardwareMap.get("FSR"))),
+                new RevServo((ExpansionHubServo)(hardwareMap.get("OL"))),
+                new RevServo((ExpansionHubServo)(hardwareMap.get("OR"))),
+                new RevServo((ExpansionHubServo)(hardwareMap.get("F"))),
+                new RevServo((ExpansionHubServo)(hardwareMap.get("CS"))),
+                new RevServo((ExpansionHubServo)(hardwareMap.get("EXT")))
+        });
 
 //        setLights((hardwareMap.get(RevBlinkinLedDriver.class, "blinkin")));
         //Yogesh commented this

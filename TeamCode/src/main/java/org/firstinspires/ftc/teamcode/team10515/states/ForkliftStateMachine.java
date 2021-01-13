@@ -20,16 +20,16 @@ public class ForkliftStateMachine extends TimedState<ForkliftStateMachine.State>
     }
 
     public enum State implements Namable {
-        UP(0.6d), MIDDLE(0.3d), DOWN(0.0d);
+        UP(0.6d), DOWN(-0.5d);
 
-        private final double position;
+        private final double power;
 
-        State(final double position) {
-            this.position = position;
+        State(final double power) {
+            this.power = power;
         }
 
-        public double getPosition() {
-            return position;
+        public double getPower() {
+            return power;
         }
 
         @Override

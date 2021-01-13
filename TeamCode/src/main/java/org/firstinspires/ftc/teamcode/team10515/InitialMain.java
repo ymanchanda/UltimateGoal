@@ -149,12 +149,6 @@ public class InitialMain extends UltimateGoalRobot {
         else if(getEnhancedGamepad2().isDpad_down()){
             currentShooterSpeed = ShooterStateMachine.State.SPEED2;
         }
-        else if(getEnhancedGamepad2().isDpad_left()){
-            currentShooterSpeed = ShooterStateMachine.State.SPEED3;
-        }
-        else if(getEnhancedGamepad2().isDpad_up()){
-            currentShooterSpeed = ShooterStateMachine.State.SPEED4;
-        }
 
 
         //--------------------------------------------------------------------------------------------------------------------------------
