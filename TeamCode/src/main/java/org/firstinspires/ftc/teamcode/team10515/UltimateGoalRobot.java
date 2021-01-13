@@ -1,34 +1,25 @@
 package org.firstinspires.ftc.teamcode.team10515;
 
-import android.os.Build;
-
-import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 
 import org.firstinspires.ftc.teamcode.lib.drivers.Motor;
 import org.firstinspires.ftc.teamcode.lib.drivers.RevMotor;
-import org.firstinspires.ftc.teamcode.lib.drivers.RevServo;
 import org.firstinspires.ftc.teamcode.lib.geometry.Pose2d;
 import org.firstinspires.ftc.teamcode.lib.util.TimeProfiler;
-import org.firstinspires.ftc.teamcode.lib.util.TimeUnits;
 import org.firstinspires.ftc.teamcode.team10515.control.StackTracker;
-import org.firstinspires.ftc.teamcode.team10515.states.FeederExtensionStateMachine;
-import org.firstinspires.ftc.teamcode.team10515.states.FeederStoneGripperStateMachine;
-import org.firstinspires.ftc.teamcode.team10515.states.FlickerStateMachine;
-import org.firstinspires.ftc.teamcode.team10515.states.FlywheelStateMachine;
 import org.firstinspires.ftc.teamcode.team10515.subsystems.Drive;
 import org.firstinspires.ftc.teamcode.team10515.subsystems.EndGameExtensionSubsystem;
 import org.firstinspires.ftc.teamcode.team10515.subsystems.ExpansionHubs;
 import org.firstinspires.ftc.teamcode.team10515.subsystems.Feeder;
 import org.firstinspires.ftc.teamcode.team10515.subsystems.FlickerSubsystem;
-import org.firstinspires.ftc.teamcode.team10515.subsystems.FlywheelSubsystem;
+import org.firstinspires.ftc.teamcode.team10515.subsystems.IntakeMotorSubsystem;
 import org.firstinspires.ftc.teamcode.team10515.subsystems.ForkliftSubsystem;
 import org.firstinspires.ftc.teamcode.team10515.subsystems.FoundationSubsystem;
+import org.firstinspires.ftc.teamcode.team10515.subsystems.IntakeServoSubsystem;
 import org.firstinspires.ftc.teamcode.team10515.subsystems.RobotStateEstimator;
 import org.firstinspires.ftc.teamcode.team10515.subsystems.ShooterSubsystem;
 import org.openftc.revextensions2.ExpansionHubEx;
 import org.openftc.revextensions2.ExpansionHubMotor;
-import org.openftc.revextensions2.ExpansionHubServo;
 
 import java.util.Arrays;
 
@@ -58,14 +49,15 @@ public abstract class UltimateGoalRobot extends Robot {
     private ExpansionHubs expansionHubs;
     private RobotStateEstimator robotStateEstimator;
     private Drive drive;
-    private FlywheelSubsystem flywheels;
     private Feeder feeder;
     private FoundationSubsystem foundationSubsystem;
     private EndGameExtensionSubsystem endGameExtensionSubsystem;
     private StackTracker stackTracker;
-    private FlickerSubsystem flicker;
+    private FlickerSubsystem flickerSubsystem;
     private ShooterSubsystem shooterMotors;
-    private ForkliftSubsystem forklift;
+    private ForkliftSubsystem forkliftSubsystem;
+    private IntakeMotorSubsystem intakeMotorSubsystem;
+    private IntakeServoSubsystem intakeServoSubsystem;
 
     @Override
     public void init() {
@@ -102,7 +94,7 @@ public abstract class UltimateGoalRobot extends Robot {
 //        setDrive(new Drive(getRobotStateEstimator(), getMotors()[0], getMotors()[1], getMotors()[2], getMotors()[3]));
         setStackTracker(new StackTracker());
 //        setEndGameExtensionSubsystem(new EndGameExtensionSubsystem(getServos()[6]));
-        setShooterMotors(new ShooterSubsystem(getMotors()[3]));
+        setShooterSubsystem(new ShooterSubsystem(getMotors()[3]));
         setMatchRuntime(new TimeProfiler(false));
     }
 
@@ -196,17 +188,17 @@ public abstract class UltimateGoalRobot extends Robot {
         this.stackTracker = stackTracker;
     }
 
-    public FlywheelSubsystem getFlywheels() {
-        return flywheels;
+    public IntakeMotorSubsystem getIntakeMotorSubsystem() {
+        return intakeMotorSubsystem;
     }
 
-    public void setFlywheels(FlywheelSubsystem flywheels) {
-        this.flywheels = flywheels;
+    public void setIntakeMotorSubsystem(IntakeMotorSubsystem intakeMotorSubsystem){
+        this.intakeMotorSubsystem = intakeMotorSubsystem;
     }
 
-    public ShooterSubsystem getShooter() { return shooterMotors; }
+    public ShooterSubsystem getShooterSubsystem() { return shooterMotors; }
 
-    public void setShooterMotors(ShooterSubsystem shooterMotors){ this.shooterMotors = shooterMotors; }
+    public void setShooterSubsystem(ShooterSubsystem shooterMotors){ this.shooterMotors = shooterMotors; }
 
     public FoundationSubsystem getFoundationSubsystem() {
         return foundationSubsystem;
@@ -225,11 +217,27 @@ public abstract class UltimateGoalRobot extends Robot {
     }
 
     public FlickerSubsystem getFlickerSubsystem(){
-        return flicker;
+        return flickerSubsystem;
+    }
+
+    public void setFlickerSubsystem(FlickerSubsystem flickerSubsystem){
+        this.flickerSubsystem = flickerSubsystem;
     }
 
     public ForkliftSubsystem getForkliftSubsystem() {
-        return forklift;
+        return forkliftSubsystem;
+    }
+
+    public void setForkliftSubsystem(ForkliftSubsystem forkliftSubsystem){
+        this.forkliftSubsystem = forkliftSubsystem;
+    }
+
+    public IntakeServoSubsystem getIntakeServoSubsystem(){
+        return intakeServoSubsystem;
+    }
+
+    public void setIntakeServoSubsystem(IntakeServoSubsystem intakeServoSubsystem){
+        this.intakeServoSubsystem = intakeServoSubsystem;
     }
 
     public static RevBlinkinLedDriver getLights() {

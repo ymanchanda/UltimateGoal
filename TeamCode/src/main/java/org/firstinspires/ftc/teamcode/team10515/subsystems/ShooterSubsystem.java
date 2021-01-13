@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.team10515.subsystems;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.lib.drivers.RevMotor;
-import org.firstinspires.ftc.teamcode.team10515.states.FlywheelStateMachine;
 import org.firstinspires.ftc.teamcode.team10515.states.ShooterStateMachine;
 
 public class ShooterSubsystem implements ISubsystem<ShooterStateMachine, ShooterStateMachine.State> {

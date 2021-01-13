@@ -3,14 +3,12 @@ package org.firstinspires.ftc.teamcode.team10515;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.Servo;
 
 //import org.firstinspires.ftc.teamcode.lib.drivers.RevServo;
 import org.firstinspires.ftc.teamcode.team10515.subsystems.ForkliftSubsystem;
 import org.firstinspires.ftc.teamcode.team10515.subsystems.ShooterSubsystem;
-import org.firstinspires.ftc.teamcode.team10515.subsystems.FlywheelSubsystem;
+import org.firstinspires.ftc.teamcode.team10515.subsystems.IntakeMotorSubsystem;
 
 public class UGMapTest
 {
@@ -44,7 +42,7 @@ public class UGMapTest
 
     private ShooterSubsystem shooterMotors;
     private ForkliftSubsystem forkliftMotorSub;
-    private FlywheelSubsystem intakeMotorSub;
+    private IntakeMotorSubsystem intakeMotorSub;
 
     /* local OpMode members. */
     HardwareMap hwMap           =  null;
@@ -129,7 +127,7 @@ public class UGMapTest
 
     public void setShooterMotors(ShooterSubsystem shooterMotors){ this.shooterMotors = shooterMotors; }
 
-    public FlywheelSubsystem getIntakeMotorSub(){
+    public IntakeMotorSubsystem getIntakeMotorSub(){
         return intakeMotorSub;
     }
 }
