@@ -2,28 +2,28 @@ package org.firstinspires.ftc.teamcode.team10515.subsystems;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.lib.drivers.RevMotor;
-import org.firstinspires.ftc.teamcode.team10515.states.FlywheelStateMachine;
+import org.firstinspires.ftc.teamcode.team10515.states.IntakeMotorStateMachine;
 
-public class FlywheelSubsystem implements ISubsystem<FlywheelStateMachine, FlywheelStateMachine.State> {
-    private static FlywheelStateMachine flywheelStateMachine;
+public class IntakeMotorSubsystem implements ISubsystem<IntakeMotorStateMachine, IntakeMotorStateMachine.State> {
+    private static IntakeMotorStateMachine intakeMotorStateMachine;
     private RevMotor intakeWheels;
     //private RevMotor leftFlywheel;
     //private RevMotor rightFlywheel;
 
-    public FlywheelSubsystem(RevMotor intakeMotor){//RevMotor leftFlywheel, RevMotor rightFlywheel) {
-        setFlywheelStateMachine(new FlywheelStateMachine());
+    public IntakeMotorSubsystem(RevMotor intakeMotor){//RevMotor leftFlywheel, RevMotor rightFlywheel) {
+        setIntakeMotorStateMachine(new IntakeMotorStateMachine());
        setIntakeWheels(intakeMotor);
 //        setLeftFlywheel(leftFlywheel);
 //        setRightFlywheel(rightFlywheel);
     }
 
     @Override
-    public FlywheelStateMachine getStateMachine() {
-        return flywheelStateMachine;
+    public IntakeMotorStateMachine getStateMachine() {
+        return intakeMotorStateMachine;
     }
 
     @Override
-    public FlywheelStateMachine.State getState() {
+    public IntakeMotorStateMachine.State getState() {
         return getStateMachine().getState();
     }
 
@@ -57,8 +57,8 @@ public class FlywheelSubsystem implements ISubsystem<FlywheelStateMachine, Flywh
         return "Flywheel Subsystem";
     }
 
-    private static void setFlywheelStateMachine(FlywheelStateMachine flywheelStateMachine) {
-        FlywheelSubsystem.flywheelStateMachine = flywheelStateMachine;
+    private static void setIntakeMotorStateMachine(IntakeMotorStateMachine intakeMotorStateMachine) {
+        IntakeMotorSubsystem.intakeMotorStateMachine = intakeMotorStateMachine;
     }
 
 //    private RevMotor getLeftFlywheel() {

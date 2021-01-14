@@ -1,5 +1,5 @@
 package org.firstinspires.ftc.teamcode.team10515;
-
+//hi
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
@@ -9,11 +9,10 @@ import org.firstinspires.ftc.teamcode.lib.util.TimeUnits;
 import org.firstinspires.ftc.teamcode.team10515.states.FlickerStateMachine;
 import org.firstinspires.ftc.teamcode.team10515.states.EndGameExtensionStateMachine;
 import org.firstinspires.ftc.teamcode.team10515.states.FeederStoneGripperStateMachine;
-import org.firstinspires.ftc.teamcode.team10515.states.FlywheelStateMachine;
+import org.firstinspires.ftc.teamcode.team10515.states.IntakeMotorStateMachine;
 import org.firstinspires.ftc.teamcode.team10515.states.ForkliftStateMachine;
 import org.firstinspires.ftc.teamcode.team10515.states.ShooterStateMachine;
 import org.firstinspires.ftc.teamcode.team10515.states.FoundationStateMachine;
-import org.firstinspires.ftc.teamcode.team10515.states.TimedState;
 import org.firstinspires.ftc.teamcode.team10515.subsystems.Feeder;
 
 /*
@@ -129,18 +128,18 @@ public class InitialMain extends UltimateGoalRobot {
 
         //Check whether to start or stop shooter
         if(shooterIsOn){
-            getShooter().getStateMachine().updateState(currentShooterSpeed);
+            getShooterSubsystem().getStateMachine().updateState(currentShooterSpeed);
         }
         else{
-            getShooter().getStateMachine().updateState(ShooterStateMachine.State.IDLE);
+            getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.IDLE);
         }
 
         //Check for bumpers
         if(getEnhancedGamepad2().isLeft_bumper()){
-            getFlywheels().getStateMachine().updateState(FlywheelStateMachine.State.IDLE);
+            getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.IDLE);
         }
         else if(getEnhancedGamepad2().isRight_bumper()) {
-            getFlywheels().getStateMachine().updateState(FlywheelStateMachine.State.INTAKE);
+            getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.INTAKE);
         }
 
         //Check for DPad
@@ -150,12 +149,6 @@ public class InitialMain extends UltimateGoalRobot {
         else if(getEnhancedGamepad2().isDpad_down()){
             currentShooterSpeed = ShooterStateMachine.State.SPEED2;
         }
-        else if(getEnhancedGamepad2().isDpad_left()){
-            currentShooterSpeed = ShooterStateMachine.State.SPEED3;
-        }
-        else if(getEnhancedGamepad2().isDpad_up()){
-            currentShooterSpeed = ShooterStateMachine.State.SPEED4;
-        }
 
 
         //--------------------------------------------------------------------------------------------------------------------------------
@@ -163,11 +156,11 @@ public class InitialMain extends UltimateGoalRobot {
 
         //Update flywheel intake
         if(getEnhancedGamepad2().getRight_trigger()>0) {
-            getFlywheels().getStateMachine().updateState(FlywheelStateMachine.State.INTAKE);
+            getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.INTAKE);
         } else if(getEnhancedGamepad2().getLeft_trigger() > 0) {
-            getFlywheels().getStateMachine().updateState(FlywheelStateMachine.State.OUTTAKE);
+            getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.OUTTAKE);
         } else if(gamepad2.back) {
-            getFlywheels().getStateMachine().updateState(FlywheelStateMachine.State.IDLE);
+            getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.IDLE);
         }
 
         //Update Stack tracker

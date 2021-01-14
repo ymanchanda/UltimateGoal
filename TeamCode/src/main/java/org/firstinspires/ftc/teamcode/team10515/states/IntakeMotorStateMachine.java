@@ -2,14 +2,14 @@ package org.firstinspires.ftc.teamcode.team10515.states;
 
 import org.firstinspires.ftc.teamcode.lib.util.Namable;
 
-public class FlywheelStateMachine extends SimpleState<FlywheelStateMachine.State> {
-    public FlywheelStateMachine() {
+public class IntakeMotorStateMachine extends SimpleState<IntakeMotorStateMachine.State> {
+    public IntakeMotorStateMachine() {
         super(State.IDLE);
     }
 
     @Override
     public String getName() {
-        return "Flywheel State Machine";
+        return "Intake Motor State Machine";
     }
 
     public enum State implements Namable {
