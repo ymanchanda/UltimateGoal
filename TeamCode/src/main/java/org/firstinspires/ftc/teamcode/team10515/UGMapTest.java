@@ -2,8 +2,13 @@ package org.firstinspires.ftc.teamcode.team10515;
 
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
+import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
+
 
 //import org.firstinspires.ftc.teamcode.lib.drivers.RevServo;
 import org.firstinspires.ftc.teamcode.team10515.subsystems.ForkliftSubsystem;
@@ -24,6 +29,8 @@ public class UGMapTest
     //public DcMotor  AA = null;  //AccessArm
     public DcMotor forkliftMotor = null; //Wobble goal
     public DcMotor intakeMotor = null;
+    public Servo elevatorServo      = null; //
+    public Rev2mDistanceSensor elevatorSensor = null;
 
     public BNO055IMU imu = null;
 
@@ -34,6 +41,10 @@ public class UGMapTest
 //    static private final String REARLEFT       = "RL";
     static private final String FORKLIFTMOTOR  = "Forklift Motor";
     static private final String INTAKEMOTOR = "Intake Motor";
+    static private final String ELEVATORSERVO       = "Elevator Servo";
+    static final String  ELEVATORSENSOR = "Elevator Sensor";
+
+
 
 
     //static private final String  DEPOSITLIFT    = "DL";
@@ -59,6 +70,11 @@ public class UGMapTest
         // Define and Initialize Motors
         Shooter2 = hwMap.dcMotor.get(SHOOTER_2);
         Shooter1 = hwMap.dcMotor.get(SHOOTER_1);
+        elevatorServo  = hwMap.servo.get(ELEVATORSERVO);
+        elevatorSensor = hwMap.get(Rev2mDistanceSensor.class, ELEVATORSENSOR);
+
+
+
 //        RL      = hwMap.dcMotor.get(REARLEFT);
 //        RR      = hwMap.dcMotor.get(REARRIGHT);
 
