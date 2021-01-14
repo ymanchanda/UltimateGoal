@@ -56,56 +56,65 @@ public class ForkliftTest extends OpMode {
 
     @Override
     public void loop() {
-        //Trial 1
-        /*
-        if (getEnhancedGamepad1().isA() && btnPressedA.milliseconds() > 250) {
-            telemetry.addLine("a pressed");
-            servoPos += 0.01;
-            btnPressedA.reset();
-        } else if (getEnhancedGamepad1().isY() && btnPressedY.milliseconds() > 250) {
-            telemetry.addLine("y pressed");
-            servoPos -= 0.01;
-            btnPressedY.reset();
-        } else if (getEnhancedGamepad1().isB()) {
-            servoPos = 0;
-        } else if (getEnhancedGamepad1().isX()) {
-            servoPos = 0.5;
+        if(getEnhancedGamepad1().isyJustPressed())
+        {
+            robot.forkliftMotor.setPower(0.5);
+        }
+        else if(getEnhancedGamepad1().isaJustPressed()) {
+            robot.forkliftMotor.setPower(-0.4);
         }
 
-        if(getEnhancedGamepad1().isA() && btnPressedA.milliseconds() > 250){
-            telemetry.addLine("a pressed");
-            toggle = !toggle;
-            btnPressedA.reset();
-            if (toggle){
-                servoPos = 0;
-            }
-            else {
-                servoPos = 0.5;
-            }
-        }
-         */
 
-//        int target = robot.forkliftMotor.getCurrentPosition() + (int) (0.5 * WHEEL_DIAMETER_INCHES * Math.PI);
-        int target = robot.forkliftMotor.getCurrentPosition() + (int)(0.75*COUNTS_PER_MOTOR_REV);
-        telemetry.addData("Hi", target);
-
-        robot.forkliftMotor.setTargetPosition(target);
-
-        robot.forkliftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        robot.forkliftMotor.setPower(0.4);
-
-        while(robot.forkliftMotor.isBusy() && !(getEnhancedGamepad1().isA())){
-            telemetry.addLine("Running");
-        }
-
-        robot.forkliftMotor.setPower(0);
-
-        while(!(getEnhancedGamepad1().isA())){
-            telemetry.addLine("Waiting for user input (press A to run again)");
-        }
-
-//        robot.forkliftMotor.setPower(forkliftPower);
+//        //Trial 1
+//        /*
+//        if (getEnhancedGamepad1().isA() && btnPressedA.milliseconds() > 250) {
+//            telemetry.addLine("a pressed");
+//            servoPos += 0.01;
+//            btnPressedA.reset();
+//        } else if (getEnhancedGamepad1().isY() && btnPressedY.milliseconds() > 250) {
+//            telemetry.addLine("y pressed");
+//            servoPos -= 0.01;
+//            btnPressedY.reset();
+//        } else if (getEnhancedGamepad1().isB()) {
+//            servoPos = 0;
+//        } else if (getEnhancedGamepad1().isX()) {
+//            servoPos = 0.5;
+//        }
+//
+//        if(getEnhancedGamepad1().isA() && btnPressedA.milliseconds() > 250){
+//            telemetry.addLine("a pressed");
+//            toggle = !toggle;
+//            btnPressedA.reset();
+//            if (toggle){
+//                servoPos = 0;
+//            }
+//            else {
+//                servoPos = 0.5;
+//            }
+//        }
+//         */
+//
+////        int target = robot.forkliftMotor.getCurrentPosition() + (int) (0.5 * WHEEL_DIAMETER_INCHES * Math.PI);
+//        int target = robot.forkliftMotor.getCurrentPosition() + (int)(0.75*COUNTS_PER_MOTOR_REV);
+//        telemetry.addData("Hi", target);
+//
+//        robot.forkliftMotor.setTargetPosition(target);
+//
+//        robot.forkliftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//
+//        robot.forkliftMotor.setPower(0.4);
+//
+//        while(robot.forkliftMotor.isBusy() && !(getEnhancedGamepad1().isA())){
+//            telemetry.addLine("Running");
+//        }
+//
+//        robot.forkliftMotor.setPower(0);
+//
+//        while(!(getEnhancedGamepad1().isA())){
+//            telemetry.addLine("Waiting for user input (press A to run again)");
+//        }
+//
+////        robot.forkliftMotor.setPower(forkliftPower);
 
         telemetry.addLine("Forklift Power: " + forkliftPower);
         telemetry.addLine("Current Position: " + robot.forkliftMotor.getCurrentPosition());
