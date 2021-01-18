@@ -11,15 +11,21 @@ import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 
 
 //import org.firstinspires.ftc.teamcode.lib.drivers.RevServo;
+import org.firstinspires.ftc.teamcode.team10515.auto.UGMap;
+import org.firstinspires.ftc.teamcode.team10515.control.EnhancedGamepad;
 import org.firstinspires.ftc.teamcode.team10515.subsystems.ForkliftSubsystem;
 import org.firstinspires.ftc.teamcode.team10515.subsystems.ShooterSubsystem;
 import org.firstinspires.ftc.teamcode.team10515.subsystems.IntakeMotorSubsystem;
+//import org.firstinspires.ftc.teamcode.team10515.control.EnhancedGamepad;
 
-public class UGMapTest
+
+public class UGMapTest extends Robot
 {
 
     public DcMotor Shooter1 = null;  //FrontRight
     public DcMotor Shooter2 = null;  //FrontLeft
+    //private static EnhancedGamepad enhancedGamepad1;
+    //private static EnhancedGamepad enhancedGamepad2;
 //    public DcMotor RR = null;  //RearRight
 //    public DcMotor RL = null;  //RearLeft
 //    public DcMotor LL = null;  //LiftLeft
@@ -64,6 +70,8 @@ public class UGMapTest
 
     /* Initialize standard Hardware interfaces */
     public void init(HardwareMap ahwMap) {
+        super.init();
+
         // Save reference to Hardware map
         hwMap = ahwMap;
 
@@ -133,8 +141,20 @@ public class UGMapTest
         // and named "imu".
 //        imu = hwMap.get(BNO055IMU.class, IMU_SENSOR);
 //        imu.initialize(parameters);
+//
+
 
     }
+    @Override
+    public void init_loop() {
+        super.init_loop();
+    }
+
+    @Override
+    public void loop() {
+        super.loop();
+    }
+
     public ShooterSubsystem getShooter() { return shooterMotors; }
 
     public ForkliftSubsystem getForkliftMotor() {
@@ -146,4 +166,5 @@ public class UGMapTest
     public IntakeMotorSubsystem getIntakeMotorSub(){
         return intakeMotorSub;
     }
+
 }

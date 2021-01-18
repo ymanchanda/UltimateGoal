@@ -6,11 +6,11 @@ import org.firstinspires.ftc.teamcode.team10515.states.PulleyStateMachine;
 
 public class PulleySubsystem implements ISubsystem<PulleyStateMachine, PulleyStateMachine.State> {
     public static PulleyStateMachine pulleyStateMachine;
-    private RevServo leftServo;
-    private RevServo rightServo;
+    private RevServo elevatorServo;
 
-    public PulleySubsystem(RevServo leftServo, RevServo rightServo){
+    public PulleySubsystem(RevServo elevatorServo){
         setPulleyStateMachine(new PulleyStateMachine());
+        setElevatorServo(elevatorServo);
     }
 
     @Override
@@ -46,27 +46,20 @@ public class PulleySubsystem implements ISubsystem<PulleyStateMachine, PulleySta
     @Override
     public void update(double dt) {
         getStateMachine().update(dt);
-        getLeftServo().setPosition(getState().getLeftPosition());
-        getRightServo().setPosition(getState().getRightPosition());
+        getElevatorServo().setPosition(getState().getPosition());
     }
 
     public static void setPulleyStateMachine(PulleyStateMachine pulleyStateMachine){
         PulleySubsystem.pulleyStateMachine = pulleyStateMachine;
     }
 
-    public RevServo getLeftServo(){
-        return leftServo;
+    public RevServo getElevatorServo(){
+        return elevatorServo;
     }
 
-    public RevServo getRightServo() {
-        return rightServo;
+
+    public void setElevatorServo(RevServo  elevatorServo){
+        this.elevatorServo = elevatorServo;
     }
 
-    public void setLeftServo(RevServo leftServo){
-        this.leftServo = leftServo;
-    }
-
-    public void setRightServo(RevServo rightServo) {
-        this.rightServo = rightServo;
-    }
 }

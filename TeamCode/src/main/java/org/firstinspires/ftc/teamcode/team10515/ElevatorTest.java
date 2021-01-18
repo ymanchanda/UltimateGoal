@@ -58,6 +58,12 @@ public class ElevatorTest extends OpMode {
             btnPressedA.reset();
         }
 
+        if(robot.elevatorSensor.getDistance(DistanceUnit.INCH)>4.5 && (robot.elevatorServo.getPosition()> 0.6))
+        {
+            robot.elevatorServo.setPosition(0.0);
+        }
+
+
 
         telemetry.addLine("E Power: " + robot.elevatorServo.getPosition());
         telemetry.addLine("Distance" + robot.elevatorSensor.getDistance(DistanceUnit.INCH));

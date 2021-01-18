@@ -44,7 +44,7 @@ public abstract class Robot extends OpMode {
 
     @Override
     public void init() {
-        setDrivetrainPower(Pose2d.identity());
+        //setDrivetrainPower(Pose2d.identity());
         setEnhancedGamepad1(new EnhancedGamepad(gamepad1));
         setEnhancedGamepad2(new EnhancedGamepad(gamepad2));
         setUpdateRuntime(new TimeProfiler(false));

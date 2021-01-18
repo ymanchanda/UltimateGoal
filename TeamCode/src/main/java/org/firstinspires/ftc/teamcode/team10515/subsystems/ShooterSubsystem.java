@@ -7,11 +7,14 @@ import org.firstinspires.ftc.teamcode.team10515.states.ShooterStateMachine;
 public class ShooterSubsystem implements ISubsystem<ShooterStateMachine, ShooterStateMachine.State> {
 
     private static ShooterStateMachine shooterStateMachine;
-    private RevMotor ShooterWheels;
+    private RevMotor ShooterWheel;
+    private RevMotor ShooterWheel2;
 
-    public ShooterSubsystem(RevMotor shooterMotor){
+
+    public ShooterSubsystem(RevMotor shooterMotor, RevMotor shooterMotor2){
         setShooterStateMachine(new ShooterStateMachine());
-        setShooterWheels(shooterMotor);
+        setShooterWheel1(shooterMotor);
+        setShooterWheel2(shooterMotor2);
     }
 
     @Override
@@ -31,7 +34,8 @@ public class ShooterSubsystem implements ISubsystem<ShooterStateMachine, Shooter
 
     @Override
     public void stop() {
-        getShooterWheels().setPower(0d);
+        getShooterWheel1().setPower(0d);
+        getShooterWheel2().setPower(0d);
 
     }
 
@@ -48,18 +52,26 @@ public class ShooterSubsystem implements ISubsystem<ShooterStateMachine, Shooter
     @Override
     public void update(double dt) {
         getStateMachine().update(dt);
-        getShooterWheels().setPower(getState().getPower());
+        getShooterWheel1().setPower(getState().getPower());
+        getShooterWheel2().setPower(getState().getPower());
     }
 
     private static void setShooterStateMachine(ShooterStateMachine ShooterStateMachine){
         ShooterSubsystem.shooterStateMachine = ShooterStateMachine;
     }
 
-    private void setShooterWheels(RevMotor intakeMotor){
-        this.ShooterWheels = intakeMotor;
+    private void setShooterWheel1(RevMotor shooterMotor){
+        this.ShooterWheel = shooterMotor;
+    }
+    private void setShooterWheel2(RevMotor shooterMotor2){
+        this.ShooterWheel2 = shooterMotor2;
     }
 
-    private RevMotor getShooterWheels(){
-        return ShooterWheels;
+    private RevMotor getShooterWheel1(){
+        return ShooterWheel;
     }
+    private RevMotor getShooterWheel2(){
+        return ShooterWheel2;
+    }
+
 }

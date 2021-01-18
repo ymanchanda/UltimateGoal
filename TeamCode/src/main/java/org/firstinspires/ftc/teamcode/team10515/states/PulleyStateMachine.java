@@ -20,25 +20,21 @@ public class PulleyStateMachine extends TimedState<PulleyStateMachine.State> {
     }
 
     public enum State implements Namable{
-        DOWN("Down", 0d, 0d), UP("Up", 0d, 0d);
+        DOWN("Down", 0d), UP("Up", 0.8d);
 
         private final String name;
-        private final double leftPosition;
-        private final double rightPosition;
+        private final double position;
 
-        State(final String name, final double leftPosition, final double rightPosition){
+        State(final String name, final double position){
             this.name = name;
-            this.leftPosition = leftPosition;
-            this.rightPosition = rightPosition;
+            this.position = position;
+
         }
 
-        public double getLeftPosition() {
-            return leftPosition;
+        public double getPosition() {
+            return position;
         }
 
-        public double getRightPosition() {
-            return rightPosition;
-        }
 
         @Override
         public String getName(){

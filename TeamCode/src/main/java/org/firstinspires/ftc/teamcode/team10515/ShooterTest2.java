@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.team10515;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.team10515.control.EnhancedGamepad;
 import org.firstinspires.ftc.teamcode.team10515.control.ShooterPhysics;
@@ -11,10 +10,14 @@ import static java.lang.System.currentTimeMillis;
 import static org.firstinspires.ftc.teamcode.team10515.Robot.getEnhancedGamepad1;
 import static org.firstinspires.ftc.teamcode.team10515.Robot.setEnhancedGamepad1;
 
+import org.firstinspires.ftc.teamcode.team10515.states.ShooterStateMachine;
+import org.firstinspires.ftc.teamcode.team10515.subsystems.ShooterSubsystem;
+import org.firstinspires.ftc.teamcode.team10515.subsystems.PulleySubsystem;
+
 
 @TeleOp(name = "Shooter Test", group = "Test")
 
-public class  ShooterTest extends OpMode{
+public class ShooterTest2 extends UltimateGoalRobot{
     public double shooterSpeed = 0;
     public double shooterSpeedPole = 0;
 
@@ -57,6 +60,8 @@ public class  ShooterTest extends OpMode{
 
     @Override
     public void loop() {
+        super.loop();
+
 //        super.loop();
 
 //        if(getEnhancedGamepad1().isA()){
@@ -126,16 +131,16 @@ public class  ShooterTest extends OpMode{
 
 
         if (getEnhancedGamepad1().isDpad_up()) {
-            robot.Shooter1.setPower(physicsShooterSpeed);
-            robot.Shooter2.setPower(physicsShooterSpeed);
+            getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.SPEED1);
+
         }
         else if (getEnhancedGamepad1().isDpad_right()){
-            robot.Shooter1.setPower(physicsShooterSpeed2);
-            robot.Shooter2.setPower(physicsShooterSpeed2);
+            getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.SPEED2);
+
         }
         else if(getEnhancedGamepad1().isDpad_down()){
-            robot.Shooter1.setPower(physicsShooterSpeed3);
-            robot.Shooter2.setPower(physicsShooterSpeed3);
+            getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.IDLE);
+
         }
 //        if(getEnhancedGamepad1().isyJustPressed())
 //            shooterSpeed += 0.05;

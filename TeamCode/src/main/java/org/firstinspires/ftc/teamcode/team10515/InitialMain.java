@@ -105,12 +105,12 @@ public class InitialMain extends UltimateGoalRobot {
 
         //Update servo for ring hitter
         if(getEnhancedGamepad2().isA()){
-            getFlickerSubsystem().getStateMachine().updateState(FlickerStateMachine.State.HOLD); // move the servo to hit the ring
+            getFlickerSubsystem().getStateMachine().updateState(FlickerStateMachine.State.HIT); // move the servo to hit the ring
             previousTime = getRuntime();
         }
 
         if(currentTime-previousTime >= flickerInterval){ // if the current time minus the last time A was pressed is at least one second,
-            getFlickerSubsystem().getStateMachine().updateState(FlickerStateMachine.State.DROP); // move the servo to original position
+            getFlickerSubsystem().getStateMachine().updateState(FlickerStateMachine.State.HOLD); // move the servo to original position
         }
 
         //Check for Y button
@@ -201,18 +201,18 @@ public class InitialMain extends UltimateGoalRobot {
         }
 
         //Toggle end game extension blocker to extend slides
-        if(getEnhancedGamepad1().isBack()) {
-            getEndGameExtensionSubsystem().getStateMachine().updateState(EndGameExtensionStateMachine.State.RELEASE_SLIDES);
-        }
-
-        if(getEnhancedGamepad2().isDpadDownJustPressed()) {
-            getFoundationSubsystem().getStateMachine().updateState(FoundationStateMachine.State.GRAB);
-        } else if(getEnhancedGamepad2().isDpadUpJustPressed()) {
-            getFoundationSubsystem().getStateMachine().updateState(FoundationStateMachine.State.INIT);
-        }
+//        if(getEnhancedGamepad1().isBack()) {
+//            getEndGameExtensionSubsystem().getStateMachine().updateState(EndGameExtensionStateMachine.State.RELEASE_SLIDES);
+//        }
+//
+//        if(getEnhancedGamepad2().isDpadDownJustPressed()) {
+//            getFoundationSubsystem().getStateMachine().updateState(FoundationStateMachine.State.GRAB);
+//        } else if(getEnhancedGamepad2().isDpadUpJustPressed()) {
+//            getFoundationSubsystem().getStateMachine().updateState(FoundationStateMachine.State.INIT);
+//        }
 
         if(getEnhancedGamepad1().isA()) {
-            Feeder.getFlickerStateMachine().updateState(FlickerStateMachine.State.DROP);
+            Feeder.getFlickerStateMachine().updateState(FlickerStateMachine.State.HIT);
         } else if(getEnhancedGamepad1().isY()) {
             Feeder.getFlickerStateMachine().updateState(FlickerStateMachine.State.HOLD);
         }

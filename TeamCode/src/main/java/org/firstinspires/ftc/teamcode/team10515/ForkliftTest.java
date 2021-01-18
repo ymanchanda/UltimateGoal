@@ -11,9 +11,9 @@ import static java.lang.System.currentTimeMillis;
 import static org.firstinspires.ftc.teamcode.team10515.Robot.getEnhancedGamepad1;
 import static org.firstinspires.ftc.teamcode.team10515.Robot.setEnhancedGamepad1;
 
-@TeleOp(name = "Wobble Goal/Servo Test", group = "Test")
+@TeleOp(name = "Wobble Goal", group = "Test")
 
-public class ForkliftTest extends OpMode {
+public class ForkliftTest extends UGMapTest {
 //    public double servoPos = 0;
 
     public double forkliftPower = 0;
@@ -43,27 +43,47 @@ public class ForkliftTest extends OpMode {
     @Override
     public void init() {
         /* Initialize the hardware map*/
+        super.init();
         robot.init(hardwareMap);
 
         // Send telemetry message to signify robot waiting;
         telemetry.addData("Init", "Hello Ultimate Goal Robot");    //
         updateTelemetry(telemetry);
 
-        setEnhancedGamepad1(new EnhancedGamepad(gamepad1));
+        //setEnhancedGamepad1(new EnhancedGamepad(gamepad1));
         btnPressedA = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
         btnPressedY = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
     }
 //hi
     @Override
     public void loop() {
-        if(getEnhancedGamepad1().isyJustPressed())
-        {
-            robot.forkliftMotor.setPower(0.5);
-        }
-        else if(getEnhancedGamepad1().isaJustPressed()) {
-            robot.forkliftMotor.setPower(-0.4);
-        }
+        super.loop();
 
+        if(gamepad1.y)
+        {
+            telemetry.addData("Left:", robot.forkliftMotor.getCurrentPosition());
+            robot.forkliftMotor.setTargetPosition(robot.forkliftMotor.getCurrentPosition() + 470);
+            robot.forkliftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            while (robot.forkliftMotor.isBusy()) {
+                robot.forkliftMotor.setPower(0.3);
+            }
+
+        }
+        else if(gamepad1.a) {
+            robot.forkliftMotor.setPower(0.0);
+        }
+//        if(getEnhancedGamepad1().isY() && btnPressedY.milliseconds() > 250)
+//        {
+//            robot.forkliftMotor.setPower(0.2);
+//            btnPressedY.reset();
+//        }
+//        else if(getEnhancedGamepad1().isA() && btnPressedA.milliseconds() > 250) {
+//            robot.forkliftMotor.setPower(-0.2);
+//            btnPressedA.reset();
+//        }
+        //getEnhancedGamepad1().update();
+//        telemetry.addData("Motor Position", robot.forkliftMotor.getCurrentPosition());
+//        telemetry.update();
 
 
 //        //Trial 1
@@ -117,7 +137,6 @@ public class ForkliftTest extends OpMode {
 //
 ////        robot.forkliftMotor.setPower(forkliftPower);
 
-        telemetry.addLine("Forklift Power: " + forkliftPower);
         telemetry.addLine("Current Position: " + robot.forkliftMotor.getCurrentPosition());
         telemetry.update();
     }

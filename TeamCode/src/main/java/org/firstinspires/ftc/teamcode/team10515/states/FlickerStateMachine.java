@@ -20,7 +20,7 @@ public class FlickerStateMachine extends TimedState<FlickerStateMachine.State> {
     }
 
     public enum State implements Namable {
-        HOLD(0.6d), DROP(0.0d);
+        HIT(0.6d), HOLD(0.0d);
 
         private final double position;
 
