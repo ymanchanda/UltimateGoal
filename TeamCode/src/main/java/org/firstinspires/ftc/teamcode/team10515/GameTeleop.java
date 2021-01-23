@@ -171,7 +171,7 @@ public class GameTeleop extends UltimateGoalRobot {
 //            telemetry.addLine("" + Feeder.getExtensionProfile().getPosition());
 //        }
         telemetry.addLine("Button Status Just Pressed: "+ getEnhancedGamepad1().isyJustPressed());
-        telemetry.addLine("Null Status: "+ getEnhancedGamepad1());
+        telemetry.addLine("Null Status: "+ getEnhancedGamepad1().getGamepad());
         telemetry.addLine("Button Status: "+ getEnhancedGamepad1().isY());
         telemetry.addLine("Button Status Last: "+ getEnhancedGamepad1().isyLast());
         telemetry.update();
