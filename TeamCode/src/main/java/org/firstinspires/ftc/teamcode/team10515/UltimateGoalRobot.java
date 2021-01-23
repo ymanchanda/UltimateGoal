@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.team10515;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 
@@ -77,7 +78,7 @@ public abstract class UltimateGoalRobot extends Robot {
                 new RevMotor((ExpansionHubMotor)(hardwareMap.get("Shooter 2")), false, false, false, true),
 
                 new RevMotor((ExpansionHubMotor)(hardwareMap.get("Intake Motor")), true, false, false, false),
-                new RevMotor((ExpansionHubMotor)(hardwareMap.get("Forklift Motor")), true, false, false, true),
+                new RevMotor((ExpansionHubMotor)(hardwareMap.get("Forklift Motor")), true, false, true, true),
 //                new RevMotor((ExpansionHubMotor)(hardwareMap.get("LL")), true, true, false, true, Motor.GOBILDA_312_RPM.getENCODER_TICKS_PER_REVOLUTION(), 38d / 25.4d),
 //                new RevMotor((ExpansionHubMotor)(hardwareMap.get("LR")), false, true, false, false, Motor.GOBILDA_312_RPM.getENCODER_TICKS_PER_REVOLUTION(), 38d / 25.4d)
         });
@@ -90,12 +91,15 @@ public abstract class UltimateGoalRobot extends Robot {
 
 //        setLights((hardwareMap.get(RevBlinkinLedDriver.class, "blinkin")));
         //Yogesh commented this
-      //  setRobotStateEstimator(new RobotStateEstimator(this, hardwareMap.get(BNO055IMU.class, "imu"), new Pose2d()));
+        setRobotStateEstimator(new RobotStateEstimator(this, hardwareMap.get(BNO055IMU.class, "imu"), new Pose2d()));
         setDistanceSensor((hardwareMap.get(Rev2mDistanceSensor.class, "Elevator Sensor")));
         setDrive(new Drive(getRobotStateEstimator(), getMotors()[0], getMotors()[1], getMotors()[2], getMotors()[3]));
         setStackTracker(new StackTracker());
         setShooterSubsystem(new ShooterSubsystem(getMotors()[4], getMotors()[5]));
         setPulleySubsystem(new PulleySubsystem(getServos()[0]));
+        setIntakeMotorSubsystem(new IntakeMotorSubsystem(getMotors()[6]));
+        setForkliftSubsystem(new ForkliftSubsystem(getMotors()[7]));
+        setFlickerSubsystem(new FlickerSubsystem(getServos()[1], getServos()[2]));
         setMatchRuntime(new TimeProfiler(false));
     }
 
@@ -222,15 +226,6 @@ public abstract class UltimateGoalRobot extends Robot {
     public void setForkliftSubsystem(ForkliftSubsystem forkliftSubsystem){
         this.forkliftSubsystem = forkliftSubsystem;
     }
-
-    public IntakeServoSubsystem getIntakeServoSubsystem(){
-        return intakeServoSubsystem;
-    }
-
-    public void setIntakeServoSubsystem(IntakeServoSubsystem intakeServoSubsystem){
-        this.intakeServoSubsystem = intakeServoSubsystem;
-    }
-
     public  RevBlinkinLedDriver getLights() {
         return lights;
     }
