@@ -50,11 +50,11 @@ import org.firstinspires.ftc.teamcode.team10515.subsystems.Feeder;
  *
  * @see UltimateGoalRobot
  */
-@TeleOp(name = "Main Tele-Op", group = "Main")
+@TeleOp(name = "Game Tele-Op", group = "Main")
 public class GameTeleop extends UltimateGoalRobot {
     @Override
     public void start() {
-        Feeder.setManualControlExtension(() -> gamepad2.b ? 0.5d : gamepad2.x ? -0.5d : 0d);
+        //Feeder.setManualControlExtension(() -> gamepad2.b ? 0.5d : gamepad2.x ? -0.5d : 0d);
     }
 
     @Override

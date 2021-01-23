@@ -4,6 +4,7 @@ import org.firstinspires.ftc.teamcode.lib.util.Namable;
 
 public class IntakeMotorStateMachine extends SimpleState<IntakeMotorStateMachine.State> {
     public IntakeMotorStateMachine() {
+
         super(State.IDLE);
     }
 

@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.team10515.subsystems.ShooterSubsystem;
 import org.firstinspires.ftc.teamcode.team10515.subsystems.PulleySubsystem;
 
 
-@TeleOp(name = "Shooter Test", group = "Test")
+@TeleOp(name = "Shooter Test2", group = "Test")
 
 public class ShooterTest2 extends UltimateGoalRobot{
     public double shooterSpeed = 0;

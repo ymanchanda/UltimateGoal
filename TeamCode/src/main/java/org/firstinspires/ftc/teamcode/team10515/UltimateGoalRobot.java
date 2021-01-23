@@ -116,7 +116,6 @@ public abstract class UltimateGoalRobot extends Robot {
       //  getRobotStateEstimator().start();
         getDrive().start();
         Arrays.stream(getMotors()).forEach(RevMotor::resetEncoder);
-        getLights().setPattern(RevBlinkinLedDriver.BlinkinPattern.BLACK);
         getMatchRuntime().start();
     }
 
