@@ -60,6 +60,8 @@ public class GameTeleop extends UltimateGoalRobot {
     @Override
     public void loop() {
         super.loop();
+        getEnhancedGamepad1().update();
+        getEnhancedGamepad2().update();
         setDrivetrainPower(new Pose2d(-gamepad1.left_stick_y, -gamepad1.left_stick_x, new Rotation2d(gamepad1.right_stick_x, false)));
 
         //Update flywheel intake
@@ -113,6 +115,8 @@ public class GameTeleop extends UltimateGoalRobot {
         else if(getEnhancedGamepad1().isaJustPressed()){
             getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.DOWN);
         }
+
+
         //Check to release grip of stone for stacking
 //        if(getEnhancedGamepad2().isRight_bumper() /*&& getStackTracker().getExtensionHeight() == Feeder.getSetpoint()*/) {
 //            Feeder.getFeederStoneGripperStateMachine().updateState(FeederStoneGripperStateMachine.State.NO_GRIP);
@@ -166,7 +170,10 @@ public class GameTeleop extends UltimateGoalRobot {
 //        if(Feeder.getExtensionProfile() != null) {
 //            telemetry.addLine("" + Feeder.getExtensionProfile().getPosition());
 //        }
-        telemetry.addLine("Status: ");
+        telemetry.addLine("Button Status Just Pressed: "+ getEnhancedGamepad1().isyJustPressed());
+        telemetry.addLine("Null Status: "+ getEnhancedGamepad1());
+        telemetry.addLine("Button Status: "+ getEnhancedGamepad1().isY());
+        telemetry.addLine("Button Status Last: "+ getEnhancedGamepad1().isyLast());
         telemetry.update();
     }
 }
