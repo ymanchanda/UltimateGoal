@@ -110,7 +110,7 @@ public class InitialMain extends UltimateGoalRobot {
         }
 
         if(currentTime-previousTime >= flickerInterval){ // if the current time minus the last time A was pressed is at least one second,
-            getFlickerSubsystem().getStateMachine().updateState(FlickerStateMachine.State.HOLD); // move the servo to original position
+            //getFlickerSubsystem().getStateMachine().updateState(FlickerStateMachine.State.HOLD); // move the servo to original position
         }
 
         //Check for Y button
@@ -214,7 +214,7 @@ public class InitialMain extends UltimateGoalRobot {
         if(getEnhancedGamepad1().isA()) {
             Feeder.getFlickerStateMachine().updateState(FlickerStateMachine.State.HIT);
         } else if(getEnhancedGamepad1().isY()) {
-            Feeder.getFlickerStateMachine().updateState(FlickerStateMachine.State.HOLD);
+            //Feeder.getFlickerStateMachine().updateState(FlickerStateMachine.State.HOLD);
         }
 
 

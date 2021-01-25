@@ -15,7 +15,7 @@ public class IntakeMotorStateMachine extends SimpleState<IntakeMotorStateMachine
 
     public enum State implements Namable {
         IDLE("Idle", 0d),
-        INTAKE("Intake", 0.6d),
+        INTAKE("Intake", 0.9d),
         OUTTAKE("Outtake", -0.7d);
 
         private final String name;

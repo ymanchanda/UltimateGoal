@@ -71,14 +71,14 @@ public abstract class UltimateGoalRobot extends Robot {
 
         setMotors(new RevMotor[] {
                 new RevMotor((ExpansionHubMotor)(hardwareMap.get("RL")), true, true, true, true, Motor.GOBILDA_435_RPM.getENCODER_TICKS_PER_REVOLUTION(), getWheelDiameter(), 2d),
-                new RevMotor((ExpansionHubMotor)(hardwareMap.get("FL")), true, true, true, true, Motor.GOBILDA_435_RPM.getENCODER_TICKS_PER_REVOLUTION(), getWheelDiameter(), 2d),
+                new RevMotor((ExpansionHubMotor)(hardwareMap.get("FL")), true, true, true, false, Motor.GOBILDA_435_RPM.getENCODER_TICKS_PER_REVOLUTION(), getWheelDiameter(), 2d),
                 new RevMotor((ExpansionHubMotor)(hardwareMap.get("RR")), false, true, true, false, Motor.GOBILDA_435_RPM.getENCODER_TICKS_PER_REVOLUTION(), getWheelDiameter(), 2d),
                 new RevMotor((ExpansionHubMotor)(hardwareMap.get("FR")), false, true, true, false, Motor.GOBILDA_435_RPM.getENCODER_TICKS_PER_REVOLUTION(), getWheelDiameter(), 2d),
                 new RevMotor((ExpansionHubMotor)(hardwareMap.get("Shooter 1 ")), false, false, false, true),
                 new RevMotor((ExpansionHubMotor)(hardwareMap.get("Shooter 2")), false, false, false, true),
 
                 new RevMotor((ExpansionHubMotor)(hardwareMap.get("Intake Motor")), true, false, false, false),
-                new RevMotor((ExpansionHubMotor)(hardwareMap.get("Forklift Motor")), true, false, true, true),
+                new RevMotor((ExpansionHubMotor)(hardwareMap.get("Forklift Motor")), true, true, true, false, Motor.GOBILDA_312_RPM.getENCODER_TICKS_PER_REVOLUTION()),
 //                new RevMotor((ExpansionHubMotor)(hardwareMap.get("LL")), true, true, false, true, Motor.GOBILDA_312_RPM.getENCODER_TICKS_PER_REVOLUTION(), 38d / 25.4d),
 //                new RevMotor((ExpansionHubMotor)(hardwareMap.get("LR")), false, true, false, false, Motor.GOBILDA_312_RPM.getENCODER_TICKS_PER_REVOLUTION(), 38d / 25.4d)
         });
@@ -126,6 +126,11 @@ public abstract class UltimateGoalRobot extends Robot {
         //Yogesh commented this
         //  getRobotStateEstimator().update(getDt());
         getDrive().update(getDt());
+        getIntakeMotorSubsystem().update(getDt());
+        getShooterSubsystem().update(getDt());
+        getFlickerSubsystem().update(getDt());
+        getPulleySubsystem().update(getDt());
+        getForkliftSubsystem().update(getDt());
     }
 //        getEndGameExtensionSubsystem().update(getDt());
 //        if(getMatchRuntime().getDeltaTime(TimeUnits.SECONDS, false) >= 90d &&
@@ -148,6 +153,11 @@ public abstract class UltimateGoalRobot extends Robot {
         //Yogesh Commented This
       //  getRobotStateEstimator().stop();
         getDrive().stop();
+        getForkliftSubsystem().stop();
+        getPulleySubsystem().stop();
+        getFlickerSubsystem().stop();
+        getShooterSubsystem().stop();
+        getIntakeMotorSubsystem().stop();
     }
 
     public ExpansionHubs getExpansionHubs() {

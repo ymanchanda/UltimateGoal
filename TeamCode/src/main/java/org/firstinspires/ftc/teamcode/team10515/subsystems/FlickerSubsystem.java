@@ -50,8 +50,8 @@ public class FlickerSubsystem implements ISubsystem<FlickerStateMachine, Flicker
     @Override
     public void update(double dt) {
         getStateMachine().update(dt);
-        getRightFlickerServo().setPosition(getState().getPosition());
-        getLeftFlickerServo().setPosition(getState().getPosition());
+        getRightFlickerServo().setPosition(getState().getRightPosition());
+        getLeftFlickerServo().setPosition(getState().getLeftPosition());
     }
 
     public static void setFlickerStateMachine(FlickerStateMachine flickerStateMachine) {

@@ -235,7 +235,7 @@ public class Feeder implements ISubsystem<FeederStateMachine, FeederStateMachine
         getLeftFourBarJoint().setPosition(getVirtualFourBarStateMachine().getState().getLeftPosition());
         getRightFourBarJoint().setPosition(getVirtualFourBarStateMachine().getState().getRightPosition());
         getStoneGripper().setPosition(getFeederStoneGripperStateMachine().getState().getPosition());
-        getFlickerArm().setPosition(getFlickerStateMachine().getState().getPosition());
+        //getFlickerArm().setPosition(getFlickerStateMachine().getState().getLeftPosition());
     }
 
     public void toggleVirtualFourBar() {

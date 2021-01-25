@@ -49,6 +49,11 @@ public class ForkliftSubsystem implements ISubsystem<ForkliftStateMachine, Forkl
     public void update(double dt) {
         getStateMachine().update(dt);
         getForkliftMotor().setPower(getState().getPower());
+//        getForkliftMotor().setTargetPosition(getForkliftMotor().getCurrentEncoderTicks() + 470);
+//        getForkliftMotor().setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//        while (getForkliftMotor().getCurrentEncoderTicks()< 470) {
+//            getForkliftMotor().setPower(getState().getPower());
+//        }
     }
 
     public RevMotor getForkliftMotor(){
