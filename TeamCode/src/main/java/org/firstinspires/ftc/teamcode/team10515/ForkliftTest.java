@@ -73,16 +73,17 @@ public class ForkliftTest extends UltimateGoalRobot {
         else if(getEnhancedGamepad1().isaLast()) {
             getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.DOWN);
         }
-
+        telemetry.addLine("Position" + getForkliftSubsystem().getForkliftMotor().getCurrentEncoderTicks());
         telemetry.update();
     }
 
     public boolean reachedPosition(){
-        if(getForkliftSubsystem().getForkliftMotor().getPosition() < 470){
+        if(getForkliftSubsystem().getForkliftMotor().getCurrentEncoderTicks() < 470){
             return false;
         }
         return true;
     }
+
 }
 
 
