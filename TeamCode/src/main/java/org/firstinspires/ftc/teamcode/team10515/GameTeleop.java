@@ -57,11 +57,14 @@ public class GameTeleop extends UltimateGoalRobot {
     private boolean iselevatorUp = false;
     private boolean isFlicked = false;
     private boolean isAuto = true;
+    private boolean doublecheckflag = false;
+
 
 
     public ElapsedTime btnPressedY = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
     public ElapsedTime btnPressedX = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
     public ElapsedTime btnPressedA = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+    public ElapsedTime doubleCheck = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
 
 
     @Override
@@ -155,14 +158,28 @@ public class GameTeleop extends UltimateGoalRobot {
             btnPressedA.reset();
 
         }
-        if(elevatorSensor.getDistance(DistanceUnit.INCH)< 8.8 && (!iselevatorUp) && (isAuto) && btnPressedA.milliseconds()>1250){
-            getPulleySubsystem().getStateMachine().updateState(PulleyStateMachine.State.UP);
-            getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.SPEED1);
-            getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.IDLE);
-            iselevatorUp = true;
-            btnPressedY.reset();
+        if(elevatorSensor.getDistance(DistanceUnit.INCH)< 8.8 && (!iselevatorUp) && (isAuto) && btnPressedA.milliseconds()>1250 && !doublecheckflag){
+            doublecheckflag = true;
+            doubleCheck.reset();
         }
-        if (getEnhancedGamepad2().isRightBumperLast()){
+        if(doublecheckflag && doubleCheck.milliseconds()>1000){
+            if(elevatorSensor.getDistance(DistanceUnit.INCH)< 8.8 && (!iselevatorUp) && (isAuto) && btnPressedA.milliseconds()>1250) {
+                getPulleySubsystem().getStateMachine().updateState(PulleyStateMachine.State.UP);
+                getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.SPEED1);
+                getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.IDLE);
+                iselevatorUp = true;
+                btnPressedY.reset();
+            }
+            doublecheckflag = false;
+        }
+//        if(elevatorSensor.getDistance(DistanceUnit.INCH)< 8.8 && (!iselevatorUp) && (isAuto) && btnPressedA.milliseconds()>1250){
+//            getPulleySubsystem().getStateMachine().updateState(PulleyStateMachine.State.UP);
+//            getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.SPEED1);
+//            getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.IDLE);
+//            iselevatorUp = true;
+//            btnPressedY.reset();
+//        }
+        if (getEnhancedGamepad2().isLeftBumperLast()){
             isAuto = !isAuto;
         }
 //8.7-8.6
