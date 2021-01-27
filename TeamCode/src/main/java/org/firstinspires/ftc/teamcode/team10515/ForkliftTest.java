@@ -4,24 +4,14 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.teamcode.lib.geometry.Pose2d;
-import org.firstinspires.ftc.teamcode.lib.geometry.Rotation2d;
-import org.firstinspires.ftc.teamcode.lib.util.TimeUnits;
-import org.firstinspires.ftc.teamcode.team10515.states.FlickerStateMachine;
-import org.firstinspires.ftc.teamcode.team10515.states.EndGameExtensionStateMachine;
-import org.firstinspires.ftc.teamcode.team10515.states.FeederStoneGripperStateMachine;
-import org.firstinspires.ftc.teamcode.team10515.states.IntakeMotorStateMachine;
 import org.firstinspires.ftc.teamcode.team10515.states.ForkliftStateMachine;
-import org.firstinspires.ftc.teamcode.team10515.states.PulleyStateMachine;
-import org.firstinspires.ftc.teamcode.team10515.states.ShooterStateMachine;
-import org.firstinspires.ftc.teamcode.team10515.states.FoundationStateMachine;
-import org.firstinspires.ftc.teamcode.team10515.subsystems.Feeder;
 
 @TeleOp(name = "Wobble Goal", group = "Test")
 
 public class ForkliftTest extends UltimateGoalRobot {
-//    public double servoPos = 0;
+    public static final int stopPosition = 470;
+    private static final int threshold = 50;
+    public static final int maxPosition = stopPosition + threshold;
 
     public double forkliftPower = 0;
 
@@ -34,51 +24,67 @@ public class ForkliftTest extends UltimateGoalRobot {
 
     public boolean toggle = true;
 
+    public int lastEncoderTicks;
+    public int currentEncoderTicks = 0;
+
+    public boolean tooHigh = false;
+
     static final double COUNTS_PER_MOTOR_REV = 134.4;
     static final double DRIVE_GEAR_REDUCTION = 2;
     static final double WHEEL_DIAMETER_INCHES = 10.25 * 2; // Wobble Goal Mover Height
-    static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV*DRIVE_GEAR_REDUCTION)/(WHEEL_DIAMETER_INCHES*Math.PI);
+    static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * Math.PI);
 
     @Override
-    public void start(){
-//        telemetry.addData("Started", "Ready for Command");
-//        telemetry.update();
+    public void start() {
+
     }
 
-//    @Override
-//    public void init() {
-//        /* Initialize the hardware map*/
-//        super.init();
-//        // Send telemetry message to signify robot waiting;
-//        telemetry.addData("Init", "Hello Ultimate Goal Robot");    //
-//        updateTelemetry(telemetry);
-//
-//        //setEnhancedGamepad1(new EnhancedGamepad(gamepad1));
-//        btnPressedA = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
-//        btnPressedY = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
-//    }
-//hi
     @Override
     public void loop() {
         super.loop();
 
-        if(reachedPosition()){
+        if (reachedStopPosition() && !tooHigh) {
             getForkliftSubsystem().getForkliftMotor().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.IDLE);
         }
 
-        if(getEnhancedGamepad1().isyLast()) {
-            getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.UP);
-        }
-        else if(getEnhancedGamepad1().isaLast()) {
+        if (currentEncoderTicks > maxPosition) {//Check if too high
             getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.DOWN);
+            tooHigh = true;
         }
-        telemetry.addLine("Position" + getForkliftSubsystem().getForkliftMotor().getCurrentEncoderTicks());
+
+        if (tooHigh && currentEncoderTicks < stopPosition) {//Check if too low even after holding
+            getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.UP);
+            tooHigh = false;
+        }
+
+        if (lastEncoderTicks - currentEncoderTicks > 0 &&
+                (getForkliftSubsystem().getStateMachine().getState() == ForkliftStateMachine.State.UP ||
+                        getForkliftSubsystem().getStateMachine().getState() == ForkliftStateMachine.State.IDLE)) {//Check if forklift is moving down when its not supposed to
+                getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.HOLD);//Counteract weight of wobble goal
+        }
+
+        if (getEnhancedGamepad1().isyLast()) {
+            getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.UP);
+        } else if (getEnhancedGamepad1().isaLast()) {
+            getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.DOWN);
+
+            if (currentEncoderTicks <= 0) {//Check if forklift has reached down position
+                //Stop motor
+                getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.IDLE);
+            }
+        }
+
+        lastEncoderTicks = currentEncoderTicks;
+        currentEncoderTicks = getForkliftSubsystem().getForkliftMotor().getCurrentEncoderTicks();
+
+        telemetry.addLine("Position" + currentEncoderTicks);
+        telemetry.addLine("Last Position" + lastEncoderTicks);
         telemetry.update();
     }
 
-    public boolean reachedPosition(){
-        if(getForkliftSubsystem().getForkliftMotor().getCurrentEncoderTicks() < 470){
+    public boolean reachedStopPosition() {
+        if (getForkliftSubsystem().getForkliftMotor().getCurrentEncoderTicks() < stopPosition) {
             return false;
         }
         return true;
