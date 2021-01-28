@@ -22,7 +22,7 @@ public class ForkliftTest extends UltimateGoalRobot {
     public ElapsedTime btnPressedA;
     public ElapsedTime btnPressedY;
 
-    public boolean toggle = true;
+    public boolean toggleY = false;
 
     public int lastEncoderTicks;
     public int currentEncoderTicks = 0;
@@ -37,6 +37,11 @@ public class ForkliftTest extends UltimateGoalRobot {
     @Override
     public void start() {
 
+    }
+
+    @Override
+    public void init(){
+        btnPressedY = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
     }
 
     @Override
@@ -64,8 +69,14 @@ public class ForkliftTest extends UltimateGoalRobot {
                 getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.HOLD);//Counteract weight of wobble goal
         }
 
-        if (getEnhancedGamepad1().isyLast()) {
-            getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.UP);
+        if (getEnhancedGamepad1().isyLast() && btnPressedY.milliseconds() > 250) {
+            btnPressedY.reset();
+            toggleY = !toggleY;
+            if(toggleY) {
+                getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.UP);
+            }else{
+                getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.HOLD);
+            }
         } else if (getEnhancedGamepad1().isaLast()) {
             getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.DOWN);
 
