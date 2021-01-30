@@ -5,6 +5,7 @@ import androidx.annotation.NonNull;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.localization.ThreeTrackingWheelLocalizer;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.teamcode.util.Encoder;
@@ -46,9 +47,25 @@ public class StandardTrackingWheelLocalizer extends ThreeTrackingWheelLocalizer 
                 new Pose2d(FORWARD_OFFSET, 0, Math.toRadians(90)) // front
         ));
         //encoder names should be same as motor names, to which they are connected
-        leftEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "FL"));
-        rightEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "RR"));
-        frontEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "RL"));
+        //leftEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "FL"));
+        //rightEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "RR"));
+        //frontEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "RL"));
+        DcMotorEx leftOdo, rightOdo, frontOdo;
+        leftOdo = hardwareMap.get(DcMotorEx.class,"FL");
+        leftOdo.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftOdo.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        rightOdo = hardwareMap.get(DcMotorEx.class,"RR");
+        rightOdo.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightOdo.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        frontOdo = hardwareMap.get(DcMotorEx.class,"RL");
+        frontOdo.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        frontOdo.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        leftEncoder = new Encoder(leftOdo);
+        rightEncoder = new Encoder(rightOdo);
+        frontEncoder = new Encoder(frontOdo);
 
         // TODO: reverse any encoders using Encoder.setDirection(Encoder.Direction.REVERSE)
         //leftEncoder.setDirection(Encoder.Direction.REVERSE);
@@ -63,6 +80,7 @@ public class StandardTrackingWheelLocalizer extends ThreeTrackingWheelLocalizer 
     @NonNull
     @Override
     public List<Double> getWheelPositions() {
+
         return Arrays.asList(
                 encoderTicksToInches(leftEncoder.getCurrentPosition()) * X_MULTIPLIER,
                 encoderTicksToInches(rightEncoder.getCurrentPosition()) * X_MULTIPLIER,
@@ -77,8 +95,7 @@ public class StandardTrackingWheelLocalizer extends ThreeTrackingWheelLocalizer 
         //  competing magnetic encoders), change Encoder.getRawVelocity() to Encoder.getCorrectedVelocity() to enable a
         //  compensation method
 
-        return Arrays.asList( //Supreet - For some reason in this file there is no X_MULTIPLIER or Y_MULTIPLIER, so I deleted it
-                // if it is needed just feel free to use the variables from the old code in the master
+        return Arrays.asList(
                 encoderTicksToInches(leftEncoder.getCorrectedVelocity()) * X_MULTIPLIER,
                 encoderTicksToInches(rightEncoder.getCorrectedVelocity()) * X_MULTIPLIER,
                 encoderTicksToInches(frontEncoder.getCorrectedVelocity()) * Y_MULTIPLIER
