@@ -30,6 +30,7 @@ public class IntakeServoSubsystem implements ISubsystem<IntakeServoStateMachine,
 
     @Override
     public void stop() {
+        getServo().setPosition(0.0);
 
     }
 

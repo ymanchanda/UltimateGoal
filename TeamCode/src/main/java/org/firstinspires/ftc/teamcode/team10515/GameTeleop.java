@@ -93,8 +93,8 @@ public class GameTeleop extends UltimateGoalRobot {
             btnPressedRightBumper.reset();
             isPushed = true;
         }
-        if (btnPressedRightBumper.milliseconds()>400 && isPushed){
-            getFlickerSubsystem().getStateMachine().updateState(FlickerStateMachine.State.INIT);
+        if (btnPressedRightBumper.milliseconds()>700 && isPushed){
+            getIntakeServoSubsystem().getStateMachine().updateState(IntakeServoStateMachine.State.STANDBY);
         }
 
         //Update Stack tracker
@@ -159,7 +159,7 @@ public class GameTeleop extends UltimateGoalRobot {
             getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.IDLE);
         }
 
-        if(elevatorSensor.getDistance(DistanceUnit.INCH)> 4.0 && (btnPressedY.milliseconds() > 1250) && (iselevatorUp) ){
+        if(elevatorSensor.getDistance(DistanceUnit.INCH)> 4.2 && (btnPressedY.milliseconds() > 1250) && (iselevatorUp) ){
             getPulleySubsystem().getStateMachine().updateState(PulleyStateMachine.State.DOWN);
             getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.IDLE);
             getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.INTAKE);

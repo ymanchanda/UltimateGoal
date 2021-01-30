@@ -15,8 +15,8 @@ public class ShooterStateMachine extends SimpleState<ShooterStateMachine.State>{
 
     public enum State implements Namable {
         IDLE("Idle", 0d),
-        SPEED1("High Goal", 0.7d),
-        SPEED2("Pole Shots", 0.6d);
+        SPEED1("High Goal", 0.6d),
+        SPEED2("Pole Shots", 0.53d);
 
         private final String name;
         private final double power;
