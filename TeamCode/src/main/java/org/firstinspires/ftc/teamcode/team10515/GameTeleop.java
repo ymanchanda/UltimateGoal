@@ -13,6 +13,7 @@ import org.firstinspires.ftc.teamcode.team10515.states.EndGameExtensionStateMach
 import org.firstinspires.ftc.teamcode.team10515.states.FeederStoneGripperStateMachine;
 import org.firstinspires.ftc.teamcode.team10515.states.IntakeMotorStateMachine;
 import org.firstinspires.ftc.teamcode.team10515.states.ForkliftStateMachine;
+import org.firstinspires.ftc.teamcode.team10515.states.IntakeServoStateMachine;
 import org.firstinspires.ftc.teamcode.team10515.states.PulleyStateMachine;
 import org.firstinspires.ftc.teamcode.team10515.states.ShooterStateMachine;
 import org.firstinspires.ftc.teamcode.team10515.states.FoundationStateMachine;
@@ -28,27 +29,23 @@ import org.firstinspires.ftc.teamcode.team10515.subsystems.Feeder;
  *      Drive:
  *          Left & Right joysticks -> Mecanum drive
  *          Left-trigger           -> Auto foundation movement
- *      Flywheel Intake:
- *          Dpad-left              -> Flywheels set to intake
- *          Dpad-right             -> Flywheels set to outtake
- *          Y-button (pressed)     -> Stop flywheels from running
- *          X-button (pressed)     -> Spit out stone with flywheels
+ *          Y-button (pressed)     -> Forklift up
+ *          X-button (pressed)     -> Forklift down
  *      //Vision:
  *          //Left bumper (pressed)  -> Auto feed
  *      Right bumper (pressed) -> Toggle end game extension slides to extend
  *  User 2:
- *      Flywheel Intake:
- *          Y-button (pressed)     -> Stop flywheels from running.
- *          X-button (pressed)     -> Spit out stone with flywheels
- *      Feeder:
- *          Dpad-up                -> Extend feeder to stacked height based on counter class controlled
- *                                    by the second user.
- *          Dpad-down              -> Fully retracts feeder.
- *          Dpad-right             -> Adds stone to stack tracker (NOTE: only changes when feeder is retracted)
- *          Dpad-left              -> Removes stone from stack tracker (NOTE: only changes when feeder is retracted)
- *          Left-trigger           -> Resets stack tracker (NOTE: only changes when feeder is retracted)
- *          Left bumper (pressed)  -> Toggles whether the four-bar sticks out of the robot or not
- *          Right bumper (pressed) -> Releases grip on the stone (NOTE: only works when trying to stack)
+ *          Dpad-down              -> Stops Shooter
+ *          Dpad-right             -> Speed for Power Shots
+ *          Dpad-Up                -> Speed for high shots
+ *          Right-trigger          -> Turns the Intake On
+ *          Left - Trigger         -> Reverses Intake
+ *          Back                   -> Stopping the intake
+ *          Y - Button             -> Elevator goes up
+ *          A - Button             -> Elevator goes down
+ *          X - Button             -> Flicker hit rings and come back
+ *          Left bumper (pressed)  -> Toggles automation
+ *          Right bumper (pressed) -> Intake Servo Hit
  *
  * @see UltimateGoalRobot
  */
@@ -58,12 +55,15 @@ public class GameTeleop extends UltimateGoalRobot {
     private boolean isFlicked = false;
     private boolean isAuto = true;
     private boolean doublecheckflag = false;
+    private boolean isPushed = false;
+
 
 
 
     public ElapsedTime btnPressedY = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
     public ElapsedTime btnPressedX = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
     public ElapsedTime btnPressedA = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+    public ElapsedTime btnPressedRightBumper = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
     public ElapsedTime doubleCheck = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
 
 
@@ -86,6 +86,15 @@ public class GameTeleop extends UltimateGoalRobot {
             getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.OUTTAKE);
         } else if(gamepad2.back) {
             getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.IDLE);
+        }
+        //Intake Servo
+        if(getEnhancedGamepad2().isRightBumperLast()){
+            getIntakeServoSubsystem().getStateMachine().updateState(IntakeServoStateMachine.State.HIT_RING);
+            btnPressedRightBumper.reset();
+            isPushed = true;
+        }
+        if (btnPressedRightBumper.milliseconds()>400 && isPushed){
+            getFlickerSubsystem().getStateMachine().updateState(FlickerStateMachine.State.INIT);
         }
 
         //Update Stack tracker

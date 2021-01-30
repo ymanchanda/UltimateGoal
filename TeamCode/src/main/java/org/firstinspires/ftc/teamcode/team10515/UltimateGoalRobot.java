@@ -87,6 +87,8 @@ public abstract class UltimateGoalRobot extends Robot {
                 new RevServo((ExpansionHubServo)(hardwareMap.get("Elevator Servo"))),
                 new RevServo((ExpansionHubServo)(hardwareMap.get("Flicker 1"))),
                 new RevServo((ExpansionHubServo)(hardwareMap.get("Flicker 2"))),
+                new RevServo((ExpansionHubServo)(hardwareMap.get("Intake Servo"))),
+
         });
 
 //        setLights((hardwareMap.get(RevBlinkinLedDriver.class, "blinkin")));
@@ -100,6 +102,7 @@ public abstract class UltimateGoalRobot extends Robot {
         setIntakeMotorSubsystem(new IntakeMotorSubsystem(getMotors()[6]));
         setForkliftSubsystem(new ForkliftSubsystem(getMotors()[7]));
         setFlickerSubsystem(new FlickerSubsystem(getServos()[1], getServos()[2]));
+        setIntakeServoSubsystem(new IntakeServoSubsystem((getServos()[3])));
         setMatchRuntime(new TimeProfiler(false));
     }
 
@@ -131,6 +134,8 @@ public abstract class UltimateGoalRobot extends Robot {
         getFlickerSubsystem().update(getDt());
         getPulleySubsystem().update(getDt());
         getForkliftSubsystem().update(getDt());
+        getIntakeServoSubsystem().update(getDt());
+
     }
 //        getEndGameExtensionSubsystem().update(getDt());
 //        if(getMatchRuntime().getDeltaTime(TimeUnits.SECONDS, false) >= 90d &&
@@ -158,6 +163,7 @@ public abstract class UltimateGoalRobot extends Robot {
         getFlickerSubsystem().stop();
         getShooterSubsystem().stop();
         getIntakeMotorSubsystem().stop();
+        getIntakeServoSubsystem().stop();
     }
 
     public ExpansionHubs getExpansionHubs() {
@@ -226,6 +232,14 @@ public abstract class UltimateGoalRobot extends Robot {
 
     public void setFlickerSubsystem(FlickerSubsystem flickerSubsystem){
         this.flickerSubsystem = flickerSubsystem;
+    }
+
+    public void setIntakeServoSubsystem(IntakeServoSubsystem intakeServoSubsystem){
+        this.intakeServoSubsystem = intakeServoSubsystem;
+    }
+
+    public IntakeServoSubsystem getIntakeServoSubsystem(){
+        return intakeServoSubsystem;
     }
 
     public ForkliftSubsystem getForkliftSubsystem() {
