@@ -1,23 +1,17 @@
 package org.firstinspires.ftc.teamcode.team10515;
 //hi
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.lib.geometry.Pose2d;
 import org.firstinspires.ftc.teamcode.lib.geometry.Rotation2d;
-import org.firstinspires.ftc.teamcode.lib.util.TimeUnits;
 import org.firstinspires.ftc.teamcode.team10515.states.FlickerStateMachine;
-import org.firstinspires.ftc.teamcode.team10515.states.EndGameExtensionStateMachine;
-import org.firstinspires.ftc.teamcode.team10515.states.FeederStoneGripperStateMachine;
 import org.firstinspires.ftc.teamcode.team10515.states.IntakeMotorStateMachine;
 import org.firstinspires.ftc.teamcode.team10515.states.ForkliftStateMachine;
 import org.firstinspires.ftc.teamcode.team10515.states.IntakeServoStateMachine;
 import org.firstinspires.ftc.teamcode.team10515.states.PulleyStateMachine;
 import org.firstinspires.ftc.teamcode.team10515.states.ShooterStateMachine;
-import org.firstinspires.ftc.teamcode.team10515.states.FoundationStateMachine;
-import org.firstinspires.ftc.teamcode.team10515.subsystems.Feeder;
 
 /**
  * This {@code class} acts as the driver-controlled program for FTC team 10515 for the Skystone
@@ -54,17 +48,20 @@ public class GameTeleop extends UltimateGoalRobot {
     private boolean iselevatorUp = false;
     private boolean isFlicked = false;
     private boolean isAuto = true;
-    private boolean doublecheckflag = false;
+    private boolean doubleCheckUpFlag = false;
+    private boolean doubleCheckDownFlag = false;
     private boolean isPushed = false;
 
-
+    public double upThreshold = 9.0;
+    public double downThreshold = 4.5;
 
 
     public ElapsedTime btnPressedY = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
     public ElapsedTime btnPressedX = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
     public ElapsedTime btnPressedA = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
     public ElapsedTime btnPressedRightBumper = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
-    public ElapsedTime doubleCheck = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+    public ElapsedTime doubleCheckUp = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+    public ElapsedTime doubleCheckDown = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
 
 
     @Override
@@ -159,28 +156,36 @@ public class GameTeleop extends UltimateGoalRobot {
             getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.IDLE);
         }
 
-        if(elevatorSensor.getDistance(DistanceUnit.INCH)> 4.2 && (btnPressedY.milliseconds() > 1250) && (iselevatorUp) ){
-            getPulleySubsystem().getStateMachine().updateState(PulleyStateMachine.State.DOWN);
-            getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.IDLE);
-            getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.INTAKE);
-            iselevatorUp = false;
-            btnPressedA.reset();
+        if(elevatorSensor.getDistance(DistanceUnit.INCH) > downThreshold && (btnPressedY.milliseconds() > 1250) && (iselevatorUp) && isAuto && !doubleCheckDownFlag){
+            doubleCheckDownFlag = true;
+            doubleCheckDown.reset();
+        }
+        if(doubleCheckDownFlag && doubleCheckDown.milliseconds() > 1000) {
+            if (elevatorSensor.getDistance(DistanceUnit.INCH) > downThreshold && btnPressedY.milliseconds() > 1250 && iselevatorUp && isAuto) {
+                getPulleySubsystem().getStateMachine().updateState(PulleyStateMachine.State.DOWN);
+                getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.IDLE);
+                getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.INTAKE);
+                iselevatorUp = false;
+                btnPressedA.reset();
+            }
+            doubleCheckDownFlag = false;
+        }
 
+        if(elevatorSensor.getDistance(DistanceUnit.INCH)< upThreshold && (!iselevatorUp) && (isAuto) && btnPressedA.milliseconds()>1250 && !doubleCheckUpFlag){
+            doubleCheckUpFlag = true;
+            doubleCheckUp.reset();
         }
-        if(elevatorSensor.getDistance(DistanceUnit.INCH)< 8.8 && (!iselevatorUp) && (isAuto) && btnPressedA.milliseconds()>1250 && !doublecheckflag){
-            doublecheckflag = true;
-            doubleCheck.reset();
-        }
-        if(doublecheckflag && doubleCheck.milliseconds()>1000){
-            if(elevatorSensor.getDistance(DistanceUnit.INCH)< 8.8 && (!iselevatorUp) && (isAuto) && btnPressedA.milliseconds()>1250) {
+        if(doubleCheckUpFlag && doubleCheckUp.milliseconds()>1000){
+            if(elevatorSensor.getDistance(DistanceUnit.INCH) < upThreshold && (!iselevatorUp) && (isAuto) && btnPressedA.milliseconds()>1250) {
                 getPulleySubsystem().getStateMachine().updateState(PulleyStateMachine.State.UP);
                 getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.SPEED1);
                 getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.IDLE);
                 iselevatorUp = true;
                 btnPressedY.reset();
             }
-            doublecheckflag = false;
+            doubleCheckUpFlag = false;
         }
+
 //        if(elevatorSensor.getDistance(DistanceUnit.INCH)< 8.8 && (!iselevatorUp) && (isAuto) && btnPressedA.milliseconds()>1250){
 //            getPulleySubsystem().getStateMachine().updateState(PulleyStateMachine.State.UP);
 //            getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.SPEED1);
@@ -251,6 +256,7 @@ public class GameTeleop extends UltimateGoalRobot {
         telemetry.addLine("Null Status: "+ getEnhancedGamepad1().getGamepad());
         telemetry.addLine("Button Status: "+ getEnhancedGamepad1().getRight_trigger());
         telemetry.addLine("Button Status Last: "+ getEnhancedGamepad1().isyLast());
+        telemetry.addLine("Auto status" + isAuto);
         telemetry.update();
     }
 }

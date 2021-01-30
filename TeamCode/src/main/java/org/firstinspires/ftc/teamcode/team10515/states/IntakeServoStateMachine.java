@@ -20,8 +20,8 @@ public class IntakeServoStateMachine extends TimedState<IntakeServoStateMachine.
     }
 
     public enum State implements Namable{
-        STANDBY(0.2d),
-        HIT_RING(0.95d);
+        STANDBY(0.0d),
+        HIT_RING(0.75d);
 
         private final double position;
 
