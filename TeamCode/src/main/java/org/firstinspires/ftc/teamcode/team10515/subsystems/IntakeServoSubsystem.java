@@ -10,7 +10,7 @@ public class IntakeServoSubsystem implements ISubsystem<IntakeServoStateMachine,
 
     public IntakeServoSubsystem(RevServo servo){
         setIntakeServoStateMachine(new IntakeServoStateMachine());
-        setServo(intakeServo);
+        setServo(servo);
     }
 
     @Override
