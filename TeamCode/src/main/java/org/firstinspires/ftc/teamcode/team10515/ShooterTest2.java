@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.team10515;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -16,7 +17,7 @@ import org.firstinspires.ftc.teamcode.team10515.subsystems.PulleySubsystem;
 
 
 @TeleOp(name = "Shooter Test2", group = "Test")
-
+@Disabled
 public class ShooterTest2 extends UltimateGoalRobot{
     public double shooterSpeed = 0;
     public double shooterSpeedPole = 0;

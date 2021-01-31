@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.team10515;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -13,7 +14,7 @@ import static org.firstinspires.ftc.teamcode.team10515.Robot.setEnhancedGamepad1
 
 
 @TeleOp(name = "Shooter Test", group = "Test")
-
+@Disabled
 public class  ShooterTest extends OpMode{
     public double shooterSpeed = 0;
     public double shooterSpeedPole = 0;

@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.team10515;
 //hi
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
@@ -45,24 +46,33 @@ import org.firstinspires.ftc.teamcode.team10515.states.ShooterStateMachine;
  */
 @TeleOp(name = "Game Tele-Op", group = "Main")
 public class GameTeleop extends UltimateGoalRobot {
-    private boolean iselevatorUp = false;
-    private boolean isFlicked = false;
-    private boolean isAuto = true;
-    private boolean doubleCheckUpFlag = false;
-    private boolean doubleCheckDownFlag = false;
-    private boolean isPushed = false;
+    private boolean iselevatorUp = false;   //elevator starts in down position
+    private boolean isFlicked = false;      //flickers are inside
+    private boolean isAuto = true;          //robot is running with automation
+    private boolean confirmElevatorUp = false;      //confirm elevator is up
+    private boolean confirmElevatorDown = false;    //confirm elevator is down
+    private boolean intakeServo = false;            //intake Servo activated
 
-    public double upThreshold = 9.0;
-    public double downThreshold = 4.5;
+    //no rings down position = 9.2  //23.6CM
+    //3 rings down position = 8.5   //22CM
+    //3 rings up position = 2.65
+    //no rings up position = 4.5
 
+    public double upThreshold = 8.65;
+    public double downThreshold = 4.45;
 
-    public ElapsedTime btnPressedY = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
-    public ElapsedTime btnPressedX = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
-    public ElapsedTime btnPressedA = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+    public ElapsedTime resetFlicker = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
     public ElapsedTime btnPressedRightBumper = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
     public ElapsedTime doubleCheckUp = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
     public ElapsedTime doubleCheckDown = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
 
+    //Wobble goal Forklift
+    public static final int stopPosition = 500; //was 470;
+    private static final int threshold = 50;
+    public static final int maxPosition = stopPosition + threshold;
+    public int lastEncoderTicks;
+    public int currentEncoderTicks = 0;
+    public boolean tooHigh = false;
 
     @Override
     public void start() {
@@ -76,43 +86,24 @@ public class GameTeleop extends UltimateGoalRobot {
         getEnhancedGamepad2().update();
         setDrivetrainPower(new Pose2d(-gamepad1.left_stick_y, -gamepad1.left_stick_x, new Rotation2d(gamepad1.right_stick_x, false)));
 
-        //Update flywheel intake
+        //Gamepad2 Update flywheel intake - In:Right Trigger, Out:Left Trigger, Stop: Back
         if(getEnhancedGamepad2().getRight_trigger()>0) {
             getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.INTAKE);
         } else if(getEnhancedGamepad2().getLeft_trigger() > 0) {
             getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.OUTTAKE);
-        } else if(gamepad2.back) {
+        } else if(getEnhancedGamepad2().isBack()) {
             getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.IDLE);
         }
-        //Intake Servo
+
+        //Gamepad2 Intake Servo - Right Bumper
         if(getEnhancedGamepad2().isRightBumperLast()){
             getIntakeServoSubsystem().getStateMachine().updateState(IntakeServoStateMachine.State.HIT_RING);
             btnPressedRightBumper.reset();
-            isPushed = true;
+            intakeServo = true;
         }
-        if (btnPressedRightBumper.milliseconds()>700 && isPushed){
+        if (btnPressedRightBumper.milliseconds()>700 && intakeServo){
             getIntakeServoSubsystem().getStateMachine().updateState(IntakeServoStateMachine.State.STANDBY);
-        }
-
-        //Update Stack tracker
-        if(getEnhancedGamepad2().isDpadRightJustPressed()) {
-            getStackTracker().addStoneToStack();
-        } else if(getEnhancedGamepad2().isDpadLeftJustPressed()) {
-            getStackTracker().removeStoneFromStack();
-        } else if(gamepad1.left_trigger > 0.05d) {
-            getStackTracker().resetStack();
-        }
-
-        //Update Elevator
-        if(getEnhancedGamepad2().isyLast()) {
-            iselevatorUp = true;
-            getPulleySubsystem().getStateMachine().updateState(PulleyStateMachine.State.UP);
-            getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.SPEED1);
-            btnPressedY.reset();
-
-        } else if(getEnhancedGamepad2().isaLast()) {
-            getPulleySubsystem().getStateMachine().updateState(PulleyStateMachine.State.DOWN);
-            iselevatorUp = false;
+            intakeServo = false;
         }
 
         //Toggle Shooter
@@ -133,10 +124,10 @@ public class GameTeleop extends UltimateGoalRobot {
         }
         else if(getEnhancedGamepad2().isxLast()){
             getFlickerSubsystem().getStateMachine().updateState(FlickerStateMachine.State.HIT);
-            btnPressedX.reset();
+            resetFlicker.reset();
             isFlicked = true;
         }
-        if (btnPressedX.milliseconds()>400 && isFlicked){
+        if (isFlicked && resetFlicker.milliseconds()>400){
             getFlickerSubsystem().getStateMachine().updateState(FlickerStateMachine.State.INIT);
         }
 
@@ -156,107 +147,118 @@ public class GameTeleop extends UltimateGoalRobot {
             getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.IDLE);
         }
 
-        if(elevatorSensor.getDistance(DistanceUnit.INCH) > downThreshold && (btnPressedY.milliseconds() > 1250) && (iselevatorUp) && isAuto && !doubleCheckDownFlag){
-            doubleCheckDownFlag = true;
+        //Auto, Elevator is up, check if we should move down, confirmation
+        if(isAuto && (iselevatorUp) && elevatorSensor.getDistance(DistanceUnit.INCH) > downThreshold && !confirmElevatorDown){
+            confirmElevatorDown = true;
             doubleCheckDown.reset();
         }
-        if(doubleCheckDownFlag && doubleCheckDown.milliseconds() > 1000) {
-            if (elevatorSensor.getDistance(DistanceUnit.INCH) > downThreshold && btnPressedY.milliseconds() > 1250 && iselevatorUp && isAuto) {
+
+        if(isAuto  && confirmElevatorDown && doubleCheckDown.milliseconds() > 1000) {
+            if (iselevatorUp && elevatorSensor.getDistance(DistanceUnit.INCH) > downThreshold ) {
                 getPulleySubsystem().getStateMachine().updateState(PulleyStateMachine.State.DOWN);
                 getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.IDLE);
                 getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.INTAKE);
                 iselevatorUp = false;
-                btnPressedA.reset();
             }
-            doubleCheckDownFlag = false;
+            confirmElevatorDown = false;
         }
 
-        if(elevatorSensor.getDistance(DistanceUnit.INCH)< upThreshold && (!iselevatorUp) && (isAuto) && btnPressedA.milliseconds()>1250 && !doubleCheckUpFlag){
-            doubleCheckUpFlag = true;
+        //Auto, Elevator is down, check if we should move up, confirmation
+        if(isAuto && (!iselevatorUp) && elevatorSensor.getDistance(DistanceUnit.INCH) < upThreshold && !confirmElevatorUp){
+            confirmElevatorUp = true;
             doubleCheckUp.reset();
         }
-        if(doubleCheckUpFlag && doubleCheckUp.milliseconds()>1000){
-            if(elevatorSensor.getDistance(DistanceUnit.INCH) < upThreshold && (!iselevatorUp) && (isAuto) && btnPressedA.milliseconds()>1250) {
+
+        if(isAuto && confirmElevatorUp && doubleCheckUp.milliseconds()>1000){
+            if((!iselevatorUp) && elevatorSensor.getDistance(DistanceUnit.INCH) < upThreshold) {
                 getPulleySubsystem().getStateMachine().updateState(PulleyStateMachine.State.UP);
                 getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.SPEED1);
                 getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.IDLE);
                 iselevatorUp = true;
-                btnPressedY.reset();
             }
-            doubleCheckUpFlag = false;
+            confirmElevatorUp = false;
         }
 
-//        if(elevatorSensor.getDistance(DistanceUnit.INCH)< 8.8 && (!iselevatorUp) && (isAuto) && btnPressedA.milliseconds()>1250){
-//            getPulleySubsystem().getStateMachine().updateState(PulleyStateMachine.State.UP);
-//            getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.SPEED1);
-//            getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.IDLE);
-//            iselevatorUp = true;
-//            btnPressedY.reset();
-//        }
+        //Gamepad2 Manually move Elevator up && btnPressedA.milliseconds()>1250  && btnPressedA.milliseconds()>1250
+        if(!isAuto && getEnhancedGamepad2().isyLast()) {
+            getPulleySubsystem().getStateMachine().updateState(PulleyStateMachine.State.UP);
+            getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.SPEED1);
+            getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.IDLE);
+            //btnPressedY.reset();
+            iselevatorUp = true;    //Elevator Moved Up and shooter starts
+        } else if(!isAuto && getEnhancedGamepad2().isaLast()) {
+            getPulleySubsystem().getStateMachine().updateState(PulleyStateMachine.State.DOWN);
+            getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.IDLE);
+            getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.INTAKE);
+            //btnPressedA.reset();
+            iselevatorUp = false;   //Elevator Moved Down
+        }
+
+        //WobbleGoal processing
+        WobbleGoal();
+
         if (getEnhancedGamepad2().isLeftBumperLast()){
             isAuto = !isAuto;
         }
-//8.7-8.6
-        //Check to release grip of stone for stacking
-//        if(getEnhancedGamepad2().isRight_bumper() /*&& getStackTracker().getExtensionHeight() == Feeder.getSetpoint()*/) {
-//            Feeder.getFeederStoneGripperStateMachine().updateState(FeederStoneGripperStateMachine.State.NO_GRIP);
-//          //  getFeeder().toggleStoneGripper();
-//        }
-//
-//        if(getEnhancedGamepad2().isStart()){
-//            Feeder.getFeederStoneGripperStateMachine().updateState(FeederStoneGripperStateMachine.State.GRIP);
-//        }
-//
-//        if(getEnhancedGamepad1().isB()){
-//            getFeeder().setDeliveryMode(true);
-//        }else if(getEnhancedGamepad1().isX()){
-//                getFeeder().setDeliveryMode(false);
-//        }
-//
-//        //Toggle end game extension blocker to extend slides
-//        if(getEnhancedGamepad1().isBack()) {
-//            getEndGameExtensionSubsystem().getStateMachine().updateState(EndGameExtensionStateMachine.State.RELEASE_SLIDES);
-//        }
-//
-//        if(getEnhancedGamepad2().isDpadDownJustPressed()) {
-//            getFoundationSubsystem().getStateMachine().updateState(FoundationStateMachine.State.GRAB);
-//        } else if(getEnhancedGamepad2().isDpadUpJustPressed()) {
-//            getFoundationSubsystem().getStateMachine().updateState(FoundationStateMachine.State.INIT);
-//        }
-//
-//        if(getEnhancedGamepad1().isRightBumperJustPressed()) {
-//            Feeder.getCapstoneStateMachine().updateState(CapstoneStateMachine.State.DROP_CAPSTONE);
-//        } else if(getEnhancedGamepad1().isLeftBumperJustPressed()) {
-//            Feeder.getCapstoneStateMachine().updateState(CapstoneStateMachine.State.DROP_FOUNDATION);
-//        } else if(getEnhancedGamepad1().isY()) {
-//            Feeder.getCapstoneStateMachine().updateState(CapstoneStateMachine.State.HOLD);
-//        }
 
-
-        //telemetry.addLine("Stones stacked: " + getStackTracker());
-        //telemetry.addLine("Stacked Height: " + getStackTracker().getExtensionHeight());
-        //telemetry.addLine("Extension Setpoint: " + Feeder.getSetpoint());
-        //telemetry.addLine("Extension Desired Setpoint: " + Feeder.getDesiredSetpoint());
-        //telemetry.addLine("Elevator Position: " + getPulleySubsystem(;
-//        telemetry.addLine("Extension State: " + Feeder.getFeederExtensionStateMachine().getState().getName());
-//        telemetry.addLine("Left Extension Power: " + getFeeder().getLeftExtension().getLastPower());
-//        telemetry.addLine("Right Extension Power: " + getFeeder().getRightExtension().getLastPower());
-//        telemetry.addLine("V4B State: " + Feeder.getVirtualFourBarStateMachine().getState().getName());
-//        telemetry.addLine("Time seen stone: " + getFeeder().getTimeProfilerStoneDetection().getDeltaTime(TimeUnits.SECONDS, false));
-//        telemetry.addLine("Stone distance: " + getFeeder().getStoneDetector().getDistance(DistanceUnit.INCH));
-//        telemetry.addLine("Feeder Extension Constants: " + Feeder.getExtendControlConstants());
-//        telemetry.addLine("Extension close to setpoint: " + getFeeder().closeToSetpoint(1 / 4d));
-//        telemetry.addLine("Extension Profile: " + (Feeder.getExtensionProfile() != null));
-//        if(Feeder.getExtensionProfile() != null) {
-//            telemetry.addLine("" + Feeder.getExtensionProfile().getPosition());
-//        }
         telemetry.addLine("Elevator Status : "+ iselevatorUp);
         telemetry.addLine("Wobble Goal: " + getForkliftSubsystem().getForkliftMotor().getPosition());
         telemetry.addLine("Elevator Sensor: " + elevatorSensor.getDistance(DistanceUnit.INCH));
-        telemetry.addLine("Null Status: "+ getEnhancedGamepad1().getGamepad());
-        telemetry.addLine("Button Status: "+ getEnhancedGamepad1().getRight_trigger());
-        telemetry.addLine("Button Status Last: "+ getEnhancedGamepad1().isyLast());
+        //telemetry.addLine("Null Status: "+ getEnhancedGamepad1().getGamepad());
+        //telemetry.addLine("Button Status: "+ getEnhancedGamepad1().getRight_trigger());
+        //telemetry.addLine("Button Status Last: "+ getEnhancedGamepad1().isyLast());
         telemetry.addLine("Auto status" + isAuto);
         telemetry.update();
+    }
+
+    void WobbleGoal()
+    {
+
+        if (reachedStopPosition() && !tooHigh) {
+            getForkliftSubsystem().getForkliftMotor().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.IDLE);
+        }
+
+        if (currentEncoderTicks > maxPosition) {//Check if too high
+            getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.DOWN);
+            tooHigh = true;
+        }
+
+        if (tooHigh && currentEncoderTicks < stopPosition) {//Check if too low even after holding
+            getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.UP);
+            tooHigh = false;
+        }
+
+        if (lastEncoderTicks - currentEncoderTicks > 0 &&
+                (getForkliftSubsystem().getStateMachine().getState() == ForkliftStateMachine.State.UP ||
+                        getForkliftSubsystem().getStateMachine().getState() == ForkliftStateMachine.State.IDLE)) {//Check if forklift is moving down when its not supposed to
+            getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.HOLD);//Counteract weight of wobble goal
+        }
+
+        if (getEnhancedGamepad1().isyLast()) {
+//            toggle = !toggle;
+//            if(toggle) {
+//                getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.UP);
+//            }else{
+//                getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.HOLD);
+//            }
+            getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.UP);
+        } else if (getEnhancedGamepad1().isaLast()) {
+            getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.DOWN);
+
+            if (currentEncoderTicks <= 0) {//Check if forklift has reached down position
+                //Stop motor
+                getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.IDLE);
+            }
+        }
+
+        lastEncoderTicks = currentEncoderTicks;
+        currentEncoderTicks = getForkliftSubsystem().getForkliftMotor().getCurrentEncoderTicks();
+    }
+
+    public boolean reachedStopPosition() {
+        if (getForkliftSubsystem().getForkliftMotor().getCurrentEncoderTicks() < stopPosition)
+            return false;
+        return true;
     }
 }

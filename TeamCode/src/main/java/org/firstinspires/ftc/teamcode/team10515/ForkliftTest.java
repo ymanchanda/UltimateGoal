@@ -114,33 +114,21 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.team10515.states.ForkliftStateMachine;
 
 @TeleOp(name = "Wobble Goal", group = "Test")
-
 public class ForkliftTest extends UltimateGoalRobot {
-    public static final int stopPosition = 470;
+    public static final int stopPosition = 500; //was 470;
     private static final int threshold = 50;
     public static final int maxPosition = stopPosition + threshold;
-
-    public double forkliftPower = 0;
-
-    public long currentTime = 0;
-    public long lastTimeA = 0;
-    public long lastTimeY = 0;
-
-    public ElapsedTime btnPressedA;
-    public ElapsedTime btnPressedY;
-
-    public boolean toggle = true;
 
     public int lastEncoderTicks;
     public int currentEncoderTicks = 0;
 
     public boolean tooHigh = false;
-
+/*
     static final double COUNTS_PER_MOTOR_REV = 134.4;
     static final double DRIVE_GEAR_REDUCTION = 2;
     static final double WHEEL_DIAMETER_INCHES = 10.25 * 2; // Wobble Goal Mover Height
     static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * Math.PI);
-
+*/
     @Override
     public void start() {
 

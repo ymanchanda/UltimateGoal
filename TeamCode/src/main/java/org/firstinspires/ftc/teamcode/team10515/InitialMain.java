@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.team10515;
 //hi
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
@@ -50,6 +51,7 @@ import org.firstinspires.ftc.teamcode.team10515.subsystems.Feeder;
  */
 
 @TeleOp(name = "Main Tele-Op", group = "Main")
+@Disabled
 public class InitialMain extends UltimateGoalRobot {
 
     public double currentTime = 0; // keep track of current time
