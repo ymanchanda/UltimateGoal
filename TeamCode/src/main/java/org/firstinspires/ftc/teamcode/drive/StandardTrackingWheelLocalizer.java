@@ -32,11 +32,34 @@ public class StandardTrackingWheelLocalizer extends ThreeTrackingWheelLocalizer 
     public static double WHEEL_RADIUS = 0.6889764; // in
     public static double GEAR_RATIO = 1; // output (wheel) speed / input (encoder) speed
 
-    public static double LATERAL_DISTANCE = 10.8; // in; distance between the left and right wheels 14.025 empirical
-    public static double FORWARD_OFFSET = -1.5; // in; offset of the lateral wheel
+    public static double LATERAL_DISTANCE = 14.27533333333333; // in; distance between the left and right wheels 14.025 empirical //14.375 original value
+    public static double FORWARD_OFFSET = -1.875; // in; offset of the lateral wheel
 
-    public static double X_MULTIPLIER = 1.04439816741; // Multiplier in the X direction 1.05537889, 1.0245418761, 1.0463534582
-    public static double Y_MULTIPLIER = 1.02257377; // Multiplier in the Y direction  1.016196, 1.02602629, 1.02549903
+    public static double X_MULTIPLIER = 1.024938934547012; // Multiplier in the X direction 1.05537889, 1.0245418761, 1.0463534582 //original value from test 1: 1.04439816741
+    public static double Y_MULTIPLIER = 1.023261168273632; // Multiplier in the Y direction  1.016196, 1.02602629, 1.02549903 //original value from test 1: 1.02257377
+    /*
+    X
+    Value       Measured        Telemetry
+    1:          100.1           97.834              1.023161682032831
+    2:          100.0           97.333              1.02740077876979
+    3:          100.0           97.632              1.024254342838414
+                                                    1.024938934547012
+
+    Y
+    Value       Measured        Telemetry
+    1:          100.1           98.113              1.020252158225719
+    2:          100.1           98.146              1.019909114991951
+    3:          100.0           97.123              1.029622231603225
+                                                    1.023261168273632
+
+    6.75 + 10.5 = 17.25 Length of Robot     Midpoint: 8.625 Forward Offset = 8.625 - 6.75 = 1.875 and negative
+    LATERAL_DISTANCE TUNING:
+    First Value: 13.920
+    Second Value: 13.931
+    Third Value: 13.925
+    AVG: 13.92533333333333 + 0.35 to adjust for when we tested with this value
+    */
+
 
     private Encoder leftEncoder, rightEncoder, frontEncoder;
 
