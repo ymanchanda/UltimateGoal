@@ -9,7 +9,8 @@ public class ShooterSubsystem implements ISubsystem<ShooterStateMachine, Shooter
     private static ShooterStateMachine shooterStateMachine;
     private RevMotor ShooterWheel;
     private RevMotor ShooterWheel2;
-
+    private double kP = (1/10850d);
+    private double output = 0d;
 
     public ShooterSubsystem(RevMotor shooterMotor, RevMotor shooterMotor2){
         setShooterStateMachine(new ShooterStateMachine());
@@ -51,9 +52,17 @@ public class ShooterSubsystem implements ISubsystem<ShooterStateMachine, Shooter
 
     @Override
     public void update(double dt) {
+        //calculate PID
+        double error = getState().getSpeed() - getShooterWheel1().getVelocity();
+        output = kP * error;
+
+        //old code
         getStateMachine().update(dt);
-        getShooterWheel1().setPower(getState().getPower());
-        getShooterWheel2().setPower(getState().getPower());
+        //getShooterWheel1().setPower(getState().getSpeed());
+        //getShooterWheel2().setPower(getState().getSpeed());
+        getShooterWheel1().setPower(output);
+        getShooterWheel1().setPower(output);
+
     }
 
     private static void setShooterStateMachine(ShooterStateMachine ShooterStateMachine){
@@ -67,11 +76,15 @@ public class ShooterSubsystem implements ISubsystem<ShooterStateMachine, Shooter
         this.ShooterWheel2 = shooterMotor2;
     }
 
-    private RevMotor getShooterWheel1(){
+    public RevMotor getShooterWheel1(){
         return ShooterWheel;
     }
     private RevMotor getShooterWheel2(){
         return ShooterWheel2;
+    }
+
+    public double getOutput() {
+        return output;
     }
 
 }

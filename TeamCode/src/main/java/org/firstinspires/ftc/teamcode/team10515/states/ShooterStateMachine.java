@@ -15,15 +15,19 @@ public class ShooterStateMachine extends SimpleState<ShooterStateMachine.State>{
 
     public enum State implements Namable {
         IDLE("Idle", 0d),
-        SPEED1("High Goal", 0.6d),
-        SPEED2("Pole Shots", 0.53d);
+        //SPEED1("High Goal", 0.6d),
+        //SPEED2("Pole Shots", 0.53d);
+        //use mm/sec
+        SPEED1("High Goal", 25000d),
+        SPEED2("Pole Shots", 22000d),
+        SPEED3("Middle Goal", 21000d);
 
         private final String name;
-        private final double power;
+        private final double speed;
 
-        State(final String name, final double power) {
+        State(final String name, final double speed) {
             this.name  = name;
-            this.power = power;
+            this.speed = speed;
         }
 
         @Override
@@ -31,8 +35,8 @@ public class ShooterStateMachine extends SimpleState<ShooterStateMachine.State>{
             return name;
         }
 
-        public double getPower() {
-            return power;
+        public double getSpeed() {
+            return speed;
         }
     }
 }

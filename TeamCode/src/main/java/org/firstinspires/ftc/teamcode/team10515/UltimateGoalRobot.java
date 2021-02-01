@@ -23,6 +23,7 @@ import org.firstinspires.ftc.teamcode.team10515.subsystems.PulleySubsystem;
 import org.openftc.revextensions2.ExpansionHubEx;
 import org.openftc.revextensions2.ExpansionHubMotor;
 import org.openftc.revextensions2.ExpansionHubServo;
+import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 
 import java.util.Arrays;
 
@@ -49,6 +50,7 @@ public abstract class UltimateGoalRobot extends Robot {
     private  RevBlinkinLedDriver lights;
     private TimeProfiler matchRuntime;
     protected static Rev2mDistanceSensor elevatorSensor;
+    protected static Rev2mDistanceSensor wobbleSensor;
     private ExpansionHubs expansionHubs;
     private RobotStateEstimator robotStateEstimator;
     private Drive drive;
@@ -60,6 +62,8 @@ public abstract class UltimateGoalRobot extends Robot {
     private ForkliftSubsystem forkliftSubsystem;
     private IntakeMotorSubsystem intakeMotorSubsystem;
     private IntakeServoSubsystem intakeServoSubsystem;
+    private RevBlinkinLedDriver blinkinLedDriver;
+    private RevBlinkinLedDriver.BlinkinPattern pattern;
 
     @Override
     public void init() {
@@ -74,10 +78,10 @@ public abstract class UltimateGoalRobot extends Robot {
                 new RevMotor((ExpansionHubMotor)(hardwareMap.get("FL")), true, true, true, true, Motor.GOBILDA_435_RPM.getENCODER_TICKS_PER_REVOLUTION(), getWheelDiameter(), 2d),
                 new RevMotor((ExpansionHubMotor)(hardwareMap.get("RR")), false, true, true, false, Motor.GOBILDA_435_RPM.getENCODER_TICKS_PER_REVOLUTION(), getWheelDiameter(), 2d),
                 new RevMotor((ExpansionHubMotor)(hardwareMap.get("FR")), false, true, true, false, Motor.GOBILDA_435_RPM.getENCODER_TICKS_PER_REVOLUTION(), getWheelDiameter(), 2d),
-                new RevMotor((ExpansionHubMotor)(hardwareMap.get("Shooter 1 ")), false, false, false, true),
+                new RevMotor((ExpansionHubMotor)(hardwareMap.get("Shooter 1")), false, false, false, true, Motor.GOBILDA_6000_RPM.getENCODER_TICKS_PER_REVOLUTION(), 120, 1d),
                 new RevMotor((ExpansionHubMotor)(hardwareMap.get("Shooter 2")), false, false, false, true),
 
-                new RevMotor((ExpansionHubMotor)(hardwareMap.get("Intake Motor")), true, false, false, false),
+                new RevMotor((ExpansionHubMotor)(hardwareMap.get("Intake Motor")), true, false, false, false, Motor.GOBILDA_1150_RPM.getENCODER_TICKS_PER_REVOLUTION(), 50.8, 2d),
                 new RevMotor((ExpansionHubMotor)(hardwareMap.get("Forklift Motor")), true, true, true, false, Motor.GOBILDA_312_RPM.getENCODER_TICKS_PER_REVOLUTION()),
 //                new RevMotor((ExpansionHubMotor)(hardwareMap.get("LL")), true, true, false, true, Motor.GOBILDA_312_RPM.getENCODER_TICKS_PER_REVOLUTION(), 38d / 25.4d),
 //                new RevMotor((ExpansionHubMotor)(hardwareMap.get("LR")), false, true, false, false, Motor.GOBILDA_312_RPM.getENCODER_TICKS_PER_REVOLUTION(), 38d / 25.4d)
@@ -91,10 +95,12 @@ public abstract class UltimateGoalRobot extends Robot {
 
         });
 
-//        setLights((hardwareMap.get(RevBlinkinLedDriver.class, "blinkin")));
-        //Yogesh commented this
         setRobotStateEstimator(new RobotStateEstimator(this, hardwareMap.get(BNO055IMU.class, "imu"), new Pose2d()));
-        setDistanceSensor((hardwareMap.get(Rev2mDistanceSensor.class, "Elevator Sensor")));
+        setElevatorSensor(hardwareMap.get(Rev2mDistanceSensor.class, "Elevator Sensor"));
+        setWobbleSensor(hardwareMap.get(Rev2mDistanceSensor.class, "Wobble Sensor"));
+        blinkinLedDriver = hardwareMap.get(RevBlinkinLedDriver.class, "blinkin");
+        pattern = RevBlinkinLedDriver.BlinkinPattern.HEARTBEAT_WHITE;
+        displayPattern();
         setDrive(new Drive(getRobotStateEstimator(), getMotors()[0], getMotors()[1], getMotors()[2], getMotors()[3]));
         setStackTracker(new StackTracker());
         setShooterSubsystem(new ShooterSubsystem(getMotors()[4], getMotors()[5]));
@@ -115,8 +121,6 @@ public abstract class UltimateGoalRobot extends Robot {
     public void start() {
         super.start();
         getExpansionHubs().start();
-        //Yogesh commented this
-      //  getRobotStateEstimator().start();
         getDrive().start();
         Arrays.stream(getMotors()).forEach(RevMotor::resetEncoder);
         getMatchRuntime().start();
@@ -126,8 +130,6 @@ public abstract class UltimateGoalRobot extends Robot {
     public void loop() {
         super.loop();
         getExpansionHubs().update(getDt());
-        //Yogesh commented this
-        //  getRobotStateEstimator().update(getDt());
         getDrive().update(getDt());
         getIntakeMotorSubsystem().update(getDt());
         getShooterSubsystem().update(getDt());
@@ -257,8 +259,12 @@ public abstract class UltimateGoalRobot extends Robot {
         this.lights = lights;
     }
 
-    public void setDistanceSensor(Rev2mDistanceSensor range) {
+    public void setElevatorSensor(Rev2mDistanceSensor range) {
         this.elevatorSensor = range;
+    }
+
+    public void setWobbleSensor(Rev2mDistanceSensor range) {
+        this.wobbleSensor = range;
     }
 
 
@@ -277,5 +283,13 @@ public abstract class UltimateGoalRobot extends Robot {
     public double getRobotSpeed() {
         return getRobotStateEstimator().getVelocityPose().getTranslation().norm() +
                 Math.abs(getRobotStateEstimator().getVelocityPose().getRotation().getRadians());
+    }
+    protected void setPattern(RevBlinkinLedDriver.BlinkinPattern ppattern)
+    {
+        pattern = ppattern;
+    }
+
+    protected void displayPattern() {
+        blinkinLedDriver.setPattern(pattern);
     }
 }

@@ -12,7 +12,6 @@ import static java.lang.System.currentTimeMillis;
 import static org.firstinspires.ftc.teamcode.team10515.Robot.getEnhancedGamepad1;
 import static org.firstinspires.ftc.teamcode.team10515.Robot.setEnhancedGamepad1;
 
-
 @TeleOp(name = "Shooter Test", group = "Test")
 @Disabled
 public class  ShooterTest extends OpMode{

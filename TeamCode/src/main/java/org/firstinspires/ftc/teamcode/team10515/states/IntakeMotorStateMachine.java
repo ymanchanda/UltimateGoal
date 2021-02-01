@@ -15,15 +15,18 @@ public class IntakeMotorStateMachine extends SimpleState<IntakeMotorStateMachine
 
     public enum State implements Namable {
         IDLE("Idle", 0d),
-        INTAKE("Intake", 0.9d),
-        OUTTAKE("Outtake", -0.7d);
+        //INTAKE("Intake", 0.9d),
+        //OUTTAKE("Outtake", -0.7d);
+        //use mm/sec
+        INTAKE("Intake", 7000),
+        OUTTAKE("Outtake", -5500);
 
         private final String name;
-        private final double power;
+        private final double speed;
 
-        State(final String name, final double power) {
+        State(final String name, final double speed) {
             this.name  = name;
-            this.power = power;
+            this.speed = speed;
         }
 
         @Override
@@ -31,8 +34,8 @@ public class IntakeMotorStateMachine extends SimpleState<IntakeMotorStateMachine
             return name;
         }
 
-        public double getPower() {
-            return power;
+        public double getSpeed() {
+            return speed;
         }
     }
 }

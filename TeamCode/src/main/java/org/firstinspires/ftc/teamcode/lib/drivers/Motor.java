@@ -4,6 +4,8 @@ public enum Motor {
     GOBILDA_435_RPM(435d, 383.6d),
     GOBILDA_312_RPM(312d, 537.6d),
     GOBILDA_223_RPM(223d, 753.2d),
+    GOBILDA_1150_RPM(1150d, 145.6d),
+    GOBILDA_6000_RPM(5400d, 28d),
     NEVERST_3_7(1780d, 103.6d),
     REV_CORE_HEX(125d, 288d);
 

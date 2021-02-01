@@ -16,7 +16,7 @@ public class FlickerStateMachine extends TimedState<FlickerStateMachine.State> {
 
     @Override
     protected Time getStateTransitionDuration() {
-        return new Time(1d, TimeUnits.SECONDS);
+        return new Time(10d, TimeUnits.MILLISECONDS);
     }
 
     public enum State implements Namable {
