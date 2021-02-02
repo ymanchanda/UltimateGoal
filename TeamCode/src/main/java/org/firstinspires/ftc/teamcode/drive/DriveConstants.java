@@ -55,8 +55,8 @@ public class DriveConstants {
      * motor encoders or have elected not to use them for velocity control, these values should be
      * empirically tuned.
      */
-    public static double kV = 0.0163; //1.0 / rpmToVelocity(MAX_RPM);
-    public static double kA = 0.0;
+    public static double kV = 0.0223; //1.0 / rpmToVelocity(MAX_RPM);
+    public static double kA = 0.004;
     public static double kStatic = 0.0;
 
     /*
@@ -99,8 +99,8 @@ public class DriveConstants {
      * https://github.com/acmerobotics/road-runner-quickstart/issues/91
 
      */
-    public static double MAX_VEL = 65;//((MAX_RPM/60) * GEAR_RATIO * WHEEL_RADIUS * 2 * Math.PI)* 0.85;
-    public static double MAX_ACCEL = 65;//((MAX_RPM/60) * GEAR_RATIO * WHEEL_RADIUS * 2 * Math.PI)* 0.85;
+    public static double MAX_VEL = 60;//((MAX_RPM/60) * GEAR_RATIO * WHEEL_RADIUS * 2 * Math.PI)* 0.85;
+    public static double MAX_ACCEL = 60;//((MAX_RPM/60) * GEAR_RATIO * WHEEL_RADIUS * 2 * Math.PI)* 0.85;
     public static double MAX_ANG_VEL = Math.toRadians(MAX_VEL/(TRACK_WIDTH/2)* (180/Math.PI));
     public static double MAX_ANG_ACCEL = Math.toRadians(MAX_VEL/(TRACK_WIDTH/2)* (180/Math.PI));
 
