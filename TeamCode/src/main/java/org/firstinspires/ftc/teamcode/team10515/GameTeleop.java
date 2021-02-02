@@ -59,7 +59,6 @@ public class GameTeleop extends UltimateGoalRobot {
     //3 rings down position = 8.5   //22CM
     //3 rings up position = 2.65
     //no rings up position = 4.5
-
     public double upThreshold = 8.65;
     public double downThreshold = 4.45;
 
@@ -71,12 +70,13 @@ public class GameTeleop extends UltimateGoalRobot {
 
     //Wobble goal Forklift
     public static final int alignPosition = 100;
-    public static final int stopPosition = 520; //was 500;
-    private static final int threshold = 50;
-    public static final int maxPosition = stopPosition + threshold;
+    public static final int topPosition = 520; //was 500;
+    private static final int threshold = 50;   //buffer of 50
+    public static final int maxPosition = topPosition + threshold; //max position
     public int lastEncoderTicks;
     public int currentEncoderTicks = 0;
     public boolean tooHigh = false;
+    public boolean pastAlign = false;
 
     @Override
     public void start() {
@@ -136,22 +136,6 @@ public class GameTeleop extends UltimateGoalRobot {
         }
         if (isFlicked && resetFlicker.milliseconds()>100){
             getFlickerSubsystem().getStateMachine().updateState(FlickerStateMachine.State.INIT);
-        }
-
-        //Raise and Lower Wobble Goal Mover
-        if(getEnhancedGamepad1().isyLast()){
-            getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.UP);
-//            getForkliftSubsystem().getForkliftMotor().setTargetPosition(470);
-//            getForkliftSubsystem().getForkliftMotor().setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//            while (getForkliftSubsystem().getForkliftMotor().getPosition()<450 ) {
-//                getForkliftSubsystem().getForkliftMotor().setPower(0.3);
-//            }
-        }
-        else if(getEnhancedGamepad1().isaLast()){
-            getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.DOWN);
-        }
-        else if(getEnhancedGamepad1().isbLast()){
-            getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.IDLE);
         }
 
         //Auto, Elevator is up, check if we should move down, confirmation
@@ -234,17 +218,20 @@ public class GameTeleop extends UltimateGoalRobot {
 
     void WobbleGoalv2()
     {
-        if (reachedStopPosition() && !tooHigh) {
+        //brake 1st time when it reaches align OR when it reaches the top
+        if ((reachedPosition(alignPosition) && !pastAlign) || (pastAlign && reachedPosition(topPosition) && !tooHigh)) {
             getForkliftSubsystem().getForkliftMotor().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.IDLE);
         }
 
+        //bring down if higher than top
         if (currentEncoderTicks > maxPosition) {//Check if too high
             getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.DOWN);
             tooHigh = true;
         }
 
-        if (tooHigh && currentEncoderTicks < stopPosition) {//Check if too low even after holding
+        //take up if lower than top
+        if (tooHigh && currentEncoderTicks < topPosition) {//Check if too low even after holding
             getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.UP);
             tooHigh = false;
         }
@@ -256,21 +243,23 @@ public class GameTeleop extends UltimateGoalRobot {
         }
 
         if (getEnhancedGamepad1().isyLast()) {
-                getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.UP);
-                wobblealign.reset();
+            //only move ~100 ticks 1st time
+            getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.UP);
+
         } else if (getEnhancedGamepad1().isaLast()) {
             getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.DOWN);
-            if (currentEncoderTicks <= 0) {//Check if forklift has reached down position
+            if (currentEncoderTicks <= 0) {//Check if forklift has reached 0 position
                 getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.IDLE);
+                pastAlign = false;      //reset pastAlign to false as it's down
             }
         }
 
         lastEncoderTicks = currentEncoderTicks;
         currentEncoderTicks = getForkliftSubsystem().getForkliftMotor().getCurrentEncoderTicks();
 
-
     }
 
+    /*
     void WobbleGoal()
     {
 
@@ -315,10 +304,14 @@ public class GameTeleop extends UltimateGoalRobot {
         lastEncoderTicks = currentEncoderTicks;
         currentEncoderTicks = getForkliftSubsystem().getForkliftMotor().getCurrentEncoderTicks();
     }
+     */
 
-    public boolean reachedStopPosition() {
-        if (getForkliftSubsystem().getForkliftMotor().getCurrentEncoderTicks() < stopPosition)
+    public boolean reachedPosition(double position) {
+        if (getForkliftSubsystem().getForkliftMotor().getCurrentEncoderTicks() < position)
             return false;
+        else
+        if (position == alignPosition)
+            pastAlign = true;
         return true;
     }
 

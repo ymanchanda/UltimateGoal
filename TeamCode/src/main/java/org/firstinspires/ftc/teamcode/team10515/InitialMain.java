@@ -95,12 +95,12 @@ public class InitialMain extends UltimateGoalRobot {
             //Increase robot speed
         }
 
-        if(getEnhancedGamepad1().isA()){
-            getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.DOWN);
-        }
-        if(getEnhancedGamepad1().isY()){
-            getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.UP);
-        }
+        //if(getEnhancedGamepad1().isA()){
+        //    getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.DOWN);
+        //}
+        //if(getEnhancedGamepad1().isY()){
+        //    getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.UP);
+        //}
 
         //-----------------------------------------------------------------------------------------------------------------------------------------
         //Gamepad 2
