@@ -49,9 +49,8 @@ import org.firstinspires.ftc.teamcode.team10515.subsystems.Feeder;
  *
  * @see UltimateGoalRobot
  */
-
-@TeleOp(name = "Main Tele-Op", group = "Main")
 @Disabled
+@TeleOp(name = "Main Tele-Op", group = "Main")
 public class InitialMain extends UltimateGoalRobot {
 
     public double currentTime = 0; // keep track of current time
