@@ -20,7 +20,7 @@ public class PulleyStateMachine extends TimedState<PulleyStateMachine.State> {
     }
 
     public enum State implements Namable{
-        DOWN("Down", 0d), UP("Up", 0.7d);
+        DOWN("Down", 0d), UP("Up", 0.75d);
 
         private final String name;
         private final double position;
