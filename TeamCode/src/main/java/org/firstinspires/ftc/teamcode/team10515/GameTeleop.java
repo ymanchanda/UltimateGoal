@@ -126,10 +126,10 @@ public class GameTeleop extends UltimateGoalRobot {
         }
 
         //Toggle Flicker
-        if (getEnhancedGamepad2().isbLast()) {
-            getFlickerSubsystem().getStateMachine().updateState(FlickerStateMachine.State.INIT);
-        }
-        else if(getEnhancedGamepad2().isxLast()){
+//        if (getEnhancedGamepad2().isbLast()) {
+//            getFlickerSubsystem().getStateMachine().updateState(FlickerStateMachine.State.INIT);
+//        }
+        if(getEnhancedGamepad2().isRightBumperLast()){
             getFlickerSubsystem().getStateMachine().updateState(FlickerStateMachine.State.HIT);
             resetFlicker.reset();
             isFlicked = true;
@@ -236,11 +236,11 @@ public class GameTeleop extends UltimateGoalRobot {
             }
         }
 
-        if (getEnhancedGamepad1().isyLast()) {
+        if (getEnhancedGamepad2().isxLast()) {
             if (!reachedPosition(maxPosition))
                 getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.UP);
 
-        } else if (getEnhancedGamepad1().isaLast()) {
+        } else if (getEnhancedGamepad1().isbLast()) {
             getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.DOWN);
             if (currentEncoderTicks <= 10) {//Check if forklift has reached 0 position
                 getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.IDLE);
