@@ -6,7 +6,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 @Autonomous(name="Blue 1", group="XtremeV")
-public class basicauto extends UGBase {
+public class Blue1Auto extends UGBase {
 
     // State used for updating telemetry
     private Orientation angles;
