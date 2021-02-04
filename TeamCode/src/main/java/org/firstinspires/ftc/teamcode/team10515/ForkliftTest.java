@@ -107,6 +107,7 @@
 
 package org.firstinspires.ftc.teamcode.team10515;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -114,6 +115,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.team10515.states.ForkliftStateMachine;
 
 @TeleOp(name = "Wobble Goal", group = "Test")
+@Disabled
 public class ForkliftTest extends UltimateGoalRobot {
     public static final int stopPosition = 500; //was 470;
     private static final int threshold = 50;

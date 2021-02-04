@@ -145,7 +145,6 @@ public class GameTeleop extends UltimateGoalRobot {
 
         if(confirmElevatorDown && doubleCheckDown.milliseconds() > 1000) {
             if (iselevatorUp && elevatorSensor.getDistance(DistanceUnit.INCH) > downThreshold ) {
-                this.setPattern(RevBlinkinLedDriver.BlinkinPattern.GOLD);
                 iselevatorUp = false;
                 if (isAuto) {
                     getPulleySubsystem().getStateMachine().updateState(PulleyStateMachine.State.DOWN);
@@ -164,7 +163,6 @@ public class GameTeleop extends UltimateGoalRobot {
 
         if(confirmElevatorUp && doubleCheckUp.milliseconds()>1000){
             if((!iselevatorUp) && elevatorSensor.getDistance(DistanceUnit.INCH) < upThreshold) {
-                this.setPattern(RevBlinkinLedDriver.BlinkinPattern.AQUA);
                 iselevatorUp = true;
                 if (isAuto) {
                     getPulleySubsystem().getStateMachine().updateState(PulleyStateMachine.State.UP);
@@ -180,13 +178,11 @@ public class GameTeleop extends UltimateGoalRobot {
             getPulleySubsystem().getStateMachine().updateState(PulleyStateMachine.State.UP);
             getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.SPEED1);
             getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.IDLE);
-            this.setPattern(RevBlinkinLedDriver.BlinkinPattern.DARK_GREEN);
             iselevatorUp = true;    //Elevator Moved Up and shooter starts
         } else if(!isAuto && getEnhancedGamepad2().isaLast()) {
             getPulleySubsystem().getStateMachine().updateState(PulleyStateMachine.State.DOWN);
             getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.IDLE);
             getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.INTAKE);
-            this.setPattern(RevBlinkinLedDriver.BlinkinPattern.DARK_GREEN);
             iselevatorUp = false;   //Elevator Moved Down
         }
 

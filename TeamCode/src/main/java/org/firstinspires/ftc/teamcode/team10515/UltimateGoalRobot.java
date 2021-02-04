@@ -47,7 +47,7 @@ import java.util.Arrays;
 
  */
 public abstract class UltimateGoalRobot extends Robot {
-    private  RevBlinkinLedDriver lights;
+    //private  RevBlinkinLedDriver lights;
     private TimeProfiler matchRuntime;
     protected static Rev2mDistanceSensor elevatorSensor;
     protected static Rev2mDistanceSensor wobbleSensor;
@@ -62,8 +62,6 @@ public abstract class UltimateGoalRobot extends Robot {
     private ForkliftSubsystem forkliftSubsystem;
     private IntakeMotorSubsystem intakeMotorSubsystem;
     private IntakeServoSubsystem intakeServoSubsystem;
-    private RevBlinkinLedDriver blinkinLedDriver;
-    private RevBlinkinLedDriver.BlinkinPattern pattern;
 
     @Override
     public void init() {
@@ -97,9 +95,6 @@ public abstract class UltimateGoalRobot extends Robot {
 
         setRobotStateEstimator(new RobotStateEstimator(this, hardwareMap.get(BNO055IMU.class, "imu"), new Pose2d()));
         setElevatorSensor(hardwareMap.get(Rev2mDistanceSensor.class, "Elevator Sensor"));
-        blinkinLedDriver = hardwareMap.get(RevBlinkinLedDriver.class, "blinkin");
-        pattern = RevBlinkinLedDriver.BlinkinPattern.HEARTBEAT_WHITE;
-        displayPattern();
         setDrive(new Drive(getRobotStateEstimator(), getMotors()[0], getMotors()[1], getMotors()[2], getMotors()[3]));
         setStackTracker(new StackTracker());
         setShooterSubsystem(new ShooterSubsystem(getMotors()[4], getMotors()[5]));
@@ -250,13 +245,13 @@ public abstract class UltimateGoalRobot extends Robot {
     public void setForkliftSubsystem(ForkliftSubsystem forkliftSubsystem){
         this.forkliftSubsystem = forkliftSubsystem;
     }
-    public  RevBlinkinLedDriver getLights() {
+    /*public  RevBlinkinLedDriver getLights() {
         return lights;
     }
 
     public void setLights(RevBlinkinLedDriver lights) {
         this.lights = lights;
-    }
+    }*/
 
     public void setElevatorSensor(Rev2mDistanceSensor range) {
         this.elevatorSensor = range;
@@ -282,13 +277,5 @@ public abstract class UltimateGoalRobot extends Robot {
     public double getRobotSpeed() {
         return getRobotStateEstimator().getVelocityPose().getTranslation().norm() +
                 Math.abs(getRobotStateEstimator().getVelocityPose().getRotation().getRadians());
-    }
-    protected void setPattern(RevBlinkinLedDriver.BlinkinPattern ppattern)
-    {
-        pattern = ppattern;
-    }
-
-    protected void displayPattern() {
-        blinkinLedDriver.setPattern(pattern);
     }
 }
