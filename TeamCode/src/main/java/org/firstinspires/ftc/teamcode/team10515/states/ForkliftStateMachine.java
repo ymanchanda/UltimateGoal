@@ -6,7 +6,7 @@ import org.firstinspires.ftc.teamcode.lib.util.TimeUnits;
 
 public class ForkliftStateMachine extends TimedState<ForkliftStateMachine.State> {
     public ForkliftStateMachine() {
-        super(State.DOWN);
+        super(State.IDLE);
     }
 
     @Override
@@ -20,16 +20,16 @@ public class ForkliftStateMachine extends TimedState<ForkliftStateMachine.State>
     }
 
     public enum State implements Namable {
-        UP(0.6d), MIDDLE(0.3d), DOWN(0.0d);
+        UP(0.4d), DOWN(-0.2d), IDLE(0.0), HOLD(0.15);
 
-        private final double position;
+        private final double power;
 
-        State(final double position) {
-            this.position = position;
+        State(final double power) {
+            this.power = power;
         }
 
-        public double getPosition() {
-            return position;
+        public double getPower() {
+            return power;
         }
 
         @Override

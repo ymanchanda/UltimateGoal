@@ -18,7 +18,7 @@ import org.firstinspires.ftc.teamcode.team10515.states.FlickerStateMachine;
 import org.firstinspires.ftc.teamcode.team10515.states.FeederExtensionStateMachine;
 import org.firstinspires.ftc.teamcode.team10515.states.FeederStateMachine;
 import org.firstinspires.ftc.teamcode.team10515.states.FeederStoneGripperStateMachine;
-import org.firstinspires.ftc.teamcode.team10515.states.FlywheelStateMachine;
+import org.firstinspires.ftc.teamcode.team10515.states.IntakeMotorStateMachine;
 import org.firstinspires.ftc.teamcode.team10515.states.VirtualFourBarStateMachine;
 
 import java.util.function.DoubleSupplier;
@@ -51,7 +51,7 @@ public class Feeder implements ISubsystem<FeederStateMachine, FeederStateMachine
     private static VirtualFourBarStateMachine virtualFourBarStateMachine;
     private static FeederStoneGripperStateMachine feederStoneGripperStateMachine;
     private static FlickerStateMachine FlickerStateMachine;
-    private static FlywheelStateMachine flywheelStateMachine;
+    private static IntakeMotorStateMachine intakeMotorStateMachine;
     private static StackTracker stackTracker;
     private RevMotor leftExtension;
     private RevMotor rightExtension;
@@ -110,7 +110,7 @@ public class Feeder implements ISubsystem<FeederStateMachine, FeederStateMachine
         });
     }
 
-    public Feeder(FlywheelStateMachine flywheelStateMachine, StackTracker stackTracker, RevMotor leftExtension,
+    public Feeder(IntakeMotorStateMachine intakeMotorStateMachine, StackTracker stackTracker, RevMotor leftExtension,
                   RevMotor rightExtension, RevServo leftFourBarJoint, RevServo rightFourBarJoint,
                   RevServo stoneGripper, RevServo capstoneArm, Rev2mDistanceSensor stoneDetector) {
         setFeederStateMachine(new FeederStateMachine());
@@ -118,7 +118,7 @@ public class Feeder implements ISubsystem<FeederStateMachine, FeederStateMachine
         setVirtualFourBarStateMachine(new VirtualFourBarStateMachine());
         setFeederStoneGripperStateMachine(new FeederStoneGripperStateMachine());
         setFlickerStateMachine(new FlickerStateMachine());
-        setFlywheelStateMachine(flywheelStateMachine);
+        setIntakeMotorStateMachine(intakeMotorStateMachine);
         setStackTracker(stackTracker);
         setLeftExtension(leftExtension);
         setRightExtension(rightExtension);
@@ -213,7 +213,7 @@ public class Feeder implements ISubsystem<FeederStateMachine, FeederStateMachine
                 if (hasStoneInRobot()) {
                     if (getTimeProfilerStoneDetection().getDeltaTime(TimeUnits.SECONDS, false) > getStoneInRobotTimeThreshold().getTimeValue(TimeUnits.SECONDS)) {
                         getFeederStoneGripperStateMachine().updateState(FeederStoneGripperStateMachine.State.GRIP);
-                        getFlywheelStateMachine().updateState(FlywheelStateMachine.State.IDLE);
+                        getIntakeMotorStateMachine().updateState(IntakeMotorStateMachine.State.IDLE);
                     }
                 } else {
                     getTimeProfilerStoneDetection().update(true);
@@ -235,7 +235,7 @@ public class Feeder implements ISubsystem<FeederStateMachine, FeederStateMachine
         getLeftFourBarJoint().setPosition(getVirtualFourBarStateMachine().getState().getLeftPosition());
         getRightFourBarJoint().setPosition(getVirtualFourBarStateMachine().getState().getRightPosition());
         getStoneGripper().setPosition(getFeederStoneGripperStateMachine().getState().getPosition());
-        getFlickerArm().setPosition(getFlickerStateMachine().getState().getPosition());
+        //getFlickerArm().setPosition(getFlickerStateMachine().getState().getLeftPosition());
     }
 
     public void toggleVirtualFourBar() {
@@ -453,12 +453,12 @@ public class Feeder implements ISubsystem<FeederStateMachine, FeederStateMachine
         Feeder.desiredSetpoint = desiredSetpoint;
     }
 
-    public static FlywheelStateMachine getFlywheelStateMachine() {
-        return flywheelStateMachine;
+    public static IntakeMotorStateMachine getIntakeMotorStateMachine() {
+        return intakeMotorStateMachine;
     }
 
-    public static void setFlywheelStateMachine(FlywheelStateMachine flywheelStateMachine) {
-        Feeder.flywheelStateMachine = flywheelStateMachine;
+    public static void setIntakeMotorStateMachine(IntakeMotorStateMachine intakeMotorStateMachine) {
+        Feeder.intakeMotorStateMachine = intakeMotorStateMachine;
     }
 
     public static DoubleSupplier getManualControlExtension() {

@@ -1,16 +1,20 @@
 package org.firstinspires.ftc.teamcode.team10515.subsystems;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.lib.drivers.RevMotor;
 import org.firstinspires.ftc.teamcode.lib.drivers.RevServo;
 import org.firstinspires.ftc.teamcode.team10515.states.FlickerStateMachine;
 
 public class FlickerSubsystem implements ISubsystem<FlickerStateMachine, FlickerStateMachine.State> {
     private static FlickerStateMachine flickerStateMachine;
-    private RevServo flickerServo;
+    private RevServo leftFlickerServo;
+    private RevServo rightFlickerServo;
 
-    public FlickerSubsystem(RevServo servo){
+
+    public FlickerSubsystem(RevServo leftServo, RevServo rightServo){
         setFlickerStateMachine(new FlickerStateMachine());
-        setServo(flickerServo);
+        setLeftFlickerServo(leftServo);
+        setRightFlickerServo(rightServo);
     }
 
     @Override
@@ -46,18 +50,27 @@ public class FlickerSubsystem implements ISubsystem<FlickerStateMachine, Flicker
     @Override
     public void update(double dt) {
         getStateMachine().update(dt);
-        getServo().setPosition(getState().getPosition());
+        getRightFlickerServo().setPosition(getState().getRightPosition());
+        getLeftFlickerServo().setPosition(getState().getLeftPosition());
     }
 
     public static void setFlickerStateMachine(FlickerStateMachine flickerStateMachine) {
         FlickerSubsystem.flickerStateMachine = flickerStateMachine;
     }
 
-    public RevServo getServo() {
-        return flickerServo;
+    public RevServo getLeftFlickerServo() {
+        return leftFlickerServo;
+    }
+    public RevServo getRightFlickerServo() {
+        return rightFlickerServo;
     }
 
-    public void setServo(RevServo flickerServo) {
-        this.flickerServo = flickerServo;
+
+    public void setLeftFlickerServo(RevServo leftFlickerServo) {
+        this.leftFlickerServo = leftFlickerServo;
     }
+    public void setRightFlickerServo(RevServo rightFlickerServo) {
+        this.rightFlickerServo = rightFlickerServo;
+    }
+
 }

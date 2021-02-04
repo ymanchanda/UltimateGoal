@@ -6,7 +6,7 @@ import org.firstinspires.ftc.teamcode.lib.util.TimeUnits;
 
 public class FlickerStateMachine extends TimedState<FlickerStateMachine.State> {
     public FlickerStateMachine() {
-        super(State.HOLD);
+        super(State.INIT);
     }
 
     @Override
@@ -16,25 +16,34 @@ public class FlickerStateMachine extends TimedState<FlickerStateMachine.State> {
 
     @Override
     protected Time getStateTransitionDuration() {
-        return new Time(1d, TimeUnits.SECONDS);
+        return new Time(10d, TimeUnits.MILLISECONDS);
     }
 
     public enum State implements Namable {
-        HOLD(0.6d), DROP(0.0d);
+        INIT("Init", 1.0d, 0.0d), HIT("Grab", 0.7d, 0.3d);
 
-        private final double position;
+        private final String name;
+        private final double leftPosition;
+        private final double rightPosition;
 
-        State(final double position) {
-            this.position = position;
+        State(final String name, final double leftPosition, final double rightPosition) {
+            this.name          = name;
+            this.leftPosition  = leftPosition;
+            this.rightPosition = rightPosition;
         }
 
-        public double getPosition() {
-            return position;
+        public double getLeftPosition() {
+            return leftPosition;
+        }
+
+        public double getRightPosition() {
+            return rightPosition;
         }
 
         @Override
+
         public String getName() {
-            return null;
+            return name;
         }
     }
 }
