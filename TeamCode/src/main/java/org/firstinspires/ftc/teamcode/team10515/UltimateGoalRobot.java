@@ -97,7 +97,6 @@ public abstract class UltimateGoalRobot extends Robot {
 
         setRobotStateEstimator(new RobotStateEstimator(this, hardwareMap.get(BNO055IMU.class, "imu"), new Pose2d()));
         setElevatorSensor(hardwareMap.get(Rev2mDistanceSensor.class, "Elevator Sensor"));
-        setWobbleSensor(hardwareMap.get(Rev2mDistanceSensor.class, "Wobble Sensor"));
         blinkinLedDriver = hardwareMap.get(RevBlinkinLedDriver.class, "blinkin");
         pattern = RevBlinkinLedDriver.BlinkinPattern.HEARTBEAT_WHITE;
         displayPattern();

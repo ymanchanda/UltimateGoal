@@ -66,7 +66,6 @@ public class GameTeleop extends UltimateGoalRobot {
     public ElapsedTime btnPressedRightBumper = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
     public ElapsedTime doubleCheckUp = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
     public ElapsedTime doubleCheckDown = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
-    public ElapsedTime wobblealign = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
 
     //Wobble goal Forklift
     public static final int alignPosition = 100;
@@ -191,10 +190,6 @@ public class GameTeleop extends UltimateGoalRobot {
             iselevatorUp = false;   //Elevator Moved Down
         }
 
-        double wobbledistance = wobbleSensor.getDistance(DistanceUnit.INCH);
-        if (wobbledistance >= 4.8 && wobbledistance < 5.2)
-            this.setPattern(RevBlinkinLedDriver.BlinkinPattern.WHITE);
-
         //WobbleGoal processing
         WobbleGoalv2();
 
@@ -203,7 +198,6 @@ public class GameTeleop extends UltimateGoalRobot {
         }
 
         //telemetry.addLine("Elevator Status: "+ iselevatorUp);
-        telemetry.addLine("Wobble Sensor: "+wobbledistance);
         telemetry.addLine("Wobble Goal: " + getForkliftSubsystem().getForkliftMotor().getPosition());
         //telemetry.addLine("Elevator Sensor: " + elevatorSensor.getDistance(DistanceUnit.INCH));
         telemetry.addLine("Intake Output: " + getIntakeMotorSubsystem().getOutput());
