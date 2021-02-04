@@ -124,10 +124,6 @@ public class GameTeleop extends UltimateGoalRobot {
             getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.IDLE);
         }
 
-        //Toggle Flicker
-//        if (getEnhancedGamepad2().isbLast()) {
-//            getFlickerSubsystem().getStateMachine().updateState(FlickerStateMachine.State.INIT);
-//        }
         if(getEnhancedGamepad2().isRightBumperLast()){
             getFlickerSubsystem().getStateMachine().updateState(FlickerStateMachine.State.HIT);
             resetFlicker.reset();
@@ -193,16 +189,10 @@ public class GameTeleop extends UltimateGoalRobot {
             isAuto = !isAuto;
         }
 
-        //telemetry.addLine("Elevator Status: "+ iselevatorUp);
+        telemetry.addLine("Auto Mode: " + isAuto);
         telemetry.addLine("Wobble Goal: " + getForkliftSubsystem().getForkliftMotor().getPosition());
-        //telemetry.addLine("Elevator Sensor: " + elevatorSensor.getDistance(DistanceUnit.INCH));
         telemetry.addLine("Intake Output: " + getIntakeMotorSubsystem().getOutput());
-        //telemetry.addLine("Shooter Velocity: " + getShooterSubsystem().getShooterWheel1().getVelocity());
         telemetry.addLine("Shooter Output: " + getShooterSubsystem().getOutput());
-        //telemetry.addLine("Null Status: "+ getEnhancedGamepad1().getGamepad());
-        //telemetry.addLine("Button Status: "+ getEnhancedGamepad1().getRight_trigger());
-        //telemetry.addLine("Button Status Last: "+ getEnhancedGamepad1().isyLast());
-        telemetry.addLine("Auto status" + isAuto);
         telemetry.update();
     }
 
@@ -242,53 +232,6 @@ public class GameTeleop extends UltimateGoalRobot {
         currentEncoderTicks = getForkliftSubsystem().getForkliftMotor().getCurrentEncoderTicks();
 
     }
-
-    /*
-    void WobbleGoal()
-    {
-
-        if (reachedStopPosition() && !tooHigh) {
-            getForkliftSubsystem().getForkliftMotor().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.IDLE);
-        }
-
-        if (currentEncoderTicks > maxPosition) {//Check if too high
-            getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.DOWN);
-            tooHigh = true;
-        }
-
-        if (tooHigh && currentEncoderTicks < stopPosition) {//Check if too low even after holding
-            getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.UP);
-            tooHigh = false;
-        }
-
-        if (lastEncoderTicks - currentEncoderTicks > 0 &&
-                (getForkliftSubsystem().getStateMachine().getState() == ForkliftStateMachine.State.UP ||
-                        getForkliftSubsystem().getStateMachine().getState() == ForkliftStateMachine.State.IDLE)) {//Check if forklift is moving down when its not supposed to
-            getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.HOLD);//Counteract weight of wobble goal
-        }
-
-        if (getEnhancedGamepad1().isyLast()) {
-//            toggle = !toggle;
-//            if(toggle) {
-//                getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.UP);
-//            }else{
-//                getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.HOLD);
-//            }
-            getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.UP);
-        } else if (getEnhancedGamepad1().isaLast()) {
-            getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.DOWN);
-
-            if (currentEncoderTicks <= 0) {//Check if forklift has reached down position
-                //Stop motor
-                getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.IDLE);
-            }
-        }
-
-        lastEncoderTicks = currentEncoderTicks;
-        currentEncoderTicks = getForkliftSubsystem().getForkliftMotor().getCurrentEncoderTicks();
-    }
-     */
 
     public boolean reachedPosition(double position) {
         if (getForkliftSubsystem().getForkliftMotor().getCurrentEncoderTicks() < position)

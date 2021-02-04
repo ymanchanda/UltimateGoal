@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
-@Autonomous(name="Program 1", group="XtremeV")
+@Autonomous(name="Blue 1", group="XtremeV")
 public class basicauto extends UGBase {
 
     // State used for updating telemetry
