@@ -234,7 +234,7 @@ public class GameTeleop extends UltimateGoalRobot {
             if (!reachedPosition(maxPosition))
                 getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.UP);
 
-        } else if (getEnhancedGamepad1().isbLast()) {
+        } else if (getEnhancedGamepad2().isbLast()) {
             getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.DOWN);
             if (currentEncoderTicks <= 10) {//Check if forklift has reached 0 position
                 getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.IDLE);
