@@ -190,6 +190,7 @@ public class GameTeleop extends UltimateGoalRobot {
 
         telemetry.addLine("Auto Mode: " + isAuto);
         telemetry.addLine("Wobble Goal: " + getForkliftSubsystem().getForkliftMotor().getCurrentEncoderTicks());
+        telemetry.addLine("Past Align: " +pastAlign);
         telemetry.addLine("Intake Output: " + getIntakeMotorSubsystem().getOutput());
         telemetry.addLine("Shooter Output: " + getShooterSubsystem().getOutput());
         telemetry.update();
@@ -215,20 +216,21 @@ public class GameTeleop extends UltimateGoalRobot {
             }
         }
 
+        if (pastAlign && reachedDownPosition(alignPosition+50)) {
+            getForkliftSubsystem().getForkliftMotor().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.IDLE);
+            pastAlign = false;      //reset pastAlign to false as it's down
+        } else if (reachedDownPosition(0)) {//Check if forklift has reached 0 position
+            getForkliftSubsystem().getForkliftMotor().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.IDLE);
+        }
+
         if (getEnhancedGamepad2().isbLast()) {
             if (!reachedUpPosition(maxPosition))
                 getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.UP);
 
         } else if (getEnhancedGamepad2().isxLast()) {
-            if (pastAlign && reachedDownPosition(alignPosition)) {
-                getForkliftSubsystem().getForkliftMotor().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-                getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.IDLE);
-                pastAlign = false;      //reset pastAlign to false as it's down
-            } else if (reachedDownPosition(0)) {//Check if forklift has reached 0 position
-                getForkliftSubsystem().getForkliftMotor().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-                getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.IDLE);
-            }
-            else {
+            if (!reachedDownPosition(0)) {
                 getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.DOWN);
             }
         }
