@@ -111,8 +111,8 @@ public class UGCV {
                 //cropWidth = (int) ((590.0 / 720.0) * bitmap.getWidth());
                 //cropHeight = (int) ((103.0 / 480.0) * bitmap.getHeight());
 
-                cropStartX = (int) ((340.0 / 720.0) * bitmap.getWidth());
-                cropStartY = (int) ((130.0 / 480.0) * bitmap.getHeight());
+                cropStartX = (int) ((280.0 / 720.0) * bitmap.getWidth());
+                cropStartY = (int) ((220.0 / 480.0) * bitmap.getHeight());
                 cropWidth = (int) ((220.0 / 720.0) * bitmap.getWidth());
                 cropHeight = (int) ((130.0 / 480.0) * bitmap.getHeight());
             } else {
@@ -120,9 +120,9 @@ public class UGCV {
                 //cropStartY = (int) ((130.0 / 720.0) * bitmap.getHeight());
                 //cropWidth = (int) ((890.0 / 1280.0) * bitmap.getWidth());
                 //cropHeight = (int) ((165.0 / 720.0) * bitmap.getHeight());
-                cropStartX = (int) ((20.0 / 720.0) * bitmap.getWidth());
-                cropStartY = (int) ((350.0 / 480.0) * bitmap.getHeight());
-                cropWidth = (int) ((560.0 / 720.0) * bitmap.getWidth());
+                cropStartX = (int) ((0.0 / 720.0) * bitmap.getWidth());
+                cropStartY = (int) ((80.0 / 480.0) * bitmap.getHeight());
+                cropWidth = (int) ((280.0 / 720.0) * bitmap.getWidth());
                 cropHeight = (int) ((90.0 / 480.0) * bitmap.getHeight());
             }
 

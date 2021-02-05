@@ -98,15 +98,15 @@ public class GameTeleop extends UltimateGoalRobot {
         }
 
         //Gamepad2 Intake Servo - Right Bumper
-        if(getEnhancedGamepad2().isRightBumperLast()){
-            getIntakeServoSubsystem().getStateMachine().updateState(IntakeServoStateMachine.State.HIT_RING);
-            btnPressedRightBumper.reset();
-            intakeServo = true;
-        }
-        if (btnPressedRightBumper.milliseconds()>700 && intakeServo){
-            getIntakeServoSubsystem().getStateMachine().updateState(IntakeServoStateMachine.State.STANDBY);
-            intakeServo = false;
-        }
+//        if(getEnhancedGamepad2().isRightBumperLast()){
+//            getIntakeServoSubsystem().getStateMachine().updateState(IntakeServoStateMachine.State.HIT_RING);
+//            btnPressedRightBumper.reset();
+//            intakeServo = true;
+//        }
+//        if (btnPressedRightBumper.milliseconds()>700 && intakeServo){
+//            getIntakeServoSubsystem().getStateMachine().updateState(IntakeServoStateMachine.State.STANDBY);
+//            intakeServo = false;
+//        }
 
         //Toggle Shooter
         if(getEnhancedGamepad2().isDpad_up()) {

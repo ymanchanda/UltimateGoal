@@ -35,6 +35,16 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.teamcode.team10515.control.StackTracker;
+import org.firstinspires.ftc.teamcode.team10515.subsystems.Drive;
+import org.firstinspires.ftc.teamcode.team10515.subsystems.ExpansionHubs;
+import org.firstinspires.ftc.teamcode.team10515.subsystems.Feeder;
+import org.firstinspires.ftc.teamcode.team10515.subsystems.FlickerSubsystem;
+import org.firstinspires.ftc.teamcode.team10515.subsystems.ForkliftSubsystem;
+import org.firstinspires.ftc.teamcode.team10515.subsystems.IntakeMotorSubsystem;
+import org.firstinspires.ftc.teamcode.team10515.subsystems.PulleySubsystem;
+import org.firstinspires.ftc.teamcode.team10515.subsystems.RobotStateEstimator;
+import org.firstinspires.ftc.teamcode.team10515.subsystems.ShooterSubsystem;
 import org.firstinspires.ftc.teamcode.util.AxesSigns;
 import org.firstinspires.ftc.teamcode.util.BNO055IMUUtil;
 import org.firstinspires.ftc.teamcode.util.DashboardUtil;
@@ -62,8 +72,9 @@ import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kV;
  */
 @Config
 public class SampleMecanumDrive extends MecanumDrive {
-    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(15, 0, 1);
-    public static PIDCoefficients HEADING_PID = new PIDCoefficients(8, 0, 0);
+
+    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(18, 0, 1);
+    public static PIDCoefficients HEADING_PID = new PIDCoefficients(20, 0, 0);
 
     public static double LATERAL_MULTIPLIER = 1.6438;
 
@@ -94,7 +105,7 @@ public class SampleMecanumDrive extends MecanumDrive {
 
     private LinkedList<Pose2d> poseHistory;
 
-    public DcMotorEx leftFront, leftRear, rightRear, rightFront;
+    public DcMotorEx leftFront, leftRear, rightRear, rightFront, shooter1, shooter2;
     private List<DcMotorEx> motors;
     private BNO055IMU imu;
 
@@ -172,6 +183,9 @@ public class SampleMecanumDrive extends MecanumDrive {
         rightFront.setDirection(DcMotor.Direction.FORWARD);
         leftRear.setDirection(DcMotor.Direction.REVERSE);
         rightRear.setDirection(DcMotor.Direction.FORWARD);
+        //shooter1.setDirection(DcMotor.Direction.REVERSE);
+        //shooter2.setDirection(DcMotor.Direction.REVERSE);
+
         // TODO: if desired, use setLocalizer() to change the localization method
         // for instance, setLocalizer(new ThreeTrackingWheelLocalizer(...));
         setLocalizer(new StandardTrackingWheelLocalizer(hardwareMap));
