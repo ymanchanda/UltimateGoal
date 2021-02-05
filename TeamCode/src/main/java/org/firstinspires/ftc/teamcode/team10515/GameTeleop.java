@@ -216,7 +216,7 @@ public class GameTeleop extends UltimateGoalRobot {
             }
         }
 
-        if (pastAlign && reachedDownPosition(alignPosition+50)) {
+        if (pastAlign && reachedDownPosition(alignPosition*2)) {
             getForkliftSubsystem().getForkliftMotor().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.IDLE);
             pastAlign = false;      //reset pastAlign to false as it's down
