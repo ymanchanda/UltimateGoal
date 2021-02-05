@@ -50,7 +50,6 @@ public abstract class UltimateGoalRobot extends Robot {
     //private  RevBlinkinLedDriver lights;
     private TimeProfiler matchRuntime;
     protected static Rev2mDistanceSensor elevatorSensor;
-    protected static Rev2mDistanceSensor wobbleSensor;
     private ExpansionHubs expansionHubs;
     private RobotStateEstimator robotStateEstimator;
     private Drive drive;
@@ -256,11 +255,6 @@ public abstract class UltimateGoalRobot extends Robot {
     public void setElevatorSensor(Rev2mDistanceSensor range) {
         this.elevatorSensor = range;
     }
-
-    public void setWobbleSensor(Rev2mDistanceSensor range) {
-        this.wobbleSensor = range;
-    }
-
 
     public TimeProfiler getMatchRuntime() {
         return matchRuntime;

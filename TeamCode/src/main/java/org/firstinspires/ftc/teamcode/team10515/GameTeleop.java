@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.team10515;
-//hi
-import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
+
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -190,7 +189,7 @@ public class GameTeleop extends UltimateGoalRobot {
         }
 
         telemetry.addLine("Auto Mode: " + isAuto);
-        telemetry.addLine("Wobble Goal: " + getForkliftSubsystem().getForkliftMotor().getPosition());
+        telemetry.addLine("Wobble Goal: " + getForkliftSubsystem().getForkliftMotor().getCurrentEncoderTicks());
         telemetry.addLine("Intake Output: " + getIntakeMotorSubsystem().getOutput());
         telemetry.addLine("Shooter Output: " + getShooterSubsystem().getOutput());
         telemetry.update();
@@ -199,32 +198,38 @@ public class GameTeleop extends UltimateGoalRobot {
     void WobbleGoalv2()
     {
         //brake 1st time when it reaches align OR when it reaches the top
-        if (reachedPosition(alignPosition) && !pastAlign) {
+        if (reachedUpPosition(alignPosition) && !pastAlign) {
             getForkliftSubsystem().getForkliftMotor().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.IDLE);
             pastAlign = true;
         }
-        if (pastAlign && reachedPosition(maxPosition)) {
+        if (pastAlign && reachedUpPosition(maxPosition)) {
             getForkliftSubsystem().getForkliftMotor().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.IDLE);
         }
 
-        if (lastEncoderTicks - currentEncoderTicks > 0 && reachedPosition(topPosition)){
+        if (lastEncoderTicks - currentEncoderTicks > 0 && reachedUpPosition(topPosition)){
             getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.HOLD);//Counteract weight of wobble goal
             if (currentEncoderTicks < topPosition) {//Check if too low even after holding
                 getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.UP);
             }
         }
 
-        if (getEnhancedGamepad2().isxLast()) {
-            if (!reachedPosition(maxPosition))
+        if (getEnhancedGamepad2().isbLast()) {
+            if (!reachedUpPosition(maxPosition))
                 getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.UP);
 
-        } else if (getEnhancedGamepad2().isbLast()) {
-            getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.DOWN);
-            if (currentEncoderTicks <= 20) {//Check if forklift has reached 0 position
+        } else if (getEnhancedGamepad2().isxLast()) {
+            if (pastAlign && reachedDownPosition(alignPosition)) {
+                getForkliftSubsystem().getForkliftMotor().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
                 getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.IDLE);
                 pastAlign = false;      //reset pastAlign to false as it's down
+            } else if (reachedDownPosition(0)) {//Check if forklift has reached 0 position
+                getForkliftSubsystem().getForkliftMotor().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+                getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.IDLE);
+            }
+            else {
+                getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.DOWN);
             }
         }
 
@@ -233,11 +238,18 @@ public class GameTeleop extends UltimateGoalRobot {
 
     }
 
-    public boolean reachedPosition(double position) {
+    public boolean reachedUpPosition(double position) {
         if (getForkliftSubsystem().getForkliftMotor().getCurrentEncoderTicks() < position)
             return false;
         else
         return true;
+    }
+
+    public boolean reachedDownPosition(double position) {
+        if (getForkliftSubsystem().getForkliftMotor().getCurrentEncoderTicks() > position)
+            return false;
+        else
+            return true;
     }
 
 }
