@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.team10515.odometery.drive.opmode;
+package org.firstinspires.ftc.teamcode.drive.opmode;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -10,16 +10,16 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.internal.system.Misc;
-import org.firstinspires.ftc.teamcode.team10515.odometery.drive.SampleMecanumDrive;
-import org.firstinspires.ftc.teamcode.team10515.odometery.util.LoggingUtil;
-import org.firstinspires.ftc.teamcode.team10515.odometery.util.RegressionUtil;
+import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.util.LoggingUtil;
+import org.firstinspires.ftc.teamcode.util.RegressionUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.firstinspires.ftc.teamcode.team10515.odometery.drive.DriveConstants.MAX_RPM;
-import static org.firstinspires.ftc.teamcode.team10515.odometery.drive.DriveConstants.RUN_USING_ENCODER;
-import static org.firstinspires.ftc.teamcode.team10515.odometery.drive.DriveConstants.rpmToVelocity;
+import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_RPM;
+import static org.firstinspires.ftc.teamcode.drive.DriveConstants.RUN_USING_ENCODER;
+import static org.firstinspires.ftc.teamcode.drive.DriveConstants.rpmToVelocity;
 
 /*
  * Op mode for computing kV, kStatic, and kA from various drive routines. For the curious, here's an
@@ -34,8 +34,8 @@ import static org.firstinspires.ftc.teamcode.team10515.odometery.drive.DriveCons
 @Config
 @Autonomous(group = "drive")
 public class AutomaticFeedforwardTuner extends LinearOpMode {
-    public static final double MAX_POWER = 0.7;
-    public static final double DISTANCE = 100; // in
+    public static double MAX_POWER = 0.7;
+    public static double DISTANCE = 200; // in
 
     @Override
     public void runOpMode() throws InterruptedException {
