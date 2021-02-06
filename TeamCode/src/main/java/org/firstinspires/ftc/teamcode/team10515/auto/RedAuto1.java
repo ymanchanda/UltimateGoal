@@ -7,7 +7,6 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
 import org.firstinspires.ftc.teamcode.lib.util.TimeProfiler;
 import org.firstinspires.ftc.teamcode.lib.util.TimeUnits;
 import org.firstinspires.ftc.teamcode.team10515.states.FlickerStateMachine;
@@ -19,8 +18,8 @@ import org.firstinspires.ftc.teamcode.team10515.states.ShooterStateMachine;
 /*
  * This is an example of a more complex path to really test the tuning.
  */
-@Autonomous(name= "Blue Auto 1", group = "drive")
-public class BlueAuto1 extends LinearOpMode {
+@Autonomous(name= "Red Auto 1", group = "drive")
+public class RedAuto1 extends LinearOpMode {
     UGBase drive;
     private static double dt;
     private static TimeProfiler updateRuntime;
@@ -57,7 +56,7 @@ public class BlueAuto1 extends LinearOpMode {
 
     State currentState = State.IDLE;
 
-    Pose2d startPose = new Pose2d(-63, 19, Math.toRadians(0));
+    Pose2d startPose = new Pose2d(-63, -24, Math.toRadians(0));
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -72,35 +71,35 @@ public class BlueAuto1 extends LinearOpMode {
         drive.robot.getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.IDLE);
 
         Trajectory traj1 = drive.trajectoryBuilder(startPose)
-                .splineTo(new Vector2d(2, 18),Math.toRadians(5))
+                .splineTo(new Vector2d(0, 8),Math.toRadians(5))
                 .build();
         Trajectory traj2 = drive.trajectoryBuilder(traj1.end())
-                .strafeLeft(8)
+                .strafeRight(8)
                 .build();
         Trajectory traj3 = drive.trajectoryBuilder(traj2.end())
-                .strafeLeft(8)
+                .strafeRight(8)
                 .build();
         Trajectory zoneA = drive.trajectoryBuilder(traj3.end())
-                .splineToConstantHeading(new Vector2d(2,50),Math.toRadians(0))
+                .splineToLinearHeading(new Pose2d(12,-38, Math.toRadians(180)),Math.toRadians(0))
                 .build();
         Trajectory zoneB = drive.trajectoryBuilder(traj3.end())
-                .splineToConstantHeading(new Vector2d(29,26),Math.toRadians(0))
+                .splineTo(new Vector2d(36, -36),Math.toRadians(0))
                 .build();
         Trajectory zoneC = drive.trajectoryBuilder(traj3.end())
-                .splineToConstantHeading(new Vector2d(47,54),Math.toRadians(0))
+                .splineToLinearHeading(new Pose2d(60,-36,Math.toRadians(180)),Math.toRadians(0))
                 .build();
         Trajectory parkb = drive.trajectoryBuilder(zoneB.end())
                 .back(24)
                 .build();
         Trajectory parkC = drive.trajectoryBuilder(zoneC.end())
-                .back(36)
+                .forward(42)
                 .build();
         Trajectory release = drive.trajectoryBuilder(zoneA.end())
                 .back(1)
                 .build();
         waitForStart();
 
-        UGCV.numRings numRings = UGCV.numRings.FOUR;//drive.getRingsUsingImage(false);
+        UGCV.numRings numRings = drive.getRingsUsingImage(true);
         telemetry.addLine("Num Rings: "+ numRings);
         telemetry.update();
 

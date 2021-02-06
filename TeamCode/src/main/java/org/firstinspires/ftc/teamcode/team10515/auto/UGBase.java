@@ -43,6 +43,9 @@ import org.firstinspires.ftc.teamcode.lib.drivers.Motor;
 import org.firstinspires.ftc.teamcode.lib.drivers.RevMotor;
 import org.firstinspires.ftc.teamcode.lib.drivers.RevServo;
 import org.firstinspires.ftc.teamcode.lib.util.TimeProfiler;
+import org.firstinspires.ftc.teamcode.team10515.Robot;
+import org.firstinspires.ftc.teamcode.team10515.UGAutoRobot;
+import org.firstinspires.ftc.teamcode.team10515.UltimateGoalRobot;
 import org.firstinspires.ftc.teamcode.team10515.control.StackTracker;
 import org.firstinspires.ftc.teamcode.team10515.subsystems.Drive;
 import org.firstinspires.ftc.teamcode.team10515.subsystems.ExpansionHubs;
@@ -53,6 +56,7 @@ import org.firstinspires.ftc.teamcode.team10515.subsystems.IntakeServoSubsystem;
 import org.firstinspires.ftc.teamcode.team10515.subsystems.PulleySubsystem;
 import org.firstinspires.ftc.teamcode.team10515.subsystems.RobotStateEstimator;
 import org.firstinspires.ftc.teamcode.team10515.subsystems.ShooterSubsystem;
+import org.firstinspires.ftc.teamcode.team10515.subsystems.UGExpansionHubs;
 import org.firstinspires.ftc.teamcode.util.DashboardUtil;
 import org.firstinspires.ftc.teamcode.util.LynxModuleUtil;
 import org.openftc.revextensions2.ExpansionHubEx;
@@ -85,7 +89,9 @@ import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kV;
  */
 @Config
 public class UGBase extends MecanumDrive {
-    private ExpansionHubs expansionHubs;
+
+    public UGAutoRobot robot = new UGAutoRobot();
+    private UGExpansionHubs expansionHubs;
     private PulleySubsystem elevatorSubsystem;
     private FlickerSubsystem flickerSubsystem;
     private ShooterSubsystem shooterMotors;
@@ -140,7 +146,7 @@ public class UGBase extends MecanumDrive {
 
     public UGBase(HardwareMap hardwareMap) {
         super(kV, kA, kStatic, TRACK_WIDTH, TRACK_WIDTH, LATERAL_MULTIPLIER);
-
+        robot.init(hardwareMap);
         initVuforia(hardwareMap);
         dashboard = FtcDashboard.getInstance();
         dashboard.setTelemetryTransmissionInterval(25);
@@ -179,30 +185,49 @@ public class UGBase extends MecanumDrive {
         // TODO: if your hub is mounted vertically, remap the IMU axes so that the z-axis points
         // upward (normal to the floor) using a command like the following:
    //      BNO055IMUUtil.remapAxes(imu, AxesOrder.XYZ, AxesSigns.NPN);
+        setExpansionHubs(new UGExpansionHubs(robot,
+                hardwareMap.get(ExpansionHubEx.class, "Control Hub"),
+                hardwareMap.get(ExpansionHubEx.class, "Expansion Hub 1"))
+        );
+
+//        robot.setMotors(new RevMotor[] {
+//                new RevMotor((ExpansionHubMotor)(hardwareMap.get("Shooter 1")), false, false, false, true, Motor.GOBILDA_6000_RPM.getENCODER_TICKS_PER_REVOLUTION(), 120, 1d),
+//                new RevMotor((ExpansionHubMotor)(hardwareMap.get("Shooter 2")), false, false, false, true),
+//                new RevMotor((ExpansionHubMotor)(hardwareMap.get("Intake Motor")), true, false, false, false, Motor.GOBILDA_1150_RPM.getENCODER_TICKS_PER_REVOLUTION(), 50.8, 2d),
+//                new RevMotor((ExpansionHubMotor)(hardwareMap.get("Forklift Motor")), true, true, true, false, Motor.GOBILDA_312_RPM.getENCODER_TICKS_PER_REVOLUTION()),
+//        });
+//        robot.setServos(new RevServo[] {
+//                new RevServo((ExpansionHubServo)(hardwareMap.get("Elevator Servo"))),
+//                new RevServo((ExpansionHubServo)(hardwareMap.get("Flicker 1"))),
+//                new RevServo((ExpansionHubServo)(hardwareMap.get("Flicker 2"))),
+//
+//
+//        });
+
+//        setShooterSubsystem(new ShooterSubsystem(robot.getMotors()[0], robot.getMotors()[1]));
+//        setPulleySubsystem(new PulleySubsystem(robot.getServos()[0]));
+//        setIntakeMotorSubsystem(new IntakeMotorSubsystem(robot.getMotors()[62]));
+//        setForkliftSubsystem(new ForkliftSubsystem(robot.getMotors()[3]));
+//        setFlickerSubsystem(new FlickerSubsystem(robot.getServos()[1], robot.getServos()[2]));
 
         leftFront = hardwareMap.get(DcMotorEx.class, "FL");
         leftRear = hardwareMap.get(DcMotorEx.class, "RL");
         rightRear = hardwareMap.get(DcMotorEx.class, "RR");
         rightFront = hardwareMap.get(DcMotorEx.class, "FR");
-        shooter1 = new RevMotor((ExpansionHubMotor)(hardwareMap.get("Shooter 1")), false, false, false, true, Motor.GOBILDA_6000_RPM.getENCODER_TICKS_PER_REVOLUTION(), 120, 1d);
-        shooter2 = new RevMotor((ExpansionHubMotor)(hardwareMap.get("Shooter 2")), false, false, false, true);
-        intakeMotor =  new RevMotor((ExpansionHubMotor)(hardwareMap.get("Intake Motor")), true, false, false, false, Motor.GOBILDA_1150_RPM.getENCODER_TICKS_PER_REVOLUTION(), 50.8, 2d);
-        forkliftMotor = new RevMotor((ExpansionHubMotor)(hardwareMap.get("Forklift Motor")), true, true, true, false, Motor.GOBILDA_312_RPM.getENCODER_TICKS_PER_REVOLUTION());
-        setShooterSubsystem(new ShooterSubsystem(shooter1, shooter2));
-        setIntakeMotorSubsystem(new IntakeMotorSubsystem(intakeMotor));
-        setForkliftSubsystem(new ForkliftSubsystem(forkliftMotor));
+//        shooter1 = new RevMotor((ExpansionHubMotor)(hardwareMap.get("Shooter 1")), false, false, false, true, Motor.GOBILDA_6000_RPM.getENCODER_TICKS_PER_REVOLUTION(), 120, 1d);
+//        shooter2 = new RevMotor((ExpansionHubMotor)(hardwareMap.get("Shooter 2")), false, false, false, true);
+//        intakeMotor =  new RevMotor((ExpansionHubMotor)(hardwareMap.get("Intake Motor")), true, false, false, false, Motor.GOBILDA_1150_RPM.getENCODER_TICKS_PER_REVOLUTION(), 50.8, 2d);
+//        forkliftMotor = new RevMotor((ExpansionHubMotor)(hardwareMap.get("Forklift Motor")), true, true, true, false, Motor.GOBILDA_312_RPM.getENCODER_TICKS_PER_REVOLUTION());
+//        setShooterSubsystem(new ShooterSubsystem(shooter1, shooter2));
+//        setIntakeMotorSubsystem(new IntakeMotorSubsystem(intakeMotor));
+//        setForkliftSubsystem(new ForkliftSubsystem(forkliftMotor));
 
-
-        elevatorServo = new RevServo((ExpansionHubServo)(hardwareMap.get("Elevator Servo")));
-        flicker1 =  new RevServo((ExpansionHubServo)(hardwareMap.get("Flicker 1")));
-        flicker2 =  new RevServo((ExpansionHubServo)(hardwareMap.get("Flicker 2")));
-
-        setPulleySubsystem(new PulleySubsystem((elevatorServo)));
-        setFlickerSubsystem(new FlickerSubsystem(flicker1,flicker2));
-
-
-
-
+//        elevatorServo = new RevServo((ExpansionHubServo)(hardwareMap.get("Elevator Servo")));
+//        flicker1 =  new RevServo((ExpansionHubServo)(hardwareMap.get("Flicker 1")));
+//        flicker2 =  new RevServo((ExpansionHubServo)(hardwareMap.get("Flicker 2")));
+//
+//        setPulleySubsystem(new PulleySubsystem((elevatorServo)));
+//        setFlickerSubsystem(new FlickerSubsystem(flicker1,flicker2));
         motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
 
         for (DcMotorEx motor : motors) {
@@ -228,79 +253,47 @@ public class UGBase extends MecanumDrive {
         leftRear.setDirection(DcMotor.Direction.REVERSE);
         rightRear.setDirection(DcMotor.Direction.FORWARD);
 
-
-
         // TODO: if desired, use setLocalizer() to change the localization method
         // for instance, setLocalizer(new ThreeTrackingWheelLocalizer(...));
         setLocalizer(new StandardTrackingWheelLocalizer(hardwareMap));
+
     }
-//    public void init() {
-//        setExpansionHubs(new ExpansionHubs(this,
-//                hardwareMap.get(ExpansionHubEx.class, "Control Hub"),
-//                hardwareMap.get(ExpansionHubEx.class, "Expansion Hub 1"))
-//        );
+
+//    public IntakeMotorSubsystem getIntakeMotorSubsystem() {
+//        return intakeMotorSubsystem;
+//    }
 //
-//        setMotors(new RevMotor[] {
-//                new RevMotor((ExpansionHubMotor)(hardwareMap.get("Shooter 1")), false, false, false, true, Motor.GOBILDA_6000_RPM.getENCODER_TICKS_PER_REVOLUTION(), 120, 1d),
-//                new RevMotor((ExpansionHubMotor)(hardwareMap.get("Shooter 2")), false, false, false, true),
-//                new RevMotor((ExpansionHubMotor)(hardwareMap.get("Intake Motor")), true, false, false, false, Motor.GOBILDA_1150_RPM.getENCODER_TICKS_PER_REVOLUTION(), 50.8, 2d),
-//                new RevMotor((ExpansionHubMotor)(hardwareMap.get("Forklift Motor")), true, true, true, false, Motor.GOBILDA_312_RPM.getENCODER_TICKS_PER_REVOLUTION()),
-//        });
+//    public void setIntakeMotorSubsystem(IntakeMotorSubsystem intakeMotorSubsystem){
+//        this.intakeMotorSubsystem = intakeMotorSubsystem;
+//    }
 //
-//        setServos(new RevServo[] {
-//                new RevServo((ExpansionHubServo)(hardwareMap.get("Elevator Servo"))),
-//                new RevServo((ExpansionHubServo)(hardwareMap.get("Flicker 1"))),
-//                new RevServo((ExpansionHubServo)(hardwareMap.get("Flicker 2"))),
-//                new RevServo((ExpansionHubServo)(hardwareMap.get("Intake Servo"))),
+//    public ShooterSubsystem getShooterSubsystem() { return shooterMotors; }
 //
-//        });
+//    public void setShooterSubsystem(ShooterSubsystem shooterMotors){ this.shooterMotors = shooterMotors; }
 //
-//        setDrive(new Drive(getRobotStateEstimator(), getMotors()[0], getMotors()[1], getMotors()[2], getMotors()[3]));
-//        setStackTracker(new StackTracker());
-//        setShooterSubsystem(new ShooterSubsystem(getMotors()[4], getMotors()[5]));
-//        setPulleySubsystem(new PulleySubsystem(getServos()[0]));
-//        setIntakeMotorSubsystem(new IntakeMotorSubsystem(getMotors()[6]));
-//        setForkliftSubsystem(new ForkliftSubsystem(getMotors()[7]));
-//        setFlickerSubsystem(new FlickerSubsystem(getServos()[1], getServos()[2]));
-//        setIntakeServoSubsystem(new IntakeServoSubsystem((getServos()[3])));
-//        setMatchRuntime(new TimeProfiler(false));
-    //}
-
-    public IntakeMotorSubsystem getIntakeMotorSubsystem() {
-        return intakeMotorSubsystem;
-    }
-
-    public void setIntakeMotorSubsystem(IntakeMotorSubsystem intakeMotorSubsystem){
-        this.intakeMotorSubsystem = intakeMotorSubsystem;
-    }
-
-    public ShooterSubsystem getShooterSubsystem() { return shooterMotors; }
-
-    public void setShooterSubsystem(ShooterSubsystem shooterMotors){ this.shooterMotors = shooterMotors; }
-
-    public PulleySubsystem getPulleySubsystem() {
-        return elevatorSubsystem;
-    }
-
-    public void setPulleySubsystem(PulleySubsystem elevatorSubsystem) {
-        this.elevatorSubsystem = elevatorSubsystem;
-    }
-
-    public FlickerSubsystem getFlickerSubsystem(){
-        return flickerSubsystem;
-    }
-
-    public void setFlickerSubsystem(FlickerSubsystem flickerSubsystem){
-        this.flickerSubsystem = flickerSubsystem;
-    }
-
-    public ForkliftSubsystem getForkliftSubsystem() {
-        return forkliftSubsystem;
-    }
-
-    public void setForkliftSubsystem(ForkliftSubsystem forkliftSubsystem){
-        this.forkliftSubsystem = forkliftSubsystem;
-    }
+//    public PulleySubsystem getPulleySubsystem() {
+//        return elevatorSubsystem;
+//    }
+//
+//    public void setPulleySubsystem(PulleySubsystem elevatorSubsystem) {
+//        this.elevatorSubsystem = elevatorSubsystem;
+//    }
+//
+//    public FlickerSubsystem getFlickerSubsystem(){
+//        return flickerSubsystem;
+//    }
+//
+//    public void setFlickerSubsystem(FlickerSubsystem flickerSubsystem){
+//        this.flickerSubsystem = flickerSubsystem;
+//    }
+//
+//    public ForkliftSubsystem getForkliftSubsystem() {
+//        return forkliftSubsystem;
+//    }
+//
+//    public void setForkliftSubsystem(ForkliftSubsystem forkliftSubsystem){
+//        this.forkliftSubsystem = forkliftSubsystem;
+//    }
     public TrajectoryBuilder trajectoryBuilder(Pose2d startPose) {
         return new TrajectoryBuilder(startPose, velConstraint, accelConstraint);
     }
@@ -550,4 +543,12 @@ public class UGBase extends MecanumDrive {
 
         // Loading trackables is not necessary for the TensorFlow Object Detection engine.
     }
+    public UGExpansionHubs getExpansionHubs() {
+        return expansionHubs;
+    }
+
+    public void setExpansionHubs(UGExpansionHubs expansionHubs) {
+        this.expansionHubs = expansionHubs;
+    }
+
 }

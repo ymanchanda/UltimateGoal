@@ -20,7 +20,7 @@ public class ForkliftStateMachine extends TimedState<ForkliftStateMachine.State>
     }
 
     public enum State implements Namable {
-        UP(0.4d), DOWN(-0.15d), IDLE(0.0), HOLD(0.15);
+        UP(0.4d), DOWN(-0.15d), IDLE(0.0d), HOLD(0.15d), AUTOUP(0.4d), AUTODOWN(-0.25d);
 
         private final double power;
 

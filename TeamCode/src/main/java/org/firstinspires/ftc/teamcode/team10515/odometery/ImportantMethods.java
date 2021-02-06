@@ -18,7 +18,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
-
+@Disabled
 @Autonomous(name="EncoderBasedMecanumMethods", group = "Pushbot")
 
 public abstract class ImportantMethods extends LinearOpMode {

@@ -8,12 +8,15 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.team10515.states.ShooterStateMachine;
+
 /*
  * This is an example of a more complex path to really test the tuning.
  */
 @Disabled
-@Autonomous(name= "Red Auto", group = "drive")
-public class RedAuto extends LinearOpMode {
+@Autonomous(name= "Blue Auto", group = "drive")
+public class oldblue extends LinearOpMode {
     int x = 1;
     UGBase drive;
     private double kP = (1/14600d);
@@ -22,14 +25,12 @@ public class RedAuto extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         drive = new UGBase(hardwareMap);
-
-
         drive.flicker1.setPosition(1.0d);
         drive.flicker2.setPosition(0.0d);
-        Pose2d startPose = new Pose2d(-63, -24, Math.toRadians(0));
+        Pose2d startPose = new Pose2d(-63, 19, Math.toRadians(0));
         drive.setPoseEstimate(startPose);
         waitForStart();
-        UGCV.numRings numRings = drive.getRingsUsingImage(true);
+        UGCV.numRings numRings = drive.getRingsUsingImage(false);
         telemetry.addLine("Num Rings: "+ numRings);
         telemetry.update();
         //numRings = UGCV.numRings.FOUR;
@@ -37,7 +38,7 @@ public class RedAuto extends LinearOpMode {
         //shooterStartPoleShot();
         drive.elevatorServo.setPosition(0.75);
         Trajectory traj = drive.trajectoryBuilder(startPose)
-                .splineTo(new Vector2d(2, 4),Math.toRadians(5))
+                .splineTo(new Vector2d(2, 14),Math.toRadians(5))
                 .addDisplacementMarker(10,() -> {
                     drive.shooter1.setPower(0.63d);
                     drive.shooter2.setPower(0.63d);
