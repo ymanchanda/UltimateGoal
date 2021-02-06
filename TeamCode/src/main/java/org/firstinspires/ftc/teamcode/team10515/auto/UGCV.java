@@ -111,8 +111,8 @@ public class UGCV {
                 //cropWidth = (int) ((590.0 / 720.0) * bitmap.getWidth());
                 //cropHeight = (int) ((103.0 / 480.0) * bitmap.getHeight());
 
-                cropStartX = (int) ((280.0 / 720.0) * bitmap.getWidth());
-                cropStartY = (int) ((220.0 / 480.0) * bitmap.getHeight());
+                cropStartX = (int) ((420.0 / 720.0) * bitmap.getWidth());
+                cropStartY = (int) ((280.0 / 480.0) * bitmap.getHeight());
                 cropWidth = (int) ((220.0 / 720.0) * bitmap.getWidth());
                 cropHeight = (int) ((130.0 / 480.0) * bitmap.getHeight());
             } else {
@@ -121,9 +121,9 @@ public class UGCV {
                 //cropWidth = (int) ((890.0 / 1280.0) * bitmap.getWidth());
                 //cropHeight = (int) ((165.0 / 720.0) * bitmap.getHeight());
                 cropStartX = (int) ((0.0 / 720.0) * bitmap.getWidth());
-                cropStartY = (int) ((80.0 / 480.0) * bitmap.getHeight());
-                cropWidth = (int) ((280.0 / 720.0) * bitmap.getWidth());
-                cropHeight = (int) ((90.0 / 480.0) * bitmap.getHeight());
+                cropStartY = (int) ((90.0 / 480.0) * bitmap.getHeight());
+                cropWidth = (int) ((260.0 / 720.0) * bitmap.getWidth());
+                cropHeight = (int) ((110.0 / 480.0) * bitmap.getHeight());
             }
 
             DbgLog.msg("XV scanning "
