@@ -53,7 +53,7 @@ public class GameTeleop extends UltimateGoalRobot {
     private boolean confirmElevatorUp = false;      //confirm elevator is up
     private boolean confirmElevatorDown = false;    //confirm elevator is down
     private boolean intakeServo = false;            //intake Servo activated
-
+    private int count = 0;
     //no rings down position = 9.2  //23.6CM
     //3 rings down position = 8.5   //22CM
     //3 rings up position = 2.65
@@ -122,6 +122,10 @@ public class GameTeleop extends UltimateGoalRobot {
         else if(getEnhancedGamepad2().isDpad_down()) {
             getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.IDLE);
         }
+        else if(getEnhancedGamepad2().isX()){
+            getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.SPEED4);
+
+        }
 
         if(getEnhancedGamepad2().isRightBumperLast()){
             getFlickerSubsystem().getStateMachine().updateState(FlickerStateMachine.State.HIT);
@@ -130,6 +134,7 @@ public class GameTeleop extends UltimateGoalRobot {
         }
         if (isFlicked && resetFlicker.milliseconds()>100){
             getFlickerSubsystem().getStateMachine().updateState(FlickerStateMachine.State.INIT);
+
         }
 
         //Auto, Elevator is up, check if we should move down, confirmation

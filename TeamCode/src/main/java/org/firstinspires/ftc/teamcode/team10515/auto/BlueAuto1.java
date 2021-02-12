@@ -52,12 +52,17 @@ public class BlueAuto1 extends LinearOpMode {
         WAIT3, //Wait before shooting
         ZONEA,
         WAIT4,
-        WAIT5
+        wobble2,
+        WAIT5,
+        GETRINGS,
+        INTAKE,
+        HIGHSHOT,
+        WAIT6
     }
 
     State currentState = State.IDLE;
 
-    Pose2d startPose = new Pose2d(-63, 19, Math.toRadians(0));
+    Pose2d startPose = new Pose2d(-60, 19, Math.toRadians(0));
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -72,7 +77,7 @@ public class BlueAuto1 extends LinearOpMode {
         drive.robot.getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.IDLE);
 
         Trajectory traj1 = drive.trajectoryBuilder(startPose)
-                .splineTo(new Vector2d(2, 18),Math.toRadians(5))
+                .splineTo(new Vector2d(2, 12),Math.toRadians(10))
                 .build();
         Trajectory traj2 = drive.trajectoryBuilder(traj1.end())
                 .strafeLeft(8)
@@ -98,9 +103,21 @@ public class BlueAuto1 extends LinearOpMode {
         Trajectory release = drive.trajectoryBuilder(zoneA.end())
                 .back(1)
                 .build();
+        Trajectory wobble2 = drive.trajectoryBuilder(zoneB.end(),true)
+                .splineTo(new Vector2d(-60,19),Math.toRadians(180))
+                .build();
+        Trajectory strafe = drive.trajectoryBuilder(wobble2.end())
+                .strafeLeft(18)
+                .build();
+        Trajectory forward = drive.trajectoryBuilder(strafe.end())
+                .forward(40)
+                .build();
+        Trajectory shootRing = drive.trajectoryBuilder(forward.end())
+                .splineTo(new Vector2d(2,48),Math.toRadians(10))
+                .build();
         waitForStart();
 
-        UGCV.numRings numRings = UGCV.numRings.FOUR;//drive.getRingsUsingImage(false);
+        UGCV.numRings numRings = drive.getRingsUsingImage(false);
         telemetry.addLine("Num Rings: "+ numRings);
         telemetry.update();
 
@@ -210,15 +227,16 @@ public class BlueAuto1 extends LinearOpMode {
                 case ZONEA:
                     if (!drive.isBusy()) {
                         drive.robot.getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.AUTODOWN);
+                        drive.robot.getPulleySubsystem().getStateMachine().updateState(PulleyStateMachine.State.DOWN);
                         goDown = true;
-                        if (elevatorUp) {
-                            drive.robot.getPulleySubsystem().getStateMachine().updateState(PulleyStateMachine.State.DOWN);
-                            elevatorUp = false;
-                        }
-                        if (shooterRunning) {
-                            drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.IDLE);
-                            shooterRunning = false;
-                        }
+//                        if (elevatorUp) {
+//                            drive.robot.getPulleySubsystem().getStateMachine().updateState(PulleyStateMachine.State.DOWN);
+//                            elevatorUp = false;
+//                        }
+//                        if (shooterRunning) {
+//                            drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.IDLE);
+//                            shooterRunning = false;
+//                        }
                         waitTimer.reset();
 //                        if (numRings == UGCV.numRings.ZERO){
 //                            currentState = State.WAIT5;
@@ -230,8 +248,8 @@ public class BlueAuto1 extends LinearOpMode {
                 case WAIT4:
                     if (waitTimer.milliseconds() >= 2000) {
                         if (numRings == UGCV.numRings.ONE) {
-                            currentState = State.IDLE;
-                            drive.followTrajectoryAsync(parkb);
+                            currentState = State.wobble2;
+                            drive.followTrajectoryAsync(wobble2);
                         }
                         else if(numRings == UGCV.numRings.FOUR){
                             currentState = State.IDLE;
@@ -243,12 +261,50 @@ public class BlueAuto1 extends LinearOpMode {
                         }
                     }
                     break;
-//                case WAIT5:
-//                    if (waitTimer.milliseconds() >= 1000) {
-//                        currentState = State.IDLE;
-//                        drive.followTrajectoryAsync(zoneA);
-//                    }
-//                    break;
+                case wobble2:
+                    if (!drive.isBusy()) {
+                        drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.IDLE);
+                        drive.robot.getPulleySubsystem().getStateMachine().updateState(PulleyStateMachine.State.DOWN);
+                        currentState = State.WAIT5;
+                        waitTimer.reset();
+                    }
+                    break;
+                case WAIT5:
+                    if(waitTimer.milliseconds() >= 500) {
+                        currentState = State.GETRINGS;
+                        drive.followTrajectoryAsync(strafe);
+                    }
+                    break;
+                case GETRINGS:
+                    if (!drive.isBusy()){
+                        drive.robot.getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.INTAKE);
+                        drive.robot.getPulleySubsystem().getStateMachine().updateState(PulleyStateMachine.State.DOWN);
+                        currentState = State.INTAKE;
+                        drive.followTrajectoryAsync(forward);
+                    }
+                    break;
+                case INTAKE:
+                    if(!drive.isBusy()){
+                        drive.robot.getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.IDLE);
+                        drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.SPEED1);
+                        drive.robot.getPulleySubsystem().getStateMachine().updateState(PulleyStateMachine.State.UP);
+                        drive.followTrajectoryAsync(shootRing);
+                        currentState = State.HIGHSHOT;
+
+                    }
+                    break;
+                case HIGHSHOT:
+                    if(!drive.isBusy()){
+                        drive.robot.getFlickerSubsystem().getStateMachine().updateState(FlickerStateMachine.State.HIT);
+                        currentState = State.WAIT6;
+                        waitTimer.reset();
+                    }
+                    break;
+                case WAIT6:
+                    if (waitTimer.milliseconds() >= 1000) {
+                        currentState = State.IDLE;
+                    }
+                    break;
                 case IDLE:
                     if (elevatorUp) {
                         drive.robot.getPulleySubsystem().getStateMachine().updateState(PulleyStateMachine.State.DOWN);
@@ -273,6 +329,8 @@ public class BlueAuto1 extends LinearOpMode {
             telemetry.addLine("Output"+drive.robot.getShooterSubsystem().getOutput());
             telemetry.addLine("Speed"+drive.robot.getShooterSubsystem().getState().getSpeed());
             telemetry.addLine("Velocity"+drive.robot.getShooterSubsystem().getShooterWheel1().getVelocity());
+            telemetry.addLine("Elevator up"+elevatorUp);
+
             telemetry.update();
         }
 

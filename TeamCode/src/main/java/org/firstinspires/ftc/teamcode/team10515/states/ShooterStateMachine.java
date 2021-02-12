@@ -18,9 +18,10 @@ public class ShooterStateMachine extends SimpleState<ShooterStateMachine.State>{
         //SPEED1("High Goal", 0.6d),
         //SPEED2("Pole Shots", 0.53d);
         //use mm/sec
-        SPEED1("High Goal", 26000d),
-        SPEED2("Pole Shots", 23000d),
-        SPEED3("Middle Goal", 21000d);
+        SPEED1("High Goal", 26000d),//26000
+        SPEED2("Pole Shots", 23000d ),//23000, //24000d
+        SPEED3("Middle Goal", 21000d),//21000
+        SPEED4("Testing",25000d);
 
         private final String name;
         private final double speed;
