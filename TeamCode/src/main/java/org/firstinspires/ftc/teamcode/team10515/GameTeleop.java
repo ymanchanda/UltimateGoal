@@ -62,19 +62,16 @@ public class GameTeleop extends UltimateGoalRobot {
     public double downThreshold = 4.45;
 
     public ElapsedTime resetFlicker = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
-    public ElapsedTime btnPressedRightBumper = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+    //public ElapsedTime btnPressedRightBumper = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
     public ElapsedTime doubleCheckUp = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
     public ElapsedTime doubleCheckDown = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
 
     //Wobble goal Forklift
-    public static final int alignPosition = 100;
-    public static final int topPosition = 480;
-    //private static final int threshold = 50;   //buffer of 50
-    public static final int maxPosition = 500; //max position
+    public static final int alignPosition = 650;
+    public static final int topPosition = 2050;
     public int lastEncoderTicks;
     public int currentEncoderTicks = 0;
-    public boolean tooHigh = false;
-    public boolean pastAlign = false;
+    public boolean pastAlign, pastTop = false;
 
     @Override
     public void start() {
@@ -121,10 +118,6 @@ public class GameTeleop extends UltimateGoalRobot {
         }
         else if(getEnhancedGamepad2().isDpad_down()) {
             getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.IDLE);
-        }
-        else if(getEnhancedGamepad2().isX()){
-            getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.SPEED4);
-
         }
 
         if(getEnhancedGamepad2().isRightBumperLast()){
@@ -203,35 +196,36 @@ public class GameTeleop extends UltimateGoalRobot {
 
     void WobbleGoalv2()
     {
-        //brake 1st time when it reaches align OR when it reaches the top
+        //brake 1st time when it reaches align
         if (reachedUpPosition(alignPosition) && !pastAlign) {
             getForkliftSubsystem().getForkliftMotor().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.IDLE);
             pastAlign = true;
         }
-        if (pastAlign && reachedUpPosition(maxPosition)) {
-            getForkliftSubsystem().getForkliftMotor().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.IDLE);
-        }
 
-        if (lastEncoderTicks - currentEncoderTicks > 0 && reachedUpPosition(topPosition)){
-            getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.HOLD);//Counteract weight of wobble goal
-            if (currentEncoderTicks < topPosition) {//Check if too low even after holding
-                getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.UP);
-            }
-        }
-
-        if (pastAlign && reachedDownPosition(alignPosition*2)) {
+        //brake if it was past align and went down past align + 20
+        if (pastAlign && reachedDownPosition(alignPosition+20)) {
             getForkliftSubsystem().getForkliftMotor().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.IDLE);
             pastAlign = false;      //reset pastAlign to false as it's down
-        } else if (reachedDownPosition(0)) {//Check if forklift has reached 0 position
+        }
+
+        if (reachedUpPosition(topPosition) && !pastTop) {
             getForkliftSubsystem().getForkliftMotor().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.IDLE);
+            pastTop = true;
+        }
+
+        if (reachedDownPosition(topPosition)) {
+            pastTop = false;
+        }
+
+        if (reachedDownPosition(50)) {
             getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.IDLE);
         }
 
         if (getEnhancedGamepad2().isbLast()) {
-            if (!reachedUpPosition(maxPosition))
+            if (!reachedUpPosition(topPosition))
                 getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.UP);
 
         } else if (getEnhancedGamepad2().isxLast()) {
