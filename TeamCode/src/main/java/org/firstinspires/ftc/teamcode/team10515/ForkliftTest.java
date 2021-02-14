@@ -1,3 +1,4 @@
+
 //package org.firstinspires.ftc.teamcode.team10515;
 //
 //import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -117,11 +118,9 @@ import org.firstinspires.ftc.teamcode.team10515.states.ForkliftStateMachine;
 //@Disabled
 public class ForkliftTest extends UltimateGoalRobot{
 
-    static final double COUNTS_PER_MOTOR_REV = 134.4;
+    static final double COUNTS_PER_MOTOR_REV = 2786.0;
     static final double DRIVE_GEAR_REDUCTION = 2;
     static final double DEGREES_PER_ENCODER_TICK = 360/(COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION);
-//    static final double WHEEL_DIAMETER_INCHES = 10.25 * 2; // Wobble Goal Mover Height
-//    static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * Math.PI);
 
     @Override
     public void start() {
@@ -129,10 +128,16 @@ public class ForkliftTest extends UltimateGoalRobot{
     }
 
     @Override
-    public void loop() {
-        super.loop();
+    public void init() {
+        super.init();
+        getForkliftSubsystem().getForkliftMotor().setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         getForkliftSubsystem().getForkliftMotor().setTargetPosition(getForkliftSubsystem().getForkliftMotor().getCurrentEncoderTicks() + (int)(90 * DEGREES_PER_ENCODER_TICK));
         getForkliftSubsystem().getForkliftMotor().setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    }
+
+    @Override
+    public void loop() {
+        super.loop();
         if(getForkliftSubsystem().getForkliftMotor().getCurrentEncoderTicks() > (int)(90/DEGREES_PER_ENCODER_TICK)) {
             getForkliftSubsystem().getForkliftMotor().setPower(0);
         }
