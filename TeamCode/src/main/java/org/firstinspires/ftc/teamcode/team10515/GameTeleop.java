@@ -68,7 +68,7 @@ public class GameTeleop extends UltimateGoalRobot {
 
     //Wobble goal Forklift
     public static final int alignPosition = 650;
-    public static final int topPosition = 2050;
+    public static final int topPosition = 2220;
     public int lastEncoderTicks;
     public int currentEncoderTicks = 0;
     public boolean pastAlign, pastTop = false;
