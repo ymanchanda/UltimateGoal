@@ -122,16 +122,20 @@ public class WobbleAuto extends LinearOpMode {
                 .build();
         waitForStart();
 
-        UGCV.numRings numRings = drive.getRingsUsingImage(false);
-        telemetry.addLine("Num Rings: "+ numRings);
+        waitTimer.reset();
+        UGCV.numRings numRingsDetected = drive.getRingsUsingImage(false);
+        numRingsDetected = drive.getRingsUsingImage(false);
+        telemetry.addLine("Num Rings: "+ numRingsDetected);
+        double CVTime = waitTimer.milliseconds();
+        telemetry.addLine("Milliseconds:" + CVTime);
         telemetry.update();
 
         if (isStopRequested()) return;
 
-        drive.robot.getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.AUTOUP);
-        drive.robot.getForkliftSubsystem().update(getDt());
-        wobbleTo = WobbleState.TOP;
-        currentState = State.WOBBLE;
+        //drive.robot.getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.AUTOUP);
+        //drive.robot.getForkliftSubsystem().update(getDt());
+        //wobbleTo = WobbleState.TOP;
+        currentState = State.IDLE;
 
         while (opModeIsActive() && !isStopRequested()) {
 //            if (!shooterRunning) {
@@ -161,9 +165,9 @@ public class WobbleAuto extends LinearOpMode {
                 case WAIT0:
                     if (waitTimer.milliseconds() >= 3000) {
                         currentState = State.WOBBLEDOWN;
-                        drive.robot.getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.AUTODOWN);
-                        drive.robot.getForkliftSubsystem().update(getDt());
-                        wobbleTo = WobbleState.ALIGN;
+                        //drive.robot.getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.AUTODOWN);
+                        //drive.robot.getForkliftSubsystem().update(getDt());
+                        //wobbleTo = WobbleState.ALIGN;
                         //drive.followTrajectoryAsync(traj1);
                     }
                     break;
@@ -220,12 +224,12 @@ public class WobbleAuto extends LinearOpMode {
                     // Check if the timer has exceeded the specified wait time
                     // If so, move on to the TURN_2 state
                     if (waitTimer.milliseconds() >= 1000) {
-                        if(numRings == UGCV.numRings.ZERO){
+                        if(numRingsDetected == UGCV.numRings.ZERO){
                             currentState = State.ZONEA;
                             drive.followTrajectoryAsync(zoneA);
 
                         }
-                        else if(numRings == UGCV.numRings.ONE){
+                        else if(numRingsDetected == UGCV.numRings.ONE){
                             currentState = State.ZONEA;
                             drive.followTrajectoryAsync(zoneB);
                         }
@@ -258,11 +262,11 @@ public class WobbleAuto extends LinearOpMode {
                     break;
                 case WAIT4:
                     if (waitTimer.milliseconds() >= 2000) {
-                        if (numRings == UGCV.numRings.ONE) {
+                        if (numRingsDetected == UGCV.numRings.ONE) {
                             currentState = State.wobble2;
                             drive.followTrajectoryAsync(wobble2);
                         }
-                        else if(numRings == UGCV.numRings.FOUR){
+                        else if(numRingsDetected == UGCV.numRings.FOUR){
                             currentState = State.IDLE;
                             drive.followTrajectoryAsync(parkC);
                         }
@@ -337,6 +341,8 @@ public class WobbleAuto extends LinearOpMode {
             drive.robot.getIntakeMotorSubsystem().update(getDt());
             WobbleGoal();
 
+            telemetry.addLine("# Rings"+numRingsDetected);
+            telemetry.addLine("Milliseconds:" + CVTime);
             telemetry.addLine("Output"+drive.robot.getShooterSubsystem().getOutput());
             telemetry.addLine("Speed"+drive.robot.getShooterSubsystem().getState().getSpeed());
             telemetry.addLine("Velocity"+drive.robot.getShooterSubsystem().getShooterWheel1().getVelocity());

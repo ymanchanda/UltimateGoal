@@ -38,6 +38,8 @@ import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigu
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
+import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.teamcode.drive.StandardTrackingWheelLocalizer;
 import org.firstinspires.ftc.teamcode.lib.drivers.Motor;
 import org.firstinspires.ftc.teamcode.lib.drivers.RevMotor;
@@ -92,11 +94,11 @@ public class UGBase extends MecanumDrive {
 
     public UGAutoRobot robot = new UGAutoRobot();
     private UGExpansionHubs expansionHubs;
-    private PulleySubsystem elevatorSubsystem;
-    private FlickerSubsystem flickerSubsystem;
-    private ShooterSubsystem shooterMotors;
-    private ForkliftSubsystem forkliftSubsystem;
-    private IntakeMotorSubsystem intakeMotorSubsystem;
+//    private PulleySubsystem elevatorSubsystem;
+//    private FlickerSubsystem flickerSubsystem;
+//    private ShooterSubsystem shooterMotors;
+//    private ForkliftSubsystem forkliftSubsystem;
+//    private IntakeMotorSubsystem intakeMotorSubsystem;
 
     public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(18, 0, 1);
     public static PIDCoefficients HEADING_PID = new PIDCoefficients(20, 0, 0);
@@ -525,7 +527,7 @@ public class UGBase extends MecanumDrive {
         UGCV ugvuforia = new UGCV(vuforia);
         UGCV.numRings position = UGCV.numRings.ZERO;
 
-        position = ugvuforia.GetPosition(true,red);
+        position = ugvuforia.GetPosition(false,red);
         return position;
     }
 
@@ -543,6 +545,7 @@ public class UGBase extends MecanumDrive {
 
         // Loading trackables is not necessary for the TensorFlow Object Detection engine.
     }
+
     public UGExpansionHubs getExpansionHubs() {
         return expansionHubs;
     }
