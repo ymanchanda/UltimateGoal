@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.lib.util.TimeProfiler;
 import org.firstinspires.ftc.teamcode.lib.util.TimeUnits;
+import org.firstinspires.ftc.teamcode.team10515.PoseStorage;
 import org.firstinspires.ftc.teamcode.team10515.states.FlickerStateMachine;
 import org.firstinspires.ftc.teamcode.team10515.states.ForkliftStateMachine;
 import org.firstinspires.ftc.teamcode.team10515.states.IntakeMotorStateMachine;
@@ -332,8 +333,9 @@ public class BlueAuto1 extends LinearOpMode {
             telemetry.addLine("Elevator up"+elevatorUp);
 
             telemetry.update();
-        }
-
+        } // end of while
+        drive.setMotorPowers(0.0,0.0,0.0,0.0);
+        PoseStorage.currentPose = drive.getPoseEstimate();
         /*
         if(numRings == UGCV.numRings.ZERO){
             Trajectory goToBase = drive.trajectoryBuilder(traj3.end())

@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.lib.util.TimeProfiler;
 import org.firstinspires.ftc.teamcode.lib.util.TimeUnits;
+import org.firstinspires.ftc.teamcode.team10515.PoseStorage;
 import org.firstinspires.ftc.teamcode.team10515.states.FlickerStateMachine;
 import org.firstinspires.ftc.teamcode.team10515.states.ForkliftStateMachine;
 import org.firstinspires.ftc.teamcode.team10515.states.IntakeMotorStateMachine;
@@ -139,7 +140,7 @@ public class RedAuto1 extends LinearOpMode {
                     break;
                 case WAIT0:
                     if (waitTimer.milliseconds() >= 3000) {
-                        currentState = State.TRAJ1;
+                        currentState = State.IDLE;
                         drive.followTrajectoryAsync(traj1);
                     }
                     break;
@@ -273,8 +274,9 @@ public class RedAuto1 extends LinearOpMode {
             telemetry.addLine("Speed"+drive.robot.getShooterSubsystem().getState().getSpeed());
             telemetry.addLine("Velocity"+drive.robot.getShooterSubsystem().getShooterWheel1().getVelocity());
             telemetry.update();
-        }
-
+        } //end of while
+        drive.setMotorPowers(0.0,0.0,0.0,0.0);
+        PoseStorage.currentPose = drive.getPoseEstimate();
         /*
         if(numRings == UGCV.numRings.ZERO){
             Trajectory goToBase = drive.trajectoryBuilder(traj3.end())

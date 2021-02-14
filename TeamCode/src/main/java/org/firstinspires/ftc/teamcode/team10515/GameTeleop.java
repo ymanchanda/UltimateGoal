@@ -234,8 +234,8 @@ public class GameTeleop extends UltimateGoalRobot {
             }
         }
 
-        lastEncoderTicks = currentEncoderTicks;
-        currentEncoderTicks = getForkliftSubsystem().getForkliftMotor().getCurrentEncoderTicks();
+//        lastEncoderTicks = currentEncoderTicks;
+//        currentEncoderTicks = getForkliftSubsystem().getForkliftMotor().getCurrentEncoderTicks();
 
     }
 
