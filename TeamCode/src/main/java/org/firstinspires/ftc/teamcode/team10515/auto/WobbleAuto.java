@@ -54,7 +54,7 @@ public class WobbleAuto extends LinearOpMode {
         WAIT1, //Wait before shooting
         WAIT2, //Wait before shooting
         WAIT3, //Wait before shooting
-        ZONEA,
+        GOTOZONE,
         WAIT4,
         wobble2,
         WAIT5,
@@ -135,7 +135,7 @@ public class WobbleAuto extends LinearOpMode {
         //drive.robot.getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.AUTOUP);
         //drive.robot.getForkliftSubsystem().update(getDt());
         //wobbleTo = WobbleState.TOP;
-        currentState = State.IDLE;
+        currentState = State.WOBBLE;
 
         while (opModeIsActive() && !isStopRequested()) {
 //            if (!shooterRunning) {
@@ -164,15 +164,16 @@ public class WobbleAuto extends LinearOpMode {
                     break;
                 case WAIT0:
                     if (waitTimer.milliseconds() >= 3000) {
-                        currentState = State.WOBBLEDOWN;
+                        //currentState = State.WOBBLEDOWN;
                         //drive.robot.getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.AUTODOWN);
                         //drive.robot.getForkliftSubsystem().update(getDt());
                         //wobbleTo = WobbleState.ALIGN;
-                        //drive.followTrajectoryAsync(traj1);
+                        currentState = State.TRAJ1;
+                        drive.followTrajectoryAsync(traj1);
                     }
                     break;
                 case WOBBLEDOWN:
-                    if (waitTimer.milliseconds() >= 3000) {
+                    if (waitTimer.milliseconds() >= 100) {
                         currentState = State.IDLE;
                     }
                     break;
@@ -225,23 +226,23 @@ public class WobbleAuto extends LinearOpMode {
                     // If so, move on to the TURN_2 state
                     if (waitTimer.milliseconds() >= 1000) {
                         if(numRingsDetected == UGCV.numRings.ZERO){
-                            currentState = State.ZONEA;
+                            currentState = State.GOTOZONE;
                             drive.followTrajectoryAsync(zoneA);
 
                         }
                         else if(numRingsDetected == UGCV.numRings.ONE){
-                            currentState = State.ZONEA;
+                            currentState = State.GOTOZONE;
                             drive.followTrajectoryAsync(zoneB);
                         }
                         else{
-                            currentState = State.ZONEA;
+                            currentState = State.GOTOZONE;
                             drive.followTrajectoryAsync(zoneC);
                         }
                     }
                     break;
-                case ZONEA:
+                case GOTOZONE:
                     if (!drive.isBusy()) {
-                        drive.robot.getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.AUTODOWN);
+                        //drive.robot.getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.AUTODOWN);
                         drive.robot.getPulleySubsystem().getStateMachine().updateState(PulleyStateMachine.State.DOWN);
                         goDown = true;
 //                        if (elevatorUp) {
@@ -257,7 +258,7 @@ public class WobbleAuto extends LinearOpMode {
 //                            currentState = State.WAIT5;
 //                        }
 //                        else
-                        currentState = State.WAIT4;
+                        currentState = State.IDLE;
                     }
                     break;
                 case WAIT4:
@@ -278,8 +279,8 @@ public class WobbleAuto extends LinearOpMode {
                     break;
                 case wobble2:
                     if (!drive.isBusy()) {
-                        drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.IDLE);
-                        drive.robot.getPulleySubsystem().getStateMachine().updateState(PulleyStateMachine.State.DOWN);
+                        //drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.IDLE);
+                        //drive.robot.getPulleySubsystem().getStateMachine().updateState(PulleyStateMachine.State.DOWN);
                         currentState = State.WAIT5;
                         waitTimer.reset();
                     }
@@ -347,6 +348,7 @@ public class WobbleAuto extends LinearOpMode {
             telemetry.addLine("Speed"+drive.robot.getShooterSubsystem().getState().getSpeed());
             telemetry.addLine("Velocity"+drive.robot.getShooterSubsystem().getShooterWheel1().getVelocity());
             telemetry.addLine("Elevator up"+elevatorUp);
+            telemetry.addLine("Pose Estimate:"+drive.getPoseEstimate().getX()+","+drive.getPoseEstimate().getY()+", "+drive.getPoseEstimate().getHeading() );
 
             telemetry.update();
         } //end of while
