@@ -130,7 +130,7 @@ public class autoTeleop extends UGTeleOpRobot {
                     // We switch the state to AUTOMATIC_CONTROL
 
                     Trajectory traj1 = drive.trajectoryBuilder(poseEstimate)
-                            .splineTo(targetHGVector, targetHGHeading)
+                            .splineToConstantHeading(targetHGVector, targetHGHeading)
                             .build();
 
                     drive.followTrajectoryAsync(traj1);
@@ -271,7 +271,7 @@ public class autoTeleop extends UGTeleOpRobot {
         }
 
         //brake if it was past align and went down past align + 20
-        if (pastAlign && reachedDownPosition(alignPosition+20)) {
+        if (pastAlign && reachedDownPosition(alignPosition + 20)) {
             drive.robot.getForkliftSubsystem().getForkliftMotor().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             drive.robot.getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.IDLE);
             pastAlign = false;      //reset pastAlign to false as it's down

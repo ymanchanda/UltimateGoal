@@ -20,8 +20,8 @@ import org.firstinspires.ftc.teamcode.team10515.states.ShooterStateMachine;
 /*
  * This is an example of a more complex path to really test the tuning.
  */
-@Autonomous(name= "Wobble Auto", group = "drive")
-public class WobbleAuto extends LinearOpMode {
+@Autonomous(name= "Test Odo", group = "drive")
+public class TestOdo extends LinearOpMode {
     UGBase drive;
     private static double dt;
     private static TimeProfiler updateRuntime;
@@ -170,6 +170,8 @@ public class WobbleAuto extends LinearOpMode {
                         //wobbleTo = WobbleState.ALIGN;
                         currentState = State.TRAJ1;
                         drive.followTrajectoryAsync(traj1);
+//                        drive.robot.getPulleySubsystem().getStateMachine().updateState(PulleyStateMachine.State.UP);
+//                        drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.SPEED1);
                     }
                     break;
                 case WOBBLEDOWN:
@@ -258,7 +260,7 @@ public class WobbleAuto extends LinearOpMode {
 //                            currentState = State.WAIT5;
 //                        }
 //                        else
-                        currentState = State.IDLE;
+                        currentState = State.WAIT4;
                     }
                     break;
                 case WAIT4:

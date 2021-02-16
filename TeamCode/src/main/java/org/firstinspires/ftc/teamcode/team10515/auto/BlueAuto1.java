@@ -3,11 +3,16 @@ package org.firstinspires.ftc.teamcode.team10515.auto;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
+import com.acmerobotics.roadrunner.trajectory.constraints.AngularVelocityConstraint;
+import com.acmerobotics.roadrunner.trajectory.constraints.MecanumVelocityConstraint;
+import com.acmerobotics.roadrunner.trajectory.constraints.MinVelocityConstraint;
+import com.acmerobotics.roadrunner.trajectory.constraints.ProfileAccelerationConstraint;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.lib.util.TimeProfiler;
 import org.firstinspires.ftc.teamcode.lib.util.TimeUnits;
 import org.firstinspires.ftc.teamcode.team10515.PoseStorage;
@@ -16,6 +21,8 @@ import org.firstinspires.ftc.teamcode.team10515.states.ForkliftStateMachine;
 import org.firstinspires.ftc.teamcode.team10515.states.IntakeMotorStateMachine;
 import org.firstinspires.ftc.teamcode.team10515.states.PulleyStateMachine;
 import org.firstinspires.ftc.teamcode.team10515.states.ShooterStateMachine;
+
+import java.util.Arrays;
 
 /*
  * This is an example of a more complex path to really test the tuning.
@@ -34,7 +41,15 @@ public class BlueAuto1 extends LinearOpMode {
     public int currentEncoderTicks = 0;
     public static final int topPosition = 430;
     public static final int maxPosition = 450; //max position
+    public static final int topPosition2 = 2020;
+    public static final int alignPosition = 1000;
+    enum WobbleState {
+        ZERO,
+        ALIGN,
+        TOP
+    }
 
+    TestOdo.WobbleState wobbleTo = TestOdo.WobbleState.ZERO;
     ElapsedTime flickerTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
     ElapsedTime waitTimer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
 
@@ -51,14 +66,18 @@ public class BlueAuto1 extends LinearOpMode {
         WAIT1, //Wait before shooting
         WAIT2, //Wait before shooting
         WAIT3, //Wait before shooting
-        ZONEA,
+        GOTOZONE,
         WAIT4,
+        MIDPOINT,
+        WAIT7,
         wobble2,
         WAIT5,
         GETRINGS,
+        WAIT8,
         INTAKE,
         HIGHSHOT,
-        WAIT6
+        WAIT6,
+
     }
 
     State currentState = State.IDLE;
@@ -107,11 +126,23 @@ public class BlueAuto1 extends LinearOpMode {
         Trajectory wobble2 = drive.trajectoryBuilder(zoneB.end(),true)
                 .splineTo(new Vector2d(-60,19),Math.toRadians(180))
                 .build();
+        Trajectory midpoint = drive.trajectoryBuilder(zoneC.end(),true)
+                .splineTo(new Vector2d(-12,19),Math.toRadians(180))
+                .build();
+        Trajectory wobble2C = drive.trajectoryBuilder(midpoint.end(),true)
+                .splineTo(new Vector2d(-60,19),Math.toRadians(170))
+                .build();
         Trajectory strafe = drive.trajectoryBuilder(wobble2.end())
                 .strafeLeft(18)
                 .build();
         Trajectory forward = drive.trajectoryBuilder(strafe.end())
                 .forward(40)
+                .build();
+        Trajectory forwardc = drive.trajectoryBuilder(strafe.end())
+                .forward(50)
+                .build();
+        Trajectory back = drive.trajectoryBuilder(forwardc.end())
+                .back(20)
                 .build();
         Trajectory shootRing = drive.trajectoryBuilder(forward.end())
                 .splineTo(new Vector2d(2,48),Math.toRadians(10))
@@ -211,21 +242,21 @@ public class BlueAuto1 extends LinearOpMode {
                     // If so, move on to the TURN_2 state
                     if (waitTimer.milliseconds() >= 1000) {
                         if(numRings == UGCV.numRings.ZERO){
-                            currentState = State.ZONEA;
+                            currentState = State.GOTOZONE;
                             drive.followTrajectoryAsync(zoneA);
 
                         }
                         else if(numRings == UGCV.numRings.ONE){
-                            currentState = State.ZONEA;
+                            currentState = State.GOTOZONE;
                             drive.followTrajectoryAsync(zoneB);
                         }
                         else{
-                            currentState = State.ZONEA;
+                            currentState = State.GOTOZONE;
                             drive.followTrajectoryAsync(zoneC);
                         }
                     }
                     break;
-                case ZONEA:
+                case GOTOZONE:
                     if (!drive.isBusy()) {
                         drive.robot.getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.AUTODOWN);
                         drive.robot.getPulleySubsystem().getStateMachine().updateState(PulleyStateMachine.State.DOWN);
@@ -253,13 +284,27 @@ public class BlueAuto1 extends LinearOpMode {
                             drive.followTrajectoryAsync(wobble2);
                         }
                         else if(numRings == UGCV.numRings.FOUR){
-                            currentState = State.IDLE;
-                            drive.followTrajectoryAsync(parkC);
+                            currentState = State.MIDPOINT;
+                            drive.followTrajectoryAsync(midpoint);
                         }
                         else{
                             currentState = State.IDLE;
                             drive.followTrajectoryAsync(release);
                         }
+                    }
+                    break;
+                case MIDPOINT:
+                    if (!drive.isBusy()) {
+                        currentState = State.WAIT7;
+                        waitTimer.reset();
+                    }
+                    break;
+                case WAIT7:
+                    // Check if the timer has exceeded the specified wait time
+                    // If so, move on to the TURN_2 state
+                    if (waitTimer.milliseconds() >= 500) {
+                        currentState = State.wobble2;
+                        drive.followTrajectoryAsync(wobble2C);
                     }
                     break;
                 case wobble2:
@@ -278,10 +323,24 @@ public class BlueAuto1 extends LinearOpMode {
                     break;
                 case GETRINGS:
                     if (!drive.isBusy()){
-                        drive.robot.getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.INTAKE);
-                        drive.robot.getPulleySubsystem().getStateMachine().updateState(PulleyStateMachine.State.DOWN);
-                        currentState = State.INTAKE;
-                        drive.followTrajectoryAsync(forward);
+                        if (numRings == UGCV.numRings.ONE){
+                            drive.robot.getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.INTAKE);
+                            drive.robot.getPulleySubsystem().getStateMachine().updateState(PulleyStateMachine.State.DOWN);
+                            currentState = State.INTAKE;
+                            drive.followTrajectoryAsync(forward);
+                        }
+                        else{
+                            drive.robot.getPulleySubsystem().getStateMachine().updateState(PulleyStateMachine.State.DOWN);
+                            currentState = State.WAIT8;
+                            drive.followTrajectoryAsync(forwardc);
+                            waitTimer.reset();
+                        }
+                    }
+                    break;
+                case WAIT8:
+                    if (waitTimer.milliseconds() >= 200){
+                        currentState = State.IDLE;
+                        drive.followTrajectoryAsync(back);
                     }
                     break;
                 case INTAKE:
@@ -302,8 +361,10 @@ public class BlueAuto1 extends LinearOpMode {
                     }
                     break;
                 case WAIT6:
-                    if (waitTimer.milliseconds() >= 1000) {
+                    if (waitTimer.milliseconds() >= 500) {
                         currentState = State.IDLE;
+                        drive.robot.getFlickerSubsystem().getStateMachine().updateState(FlickerStateMachine.State.INIT);
+
                     }
                     break;
                 case IDLE:
