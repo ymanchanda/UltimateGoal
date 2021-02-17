@@ -144,7 +144,7 @@ public class autoTeleop extends UGTeleOpRobot {
                     drive.followTrajectoryAsync(wobbleGoalPosition);
                     drive.robot.getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.DOWN);
                     currentMode = Mode.AUTOMATIC_CONTROL;
-                }
+                } //hi
                 break;
             case AUTOMATIC_CONTROL:
                 // If x is pressed, we break out of the automatic following
