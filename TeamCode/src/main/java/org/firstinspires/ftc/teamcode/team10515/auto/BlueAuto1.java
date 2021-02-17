@@ -68,6 +68,12 @@ public class BlueAuto1 extends LinearOpMode {
         WAIT3, //Wait before shooting
         GOTOZONE,
         WAIT4,
+        RINGDETECTION,
+        BLINDFOLLOW,
+        RETURN,
+        SHOOT,
+        WAIT9,
+        WAIT10,
         MIDPOINT,
         WAIT7,
         wobble2,
@@ -75,6 +81,15 @@ public class BlueAuto1 extends LinearOpMode {
         GETRINGS,
         WAIT8,
         INTAKE,
+        RING1,
+        WAITR1,
+        WAITR2,
+        RING2,
+        RING3,
+        WAITSHOT1,
+        WAITSHOT2,
+        WAITSHOT3,
+        WAITFINAL,
         HIGHSHOT,
         WAIT6,
 
@@ -114,9 +129,6 @@ public class BlueAuto1 extends LinearOpMode {
         Trajectory zoneC = drive.trajectoryBuilder(traj3.end())
                 .splineToConstantHeading(new Vector2d(47,54),Math.toRadians(0))
                 .build();
-        Trajectory parkb = drive.trajectoryBuilder(zoneB.end())
-                .back(24)
-                .build();
         Trajectory parkC = drive.trajectoryBuilder(zoneC.end())
                 .back(36)
                 .build();
@@ -130,7 +142,7 @@ public class BlueAuto1 extends LinearOpMode {
                 .splineTo(new Vector2d(-12,19),Math.toRadians(180))
                 .build();
         Trajectory wobble2C = drive.trajectoryBuilder(midpoint.end(),true)
-                .splineTo(new Vector2d(-60,19),Math.toRadians(170))
+                .splineTo(new Vector2d(-60,19),Math.toRadians(180))
                 .build();
         Trajectory strafe = drive.trajectoryBuilder(wobble2.end())
                 .strafeLeft(18)
@@ -145,11 +157,54 @@ public class BlueAuto1 extends LinearOpMode {
                 .back(20)
                 .build();
         Trajectory shootRing = drive.trajectoryBuilder(forward.end())
-                .splineTo(new Vector2d(2,48),Math.toRadians(10))
+                .splineTo(new Vector2d(2,48),Math.toRadians(0))
+                .build();
+        Trajectory ringdetection = drive.trajectoryBuilder(release.end())
+                .splineTo(new Vector2d(54,60),Math.toRadians(-80))
+                .build();
+        Trajectory blindforward = drive.trajectoryBuilder(ringdetection.end())
+                .forward(55)
+                .build();
+        Trajectory parkb = drive.trajectoryBuilder(shootRing.end())
+                .forward(10)
+                .build();
+        Trajectory returntoshotpos = drive.trajectoryBuilder(blindforward.end())
+                .splineTo(new Vector2d(-8,40),Math.toRadians(20))
+                .build();
+        Trajectory ring1 = drive.trajectoryBuilder(back.end())
+                .forward(9, new MinVelocityConstraint(
+                                Arrays.asList(
+                                        new AngularVelocityConstraint(DriveConstants.MAX_ANG_VEL),
+                                        new MecanumVelocityConstraint(15, DriveConstants.TRACK_WIDTH)
+                                )
+                        ),
+                        new ProfileAccelerationConstraint(DriveConstants.MAX_ACCEL)
+                )
+                .build();
+        Trajectory ring2 = drive.trajectoryBuilder(ring1.end())
+                .forward(9,
+                        new MinVelocityConstraint(
+                                Arrays.asList(
+                                        new AngularVelocityConstraint(DriveConstants.MAX_ANG_VEL),
+                                        new MecanumVelocityConstraint(15, DriveConstants.TRACK_WIDTH)
+                                )
+                        ),
+                        new ProfileAccelerationConstraint(DriveConstants.MAX_ACCEL)
+                )
+                .build();
+        Trajectory ring3 = drive.trajectoryBuilder(ring2.end())
+                .forward(9, new MinVelocityConstraint(
+                                Arrays.asList(
+                                        new AngularVelocityConstraint(DriveConstants.MAX_ANG_VEL),
+                                        new MecanumVelocityConstraint(15, DriveConstants.TRACK_WIDTH)
+                                )
+                        ),
+                        new ProfileAccelerationConstraint(DriveConstants.MAX_ACCEL)
+                )
                 .build();
         waitForStart();
 
-        UGCV.numRings numRings = UGCV.numRings.FOUR;//drive.getRingsUsingImage(false);
+        UGCV.numRings numRings = drive.getRingsUsingImage(false);
         telemetry.addLine("Num Rings: "+ numRings);
         telemetry.update();
 
@@ -188,7 +243,7 @@ public class BlueAuto1 extends LinearOpMode {
                     }
                     break;
                 case WAIT0:
-                    if (waitTimer.milliseconds() >= 3000) {
+                    if (waitTimer.milliseconds() >= 1500) {
                         currentState = State.TRAJ1;
                         drive.followTrajectoryAsync(traj1);
                     }
@@ -205,7 +260,7 @@ public class BlueAuto1 extends LinearOpMode {
                 case WAIT1:
                     // Check if the timer has exceeded the specified wait time
                     // If so, move on to the TURN_2 state
-                    if (waitTimer.milliseconds() >= 500) {
+                    if (waitTimer.milliseconds() >= 200) {
                         currentState = State.TRAJ2;
                         drive.followTrajectoryAsync(traj2);
                     }
@@ -222,7 +277,7 @@ public class BlueAuto1 extends LinearOpMode {
                 case WAIT2:
                     // Check if the timer has exceeded the specified wait time
                     // If so, move on to the TURN_2 state
-                    if (waitTimer.milliseconds() >= 500) {
+                    if (waitTimer.milliseconds() >= 200) {
                         currentState = State.TRAJ3;
                         drive.followTrajectoryAsync(traj3);
                     }
@@ -278,19 +333,65 @@ public class BlueAuto1 extends LinearOpMode {
                     }
                     break;
                 case WAIT4:
-                    if (waitTimer.milliseconds() >= 2000) {
+                    if (waitTimer.milliseconds() >= 1500) {
                         if (numRings == UGCV.numRings.ONE) {
                             currentState = State.wobble2;
                             drive.followTrajectoryAsync(wobble2);
                         }
                         else if(numRings == UGCV.numRings.FOUR){
                             currentState = State.MIDPOINT;
+                            drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.IDLE);
                             drive.followTrajectoryAsync(midpoint);
                         }
                         else{
-                            currentState = State.IDLE;
+                            currentState = State.RINGDETECTION;
                             drive.followTrajectoryAsync(release);
                         }
+                    }
+                    break;
+                case RINGDETECTION:
+                    if (!drive.isBusy()) {
+                        drive.followTrajectoryAsync(ringdetection);
+                        drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.IDLE);
+                        currentState = State.BLINDFOLLOW;
+                    }
+                    break;
+                case BLINDFOLLOW:
+                    if (!drive.isBusy()) {
+                        drive.followTrajectoryAsync(blindforward);
+                        currentState = State.RETURN;
+                    }
+                    break;
+                case RETURN:
+                    if (!drive.isBusy()) {
+                        drive.followTrajectoryAsync(returntoshotpos);
+                        currentState = State.SHOOT;
+                    }
+                    break;
+                case SHOOT:
+                    if (!drive.isBusy()) {
+                        drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.SPEED1);
+                        drive.robot.getPulleySubsystem().getStateMachine().updateState(PulleyStateMachine.State.UP);
+                        currentState = State.WAIT9;
+                        waitTimer.reset();
+                }
+                break;
+                case WAIT9:
+                    if(waitTimer.milliseconds() >= 600){
+                        drive.robot.getFlickerSubsystem().getStateMachine().updateState(FlickerStateMachine.State.HIT);
+                        flickerchange = true;
+                        flickerTime.reset();
+                        currentState = State.WAIT10;
+                        waitTimer.reset();
+                    }
+                    break;
+                case WAIT10:
+                    if(waitTimer.milliseconds() >= 600){
+                        drive.robot.getFlickerSubsystem().getStateMachine().updateState(FlickerStateMachine.State.HIT);
+                        flickerchange = true;
+                        flickerTime.reset();
+                        currentState = State.IDLE;
+                        waitTimer.reset();
                     }
                     break;
                 case MIDPOINT:
@@ -302,21 +403,20 @@ public class BlueAuto1 extends LinearOpMode {
                 case WAIT7:
                     // Check if the timer has exceeded the specified wait time
                     // If so, move on to the TURN_2 state
-                    if (waitTimer.milliseconds() >= 500) {
+                    if (waitTimer.milliseconds() >= 100) {
                         currentState = State.wobble2;
                         drive.followTrajectoryAsync(wobble2C);
                     }
                     break;
                 case wobble2:
                     if (!drive.isBusy()) {
-                        drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.IDLE);
                         drive.robot.getPulleySubsystem().getStateMachine().updateState(PulleyStateMachine.State.DOWN);
                         currentState = State.WAIT5;
                         waitTimer.reset();
                     }
                     break;
                 case WAIT5:
-                    if(waitTimer.milliseconds() >= 500) {
+                    if(waitTimer.milliseconds() >= 200) {
                         currentState = State.GETRINGS;
                         drive.followTrajectoryAsync(strafe);
                     }
@@ -326,6 +426,7 @@ public class BlueAuto1 extends LinearOpMode {
                         if (numRings == UGCV.numRings.ONE){
                             drive.robot.getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.INTAKE);
                             drive.robot.getPulleySubsystem().getStateMachine().updateState(PulleyStateMachine.State.DOWN);
+
                             currentState = State.INTAKE;
                             drive.followTrajectoryAsync(forward);
                         }
@@ -338,9 +439,76 @@ public class BlueAuto1 extends LinearOpMode {
                     }
                     break;
                 case WAIT8:
-                    if (waitTimer.milliseconds() >= 200){
-                        currentState = State.IDLE;
+                    if (waitTimer.milliseconds() >= 500){
+                        currentState = State.RING1;
                         drive.followTrajectoryAsync(back);
+                    }
+                    break;
+                case RING1:
+                    if(!drive.isBusy()){
+                        drive.followTrajectoryAsync(ring1);
+                        currentState = State.WAITR1;
+                        waitTimer.reset();
+                    }
+                    break;
+                case WAITR1:
+                    if (waitTimer.milliseconds() >= 500){
+                        currentState = State.RING2;
+                        drive.followTrajectoryAsync(ring2);
+
+                    }
+                    break;
+                case RING2:
+                    if(!drive.isBusy()){
+                        currentState = State.WAITR2;
+                        waitTimer.reset();
+                    }
+                    break;
+                case WAITR2:
+                    if (waitTimer.milliseconds() >= 500){
+                        currentState = State.RING3;
+                        drive.followTrajectoryAsync(ring3);
+
+                    }
+                    break;
+                case RING3:
+                    if(!drive.isBusy()){
+                        drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.BACKSHOT);
+                        drive.robot.getPulleySubsystem().getStateMachine().updateState(PulleyStateMachine.State.UP);
+                        currentState = State.WAITSHOT1;
+                        waitTimer.reset();
+                    }
+                    break;
+                case WAITSHOT1:
+                    if(waitTimer.milliseconds() >= 600){
+                        drive.robot.getFlickerSubsystem().getStateMachine().updateState(FlickerStateMachine.State.HIT);
+                        flickerchange = true;
+                        flickerTime.reset();
+                        currentState = State.WAITSHOT2;
+                        waitTimer.reset();
+                    }
+                    break;
+                case WAITSHOT2:
+                    if(waitTimer.milliseconds() >= 1000){
+                        drive.robot.getFlickerSubsystem().getStateMachine().updateState(FlickerStateMachine.State.HIT);
+                        flickerchange = true;
+                        flickerTime.reset();
+                        currentState = State.WAITSHOT3;
+                        waitTimer.reset();
+                    }
+                    break;
+                case WAITSHOT3:
+                    if(waitTimer.milliseconds() >= 1000){
+                        drive.robot.getFlickerSubsystem().getStateMachine().updateState(FlickerStateMachine.State.HIT);
+                        flickerchange = true;
+                        flickerTime.reset();
+                        currentState = State.WAITFINAL;
+                        waitTimer.reset();
+                    }
+                    break;
+                case WAITFINAL:
+                    if(waitTimer.milliseconds() >= 1000){
+                        currentState = State.IDLE;
                     }
                     break;
                 case INTAKE:
@@ -362,6 +530,7 @@ public class BlueAuto1 extends LinearOpMode {
                     break;
                 case WAIT6:
                     if (waitTimer.milliseconds() >= 500) {
+                        drive.followTrajectoryAsync(parkb);
                         currentState = State.IDLE;
                         drive.robot.getFlickerSubsystem().getStateMachine().updateState(FlickerStateMachine.State.INIT);
 
