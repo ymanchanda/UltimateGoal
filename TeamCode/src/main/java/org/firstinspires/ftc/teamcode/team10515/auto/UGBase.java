@@ -531,7 +531,7 @@ public class UGBase extends MecanumDrive {
         UGCV ugvuforia = new UGCV(vuforia);
         UGCV.numRings position = UGCV.numRings.ZERO;
 
-        position = ugvuforia.GetPosition(false,red);
+        position = ugvuforia.GetPosition(true,red);
         return position;
     }
 

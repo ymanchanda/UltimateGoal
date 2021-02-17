@@ -85,7 +85,7 @@ public class autoTeleop extends UGTeleOpRobot {
 
     // The coordinates we want the bot to automatically go to when we press the A button
     Vector2d highShotVector = new Vector2d(2, 40);
-    Pose2d wobbleGoalDepositPose = new Pose2d(-60, 48, 270);
+    Vector2d wobbleGoalDepositVector = new Vector2d(-60, 48);
     // The heading we want the bot to end on for targetA
     double highShotHeading = Math.toRadians(10);
 
@@ -139,7 +139,7 @@ public class autoTeleop extends UGTeleOpRobot {
                 }
                 if(getEnhancedGamepad1().isyLast()){
                     Trajectory wobbleGoalPosition = drive.trajectoryBuilder(poseEstimate)
-                            .splineToLinearHeading(wobbleGoalDepositPose,Math.toRadians(0))
+                            .splineTo(wobbleGoalDepositVector, Math.toRadians(270))
                             .build();
                     drive.followTrajectoryAsync(wobbleGoalPosition);
                     drive.robot.getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.DOWN);

@@ -149,7 +149,7 @@ public class BlueAuto1 extends LinearOpMode {
                 .build();
         waitForStart();
 
-        UGCV.numRings numRings = drive.getRingsUsingImage(false);
+        UGCV.numRings numRings = UGCV.numRings.FOUR;//drive.getRingsUsingImage(false);
         telemetry.addLine("Num Rings: "+ numRings);
         telemetry.update();
 
