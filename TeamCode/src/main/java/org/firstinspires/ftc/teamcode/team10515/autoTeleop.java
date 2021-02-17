@@ -84,9 +84,10 @@ public class autoTeleop extends UGTeleOpRobot {
     Mode currentMode = Mode.DRIVER_CONTROL;
 
     // The coordinates we want the bot to automatically go to when we press the A button
-    Vector2d targetHGVector = new Vector2d(2, 40);
+    Vector2d highShotVector = new Vector2d(2, 40);
+    Pose2d wobbleGoalDepositPose = new Pose2d(-60, 48, 270);
     // The heading we want the bot to end on for targetA
-    double targetHGHeading = Math.toRadians(10);
+    double highShotHeading = Math.toRadians(10);
 
     @Override
     public void init() {
@@ -129,11 +130,19 @@ public class autoTeleop extends UGTeleOpRobot {
                     // trajectory on the fly and follow it
                     // We switch the state to AUTOMATIC_CONTROL
 
-                    Trajectory traj1 = drive.trajectoryBuilder(poseEstimate)
-                            .splineToConstantHeading(targetHGVector, targetHGHeading)
+                    Trajectory highShotPosition = drive.trajectoryBuilder(poseEstimate)
+                            .splineToConstantHeading(highShotVector, highShotHeading)
                             .build();
 
-                    drive.followTrajectoryAsync(traj1);
+                    drive.followTrajectoryAsync(highShotPosition);
+                    currentMode = Mode.AUTOMATIC_CONTROL;
+                }
+                if(getEnhancedGamepad1().isyLast()){
+                    Trajectory wobbleGoalPosition = drive.trajectoryBuilder(poseEstimate)
+                            .splineToLinearHeading(wobbleGoalDepositPose,Math.toRadians(0))
+                            .build();
+                    drive.followTrajectoryAsync(wobbleGoalPosition);
+                    drive.robot.getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.DOWN);
                     currentMode = Mode.AUTOMATIC_CONTROL;
                 }
                 break;
