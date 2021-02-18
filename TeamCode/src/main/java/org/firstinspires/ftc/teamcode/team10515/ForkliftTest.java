@@ -3,27 +3,18 @@ package org.firstinspires.ftc.teamcode.team10515;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.lib.drivers.RevMotor;
-import org.firstinspires.ftc.teamcode.team10515.control.ForkliftAngle;
+import org.firstinspires.ftc.teamcode.team10515.states.ForkliftStateMachine2;
+
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 @TeleOp(name = "Wobble Goal", group = "Test")
 public class ForkliftTest extends UltimateGoalRobot{
-    public ForkliftAngle f;
-
-    public double angle0 = 0;
-    public double angle1 = 45;
-    public double angle2 = 155;
-
     public RevMotor forkliftMotor;
 
-    public ElapsedTime btnPressedA;
+    public ElapsedTime btnPressedB; //Regular button
+    public ElapsedTime btnPressedX; //Override button (Sets state to DOWN)
 
-    public boolean nextState = false;
-    public boolean goingDown = false;
-
-    public int currentEncoderTicks = 0;
-    public double power = 0;
-    public double currentAngle;
+    public ForkliftStateMachine2.State currentState;
 
     @Override
     public void start() {
@@ -33,58 +24,57 @@ public class ForkliftTest extends UltimateGoalRobot{
     @Override
     public void init() {
         super.init();
-        forkliftMotor = getForkliftSubsystem().getForkliftMotor();
-        btnPressedA = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
-        f = new ForkliftAngle(0.15, 0.6, 0.7);
-        f.setAngle(angle0);
+        forkliftMotor = getForkliftSubsystem2().getForkliftMotor();
+        btnPressedB = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+        btnPressedX = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+        currentState = ForkliftStateMachine2.State.DOWN;
     }
 
     @Override
     public void loop() {
         super.loop();
-        getEnhancedGamepad1().update();
-        if(getEnhancedGamepad1().isA() && btnPressedA.milliseconds() > 250){
-            btnPressedA.reset();
+
+        if(getEnhancedGamepad1().isB() && btnPressedB.milliseconds() > 250){
+            btnPressedB.reset();
             forkliftMotor.setPower(0);
-            nextState = true;
+            WobbleGoalV3(true);
+        }
+        else if(getEnhancedGamepad1().isX() && btnPressedX.milliseconds() > 250){
+            btnPressedX.reset();
+            forkliftMotor.setPower(0);
+            WobbleGoalV3(false);
         }
 
-        if(nextState){
-            nextState = false;
-            if(currentAngle < angle1 && !goingDown){
-                goingDown = false;
-                f.setAngle(currentAngle, angle1);
-                telemetry.addLine("1");
-            }
-            else if(currentAngle >= angle1 && currentAngle < angle2 && !goingDown){
-                f.setAngle(currentAngle, angle2);
-                goingDown = true;
-                telemetry.addLine("2");
-            }
-            else if(currentAngle >= angle2 && goingDown){
-                f.setAngle(currentAngle, angle1);
-                goingDown = true;
-                telemetry.addLine("3");
-            }
-            else if(currentAngle <= angle1 && currentAngle > angle0 && goingDown){
-                f.setAngle(currentAngle, angle0);
-                goingDown = false;
-                telemetry.addLine("4");
-            }
-        }
-
-        currentEncoderTicks = forkliftMotor.getCurrentEncoderTicks();
-        power = f.getSpeed(currentEncoderTicks);
-        currentAngle = f.getAngle(currentEncoderTicks);
-
-        forkliftMotor.setPower(power);
-
-        telemetry.addLine("Encoder ticks: " + currentEncoderTicks);
-        telemetry.addLine("Angle: " + currentAngle);
-        telemetry.addLine("Power: " + power);
-        telemetry.addLine("Going down?: " + goingDown);
         telemetry.update();
+        getEnhancedGamepad1().update();
 
+    }
+
+    public void WobbleGoalV3(boolean nextState){
+        if(nextState){
+            switch (currentState) {
+                case DOWN:
+                    telemetry.addLine("1");
+                    currentState = ForkliftStateMachine2.State.ALIGN_UP;
+                    break;
+                case ALIGN_UP:
+                    telemetry.addLine("2");
+                    currentState = ForkliftStateMachine2.State.UP;
+                    break;
+                case UP:
+                    telemetry.addLine("3");
+                    currentState = ForkliftStateMachine2.State.ALIGN_DOWN;
+                    break;
+                case ALIGN_DOWN:
+                    telemetry.addLine("2");
+                    currentState = ForkliftStateMachine2.State.DOWN;
+                    break;
+            }
+        }
+        else{
+            currentState = ForkliftStateMachine2.State.DOWN;
+        }
+        getForkliftSubsystem2().getStateMachine().updateState(currentState);
     }
 
 }

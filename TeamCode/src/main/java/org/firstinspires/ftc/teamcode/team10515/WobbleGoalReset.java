@@ -19,12 +19,12 @@ public class WobbleGoalReset extends UltimateGoalRobot{
         super.loop();
         getEnhancedGamepad1().update();
         while(getEnhancedGamepad1().isA()){
-            getForkliftSubsystem().getForkliftMotor().setPower(-0.35);
+            getForkliftSubsystem2().getForkliftMotor().setPower(-0.35);
         }
         while(getEnhancedGamepad1().isY()){
-            getForkliftSubsystem().getForkliftMotor().setPower(0.35);
+            getForkliftSubsystem2().getForkliftMotor().setPower(0.35);
         }
-        getForkliftSubsystem().getForkliftMotor().setPower(0);
+        getForkliftSubsystem2().getForkliftMotor().setPower(0);
         telemetry.addLine("A to go down, Y to go up");
     }
 

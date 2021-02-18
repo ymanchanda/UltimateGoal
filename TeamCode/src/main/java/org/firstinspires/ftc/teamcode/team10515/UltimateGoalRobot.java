@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.team10515;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
-import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 
 import org.firstinspires.ftc.teamcode.lib.drivers.Motor;
 import org.firstinspires.ftc.teamcode.lib.drivers.RevMotor;
@@ -14,8 +13,9 @@ import org.firstinspires.ftc.teamcode.team10515.subsystems.Drive;
 import org.firstinspires.ftc.teamcode.team10515.subsystems.ExpansionHubs;
 import org.firstinspires.ftc.teamcode.team10515.subsystems.Feeder;
 import org.firstinspires.ftc.teamcode.team10515.subsystems.FlickerSubsystem;
+import org.firstinspires.ftc.teamcode.team10515.subsystems.ForkliftSubsystem2;
 import org.firstinspires.ftc.teamcode.team10515.subsystems.IntakeMotorSubsystem;
-import org.firstinspires.ftc.teamcode.team10515.subsystems.ForkliftSubsystem;
+//import org.firstinspires.ftc.teamcode.team10515.subsystems.ForkliftSubsystem;
 import org.firstinspires.ftc.teamcode.team10515.subsystems.IntakeServoSubsystem;
 import org.firstinspires.ftc.teamcode.team10515.subsystems.RobotStateEstimator;
 import org.firstinspires.ftc.teamcode.team10515.subsystems.ShooterSubsystem;
@@ -23,7 +23,6 @@ import org.firstinspires.ftc.teamcode.team10515.subsystems.PulleySubsystem;
 import org.openftc.revextensions2.ExpansionHubEx;
 import org.openftc.revextensions2.ExpansionHubMotor;
 import org.openftc.revextensions2.ExpansionHubServo;
-import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 
 import java.util.Arrays;
 
@@ -58,7 +57,8 @@ public abstract class UltimateGoalRobot extends Robot {
     private StackTracker stackTracker;
     private FlickerSubsystem flickerSubsystem;
     private ShooterSubsystem shooterMotors;
-    private ForkliftSubsystem forkliftSubsystem;
+//    private ForkliftSubsystem forkliftSubsystem;
+    private ForkliftSubsystem2 forkliftSubsystem;
     private IntakeMotorSubsystem intakeMotorSubsystem;
     private IntakeServoSubsystem intakeServoSubsystem;
 
@@ -99,7 +99,7 @@ public abstract class UltimateGoalRobot extends Robot {
         setShooterSubsystem(new ShooterSubsystem(getMotors()[4], getMotors()[5]));
         setPulleySubsystem(new PulleySubsystem(getServos()[0]));
         setIntakeMotorSubsystem(new IntakeMotorSubsystem(getMotors()[6]));
-        setForkliftSubsystem(new ForkliftSubsystem(getMotors()[7]));
+        setForkliftSubsystem2(new ForkliftSubsystem2(getMotors()[7]));
         setFlickerSubsystem(new FlickerSubsystem(getServos()[1], getServos()[2]));
         setMatchRuntime(new TimeProfiler(false));
     }
@@ -127,7 +127,7 @@ public abstract class UltimateGoalRobot extends Robot {
         getShooterSubsystem().update(getDt());
         getFlickerSubsystem().update(getDt());
         getPulleySubsystem().update(getDt());
-        getForkliftSubsystem().update(getDt());
+        getForkliftSubsystem2().update(getDt());
 
 
     }
@@ -152,7 +152,7 @@ public abstract class UltimateGoalRobot extends Robot {
         //Yogesh Commented This
       //  getRobotStateEstimator().stop();
         getDrive().stop();
-        getForkliftSubsystem().stop();
+        getForkliftSubsystem2().stop();
         getPulleySubsystem().stop();
         getFlickerSubsystem().stop();
         getShooterSubsystem().stop();
@@ -229,11 +229,11 @@ public abstract class UltimateGoalRobot extends Robot {
     }
 
 
-    public ForkliftSubsystem getForkliftSubsystem() {
+    public ForkliftSubsystem2 getForkliftSubsystem2() {
         return forkliftSubsystem;
     }
 
-    public void setForkliftSubsystem(ForkliftSubsystem forkliftSubsystem){
+    public void setForkliftSubsystem2(ForkliftSubsystem2 forkliftSubsystem){
         this.forkliftSubsystem = forkliftSubsystem;
     }
     /*public  RevBlinkinLedDriver getLights() {

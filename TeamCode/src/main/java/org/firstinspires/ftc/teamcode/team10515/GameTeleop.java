@@ -1,16 +1,15 @@
 package org.firstinspires.ftc.teamcode.team10515;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.lib.drivers.RevMotor;
 import org.firstinspires.ftc.teamcode.lib.geometry.Pose2d;
 import org.firstinspires.ftc.teamcode.lib.geometry.Rotation2d;
 import org.firstinspires.ftc.teamcode.team10515.states.FlickerStateMachine;
+import org.firstinspires.ftc.teamcode.team10515.states.ForkliftStateMachine2;
 import org.firstinspires.ftc.teamcode.team10515.states.IntakeMotorStateMachine;
-import org.firstinspires.ftc.teamcode.team10515.states.ForkliftStateMachine;
-import org.firstinspires.ftc.teamcode.team10515.states.IntakeServoStateMachine;
 import org.firstinspires.ftc.teamcode.team10515.states.PulleyStateMachine;
 import org.firstinspires.ftc.teamcode.team10515.states.ShooterStateMachine;
 
@@ -67,11 +66,17 @@ public class GameTeleop extends UltimateGoalRobot {
     public ElapsedTime doubleCheckDown = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
 
     //Wobble goal Forklift
-    public static final int alignPosition = 650;
-    public static final int topPosition = 2220;
-    public int lastEncoderTicks;
-    public int currentEncoderTicks = 0;
-    public boolean pastAlign, pastTop = false;
+//    public static final int alignPosition = 650;
+//    public static final int topPosition = 2220;
+//    public int lastEncoderTicks;
+//    public int currentEncoderTicks = 0;
+//    public boolean pastAlign, pastTop = false;
+    public RevMotor forkliftMotor;
+
+    public ElapsedTime btnPressedB; //Regular button
+    public ElapsedTime btnPressedX; //Override button (Sets state to DOWN)
+
+    public ForkliftStateMachine2.State currentWobbleState;
 
     @Override
     public void start() {
@@ -180,77 +185,114 @@ public class GameTeleop extends UltimateGoalRobot {
         }
 
         //WobbleGoal processing
-        WobbleGoalv2();
+//        WobbleGoalv2();
+        if(getEnhancedGamepad1().isB() && btnPressedB.milliseconds() > 250){
+            btnPressedB.reset();
+            forkliftMotor.setPower(0);
+            WobbleGoalV3(true);
+        }
+        else if(getEnhancedGamepad1().isX() && btnPressedX.milliseconds() > 250){
+            btnPressedX.reset();
+            forkliftMotor.setPower(0);
+            WobbleGoalV3(false);
+        }
 
         if (getEnhancedGamepad2().isLeftBumperLast()){
             isAuto = !isAuto;
         }
 
         telemetry.addLine("Auto Mode: " + isAuto);
-        telemetry.addLine("Wobble Goal: " + getForkliftSubsystem().getForkliftMotor().getCurrentEncoderTicks());
-        telemetry.addLine("Past Align: " +pastAlign);
+        telemetry.addLine("Wobble Goal: " + getForkliftSubsystem2().getForkliftMotor().getCurrentEncoderTicks());
+//        telemetry.addLine("Past Align: " +pastAlign);
         telemetry.addLine("Intake Output: " + getIntakeMotorSubsystem().getOutput());
         telemetry.addLine("Shooter Output: " + getShooterSubsystem().getOutput());
         telemetry.update();
     }
 
-    void WobbleGoalv2()
-    {
-        //brake 1st time when it reaches align
-        if (reachedUpPosition(alignPosition) && !pastAlign) {
-            getForkliftSubsystem().getForkliftMotor().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.IDLE);
-            pastAlign = true;
-        }
+//    void WobbleGoalv2()
+//    {
+//        //brake 1st time when it reaches align
+//        if (reachedUpPosition(alignPosition) && !pastAlign) {
+//            getForkliftSubsystem2().getForkliftMotor().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//            getForkliftSubsystem2().getStateMachine().updateState(ForkliftStateMachine.State.IDLE);
+//            pastAlign = true;
+//        }
+//
+//        //brake if it was past align and went down past align + 20
+//        if (pastAlign && reachedDownPosition(alignPosition+20)) {
+//            getForkliftSubsystem2().getForkliftMotor().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//            getForkliftSubsystem2().getStateMachine().updateState(ForkliftStateMachine.State.IDLE);
+//            pastAlign = false;      //reset pastAlign to false as it's down
+//        }
+//
+//        if (reachedUpPosition(topPosition) && !pastTop) {
+//            getForkliftSubsystem2().getForkliftMotor().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//            getForkliftSubsystem2().getStateMachine().updateState(ForkliftStateMachine.State.IDLE);
+//            pastTop = true;
+//        }
+//
+//        if (reachedDownPosition(topPosition)) {
+//            pastTop = false;
+//        }
+//
+//        if (reachedDownPosition(50)) {
+//            getForkliftSubsystem2().getStateMachine().updateState(ForkliftStateMachine.State.IDLE);
+//        }
+//
+//        if (getEnhancedGamepad2().isbLast()) {
+//            if (!reachedUpPosition(topPosition))
+//                getForkliftSubsystem2().getStateMachine().updateState(ForkliftStateMachine.State.UP);
+//
+//        } else if (getEnhancedGamepad2().isxLast()) {
+//            if (!reachedDownPosition(0)) {
+//                getForkliftSubsystem2().getStateMachine().updateState(ForkliftStateMachine.State.DOWN);
+//            }
+//        }
+//
+////        lastEncoderTicks = currentEncoderTicks;
+////        currentEncoderTicks = getForkliftSubsystem().getForkliftMotor().getCurrentEncoderTicks();
+//
+//    }
 
-        //brake if it was past align and went down past align + 20
-        if (pastAlign && reachedDownPosition(alignPosition+20)) {
-            getForkliftSubsystem().getForkliftMotor().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.IDLE);
-            pastAlign = false;      //reset pastAlign to false as it's down
-        }
-
-        if (reachedUpPosition(topPosition) && !pastTop) {
-            getForkliftSubsystem().getForkliftMotor().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.IDLE);
-            pastTop = true;
-        }
-
-        if (reachedDownPosition(topPosition)) {
-            pastTop = false;
-        }
-
-        if (reachedDownPosition(50)) {
-            getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.IDLE);
-        }
-
-        if (getEnhancedGamepad2().isbLast()) {
-            if (!reachedUpPosition(topPosition))
-                getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.UP);
-
-        } else if (getEnhancedGamepad2().isxLast()) {
-            if (!reachedDownPosition(0)) {
-                getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.DOWN);
+    public void WobbleGoalV3(boolean nextState){
+        if(nextState){
+            switch (currentWobbleState) {
+                case DOWN:
+                    telemetry.addLine("1");
+                    currentWobbleState = ForkliftStateMachine2.State.ALIGN_UP;
+                    break;
+                case ALIGN_UP:
+                    telemetry.addLine("2");
+                    currentWobbleState = ForkliftStateMachine2.State.UP;
+                    break;
+                case UP:
+                    telemetry.addLine("3");
+                    currentWobbleState = ForkliftStateMachine2.State.ALIGN_DOWN;
+                    break;
+                case ALIGN_DOWN:
+                    telemetry.addLine("2");
+                    currentWobbleState = ForkliftStateMachine2.State.DOWN;
+                    break;
             }
         }
-
-//        lastEncoderTicks = currentEncoderTicks;
-//        currentEncoderTicks = getForkliftSubsystem().getForkliftMotor().getCurrentEncoderTicks();
-
+        else{
+            currentWobbleState = ForkliftStateMachine2.State.DOWN;
+        }
+        getForkliftSubsystem2().getStateMachine().updateState(currentWobbleState);
     }
 
-    public boolean reachedUpPosition(double position) {
-        if (getForkliftSubsystem().getForkliftMotor().getCurrentEncoderTicks() < position)
-            return false;
-        else
-        return true;
-    }
-
-    public boolean reachedDownPosition(double position) {
-        if (getForkliftSubsystem().getForkliftMotor().getCurrentEncoderTicks() > position)
-            return false;
-        else
-            return true;
-    }
+//    public boolean reachedUpPosition(double position) {
+//        if (getForkliftSubsystem2().getForkliftMotor().getCurrentEncoderTicks() < position)
+//            return false;
+//        else
+//        return true;
+//    }
+//
+//    public boolean reachedDownPosition(double position) {
+//        if (getForkliftSubsystem2().getForkliftMotor().getCurrentEncoderTicks() > position)
+//            return false;
+//        else
+//            return true;
+//    }
 
 }
