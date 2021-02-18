@@ -23,6 +23,7 @@ public class ForkliftTest extends UltimateGoalRobot{
 
     public int currentEncoderTicks = 0;
     public double power = 0;
+    public double currentAngle;
 
     @Override
     public void start() {
@@ -50,28 +51,23 @@ public class ForkliftTest extends UltimateGoalRobot{
 
         if(nextState){
             nextState = false;
-            if(f.getAngle(currentEncoderTicks) < angle1 &&
-                !goingDown){
+            if(currentAngle < angle1 && !goingDown){
                 goingDown = false;
-                f.setAngle(f.getAngle(currentEncoderTicks), angle1);
+                f.setAngle(currentAngle, angle1);
                 telemetry.addLine("1");
             }
-            else if(f.getAngle(currentEncoderTicks) >= angle1 &&
-                    f.getAngle(currentEncoderTicks) < angle2 &&
-                    !goingDown){
-                f.setAngle(f.getAngle(currentEncoderTicks), angle2);
+            else if(currentAngle >= angle1 && currentAngle < angle2 && !goingDown){
+                f.setAngle(currentAngle, angle2);
                 goingDown = true;
                 telemetry.addLine("2");
             }
-            else if(f.getAngle(currentEncoderTicks) >= angle2 && goingDown){
-                f.setAngle(f.getAngle(currentEncoderTicks), angle1);
+            else if(currentAngle >= angle2 && goingDown){
+                f.setAngle(currentAngle, angle1);
                 goingDown = true;
                 telemetry.addLine("3");
             }
-            else if(f.getAngle(currentEncoderTicks) <= angle1 &&
-                    f.getAngle(currentEncoderTicks) > angle0 &&
-                    goingDown){
-                f.setAngle(f.getAngle(currentEncoderTicks), angle0);
+            else if(currentAngle <= angle1 && currentAngle > angle0 && goingDown){
+                f.setAngle(currentAngle, angle0);
                 goingDown = false;
                 telemetry.addLine("4");
             }
@@ -79,9 +75,12 @@ public class ForkliftTest extends UltimateGoalRobot{
 
         currentEncoderTicks = forkliftMotor.getCurrentEncoderTicks();
         power = f.getSpeed(currentEncoderTicks);
+        currentAngle = f.getAngle(currentEncoderTicks);
 
         forkliftMotor.setPower(power);
+
         telemetry.addLine("Encoder ticks: " + currentEncoderTicks);
+        telemetry.addLine("Angle: " + currentAngle);
         telemetry.addLine("Power: " + power);
         telemetry.addLine("Going down?: " + goingDown);
         telemetry.update();

@@ -33,11 +33,11 @@ public class ForkliftAngle extends UltimateGoalRobot {
         return angleDiff*COUNTS_PER_MOTOR_REV/180;
     }
 
-    public double calculateAngle(double angle) {
-        return calculateAngle(0, angle);
+    public double calculateTicks(double angle) {
+        return calculateTicks(0, angle);
     }
 
-    public double calculateAngle(double startingAngle, double angle) {
+    public double calculateTicks(double startingAngle, double angle) {
         return (angle - startingAngle)*COUNTS_PER_MOTOR_REV/180;
     }
 
@@ -60,7 +60,7 @@ public class ForkliftAngle extends UltimateGoalRobot {
         currentAngle = getAngle(ticks);
         if(initialAngle < targetAngle) {
             telemetry.addLine("Going UP");
-            if(currentAngle > targetAngle) {
+            if(currentAngle >= targetAngle) {
                 return 0;
             }
             if((currentAngle - initialAngle) <= factorOfMS * angleDiff){
@@ -72,7 +72,7 @@ public class ForkliftAngle extends UltimateGoalRobot {
         }
         else {
             telemetry.addLine("Going DOWN");
-            if(currentAngle < targetAngle) {
+            if(currentAngle <= targetAngle) {
                 return 0;
             }
             if((currentAngle - initialAngle) >= factorOfMS * angleDiff){
