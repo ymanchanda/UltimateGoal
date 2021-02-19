@@ -72,7 +72,7 @@ public class RedAuto1 extends LinearOpMode {
         drive.robot.getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.IDLE);
 
         Trajectory traj1 = drive.trajectoryBuilder(startPose)
-                .splineTo(new Vector2d(0, 8),Math.toRadians(5))
+                .splineTo(new Vector2d(0, 8), Math.toRadians(5))
                 .build();
         Trajectory traj2 = drive.trajectoryBuilder(traj1.end())
                 .strafeRight(8)
@@ -81,13 +81,13 @@ public class RedAuto1 extends LinearOpMode {
                 .strafeRight(8)
                 .build();
         Trajectory zoneA = drive.trajectoryBuilder(traj3.end())
-                .splineToLinearHeading(new Pose2d(12,-38, Math.toRadians(180)),Math.toRadians(0))
+                .splineToLinearHeading(new Pose2d(12, -38, Math.toRadians(180)), Math.toRadians(0))
                 .build();
         Trajectory zoneB = drive.trajectoryBuilder(traj3.end())
-                .splineTo(new Vector2d(36, -36),Math.toRadians(0))
+                .splineTo(new Vector2d(36, -36), Math.toRadians(0))
                 .build();
         Trajectory zoneC = drive.trajectoryBuilder(traj3.end())
-                .splineToLinearHeading(new Pose2d(60,-36,Math.toRadians(180)),Math.toRadians(0))
+                .splineToLinearHeading(new Pose2d(60, -36, Math.toRadians(180)), Math.toRadians(0))
                 .build();
         Trajectory parkb = drive.trajectoryBuilder(zoneB.end())
                 .back(24)
@@ -101,7 +101,7 @@ public class RedAuto1 extends LinearOpMode {
         waitForStart();
 
         UGCV.numRings numRings = drive.getRingsUsingImage(true);
-        telemetry.addLine("Num Rings: "+ numRings);
+        telemetry.addLine("Num Rings: " + numRings);
         telemetry.update();
 
         if (isStopRequested()) return;
@@ -192,16 +192,14 @@ public class RedAuto1 extends LinearOpMode {
                     // Check if the timer has exceeded the specified wait time
                     // If so, move on to the TURN_2 state
                     if (waitTimer.milliseconds() >= 1000) {
-                        if(numRings == UGCV.numRings.ZERO){
+                        if (numRings == UGCV.numRings.ZERO) {
                             currentState = State.ZONEA;
                             drive.followTrajectoryAsync(zoneA);
 
-                        }
-                        else if(numRings == UGCV.numRings.ONE){
+                        } else if (numRings == UGCV.numRings.ONE) {
                             currentState = State.ZONEA;
                             drive.followTrajectoryAsync(zoneB);
-                        }
-                        else{
+                        } else {
                             currentState = State.ZONEA;
                             drive.followTrajectoryAsync(zoneC);
                         }
@@ -232,12 +230,10 @@ public class RedAuto1 extends LinearOpMode {
                         if (numRings == UGCV.numRings.ONE) {
                             currentState = State.IDLE;
                             drive.followTrajectoryAsync(parkb);
-                        }
-                        else if(numRings == UGCV.numRings.FOUR){
+                        } else if (numRings == UGCV.numRings.FOUR) {
                             currentState = State.IDLE;
                             drive.followTrajectoryAsync(parkC);
-                        }
-                        else{
+                        } else {
                             currentState = State.IDLE;
                             drive.followTrajectoryAsync(release);
                         }
@@ -270,134 +266,14 @@ public class RedAuto1 extends LinearOpMode {
             drive.robot.getIntakeMotorSubsystem().update(getDt());
             WobbleGoal();
 
-            telemetry.addLine("Output"+drive.robot.getShooterSubsystem().getOutput());
-            telemetry.addLine("Speed"+drive.robot.getShooterSubsystem().getState().getSpeed());
-            telemetry.addLine("Velocity"+drive.robot.getShooterSubsystem().getShooterWheel1().getVelocity());
+            telemetry.addLine("Output" + drive.robot.getShooterSubsystem().getOutput());
+            telemetry.addLine("Speed" + drive.robot.getShooterSubsystem().getState().getSpeed());
+            telemetry.addLine("Velocity" + drive.robot.getShooterSubsystem().getShooterWheel1().getVelocity());
             telemetry.update();
         } //end of while
-        drive.setMotorPowers(0.0,0.0,0.0,0.0);
+        drive.setMotorPowers(0.0, 0.0, 0.0, 0.0);
         PoseStorage.currentPose = drive.getPoseEstimate();
-        /*
-        if(numRings == UGCV.numRings.ZERO){
-            Trajectory goToBase = drive.trajectoryBuilder(traj3.end())
-                    .splineToConstantHeading(new Vector2d(5,50),Math.toRadians(0))
-                    .addDisplacementMarker(10,()->{
-                        drive.shooter1.setPower(0.0);
-                        drive.shooter2.setPower(0.0);
-                    })
-                    .build();
-            drive.followTrajectory(goToBase);
-
-        }
-        else{
-            if(numRings == UGCV.numRings.ONE){
-                Trajectory goToBase = drive.trajectoryBuilder(traj3.end())
-                        .splineToConstantHeading(new Vector2d(29,26),Math.toRadians(0))
-                        .addDisplacementMarker(10,()->{
-                            drive.shooter1.setPower(0.0);
-                            drive.shooter2.setPower(0.0);
-                        })
-                        .build();
-                Trajectory getRings = drive.trajectoryBuilder(goToBase.end())
-                        .splineToLinearHeading(new Pose2d(-3,36,Math.toRadians(195)),Math.toRadians(0.0))
-                        .addDisplacementMarker(15,()-> {
-                            drive.intakeMotor.setPower(0.9);
-                            drive.elevatorServo.setPosition(0.0);
-                        })
-                        .build();
-                Trajectory fwd = drive.trajectoryBuilder(getRings.end())
-                        .forward(20)
-                        .build();
-                Trajectory highshoot = drive.trajectoryBuilder(fwd.end())
-                        .splineToLinearHeading(new Pose2d(2,36,Math.toRadians(5)),Math.toRadians(0.0))
-                        .addDisplacementMarker(15,()-> {
-                            drive.intakeMotor.setPower(0.0);
-                            drive.elevatorServo.setPosition(0.75);
-                            drive.shooter1.setPower(0.7d);
-                            drive.shooter2.setPower(0.7d);
-                        })
-                        .build();
-                Trajectory park = drive.trajectoryBuilder(highshoot.end())
-                        .forward(6)
-                        .build();
-                drive.followTrajectory(goToBase);
-                sleep(200);
-                drive.followTrajectory(getRings);
-                sleep(200);
-                drive.followTrajectory(fwd);
-                sleep(200);
-                drive.followTrajectory(highshoot);
-                flicker();
-                sleep(200);
-                drive.followTrajectory(park);
-
-            }
-            else{
-                Trajectory goToBase = drive.trajectoryBuilder(traj3.end())
-                        .splineToConstantHeading(new Vector2d(43,50),Math.toRadians(0))
-                        .addDisplacementMarker(10,()->{
-                            drive.shooter1.setPower(0.0);
-                            drive.shooter2.setPower(0.0);
-                        })
-                        .build();
-//                Trajectory getRings = drive.trajectoryBuilder(goToBase.end())
-//                        .splineToLinearHeading(new Pose2d(-3,36,Math.toRadians(195)), Math.toRadians(0.0))
-//                        .build();
-//                Trajectory fwd = drive.trajectoryBuilder(getRings.end())
-//                        .forward(25)
-//                        .build();
-//                Trajectory back = drive.trajectoryBuilder(fwd.end())
-//                        .back(5)
-//                        .addDisplacementMarker(()-> {
-//                            drive.intakeMotor.setPower(0.9);
-//                            drive.elevatorServo.setPosition(0.0);
-//                        })
-//                        .build();
-                Trajectory park = drive.trajectoryBuilder(goToBase.end())
-                        .back(45)
-                        .build();
-                drive.followTrajectory(goToBase);
-                sleep(200);
-                drive.followTrajectory(park);
-//                drive.followTrajectory(getRings);
-//                sleep(200);
-//                drive.followTrajectory(fwd);
-//                sleep(200);
-//                drive.followTrajectory(back);
-//                sleep(200);
-//                drive.followTrajectory(intakerings);
-            }
-
-        }*/
-
     }
-//    public void flicker(){
-//        drive.flicker1.setPosition(0.7d);
-//        drive.flicker2.setPosition(0.3d);
-//        sleep(250);
-//        drive.flicker1.setPosition(1.0d);
-//        drive.flicker2.setPosition(0.0d);
-//    }
-//    public void flickerv2(double speed){
-//        double output = 0d;
-//        ElapsedTime timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
-//
-//        while (timer.milliseconds() < 500) {
-//            //keep motor running at constant speed
-//            double error = speed - drive.getShooterSubsystem().getShooterWheel1().getVelocity();
-//            output = kP * error;
-//            drive.getShooterSubsystem().getShooterWheel1().setPower(output);
-//            drive.getShooterSubsystem().getShooterWheel2().setPower(output);
-//            if(timer.milliseconds() > 300) {
-//                drive.flicker1.setPosition(0.7d);
-//                drive.flicker2.setPosition(0.3d);
-//            }
-//        }
-//
-//        drive.flicker1.setPosition(1.0d);
-//        drive.flicker2.setPosition(0.0d);
-//
-//    }
 
     public static TimeProfiler getUpdateRuntime() {return updateRuntime;}
     public static void setUpdateRuntime(TimeProfiler updaRuntime) { updateRuntime = updaRuntime; }
