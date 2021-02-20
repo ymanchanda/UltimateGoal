@@ -4,20 +4,16 @@ import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.teamcode.drive.StandardTrackingWheelLocalizer;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import org.firstinspires.ftc.teamcode.lib.geometry.Rotation2d;
 import org.firstinspires.ftc.teamcode.team10515.auto.UGBase;
 import org.firstinspires.ftc.teamcode.team10515.states.FlickerStateMachine;
 import org.firstinspires.ftc.teamcode.team10515.states.ForkliftStateMachine;
 import org.firstinspires.ftc.teamcode.team10515.states.IntakeMotorStateMachine;
 import org.firstinspires.ftc.teamcode.team10515.states.PulleyStateMachine;
 import org.firstinspires.ftc.teamcode.team10515.states.ShooterStateMachine;
-
 
 /**
  * This {@code class} acts as the driver-controlled program for FTC team 10515 for the Skystone
@@ -53,15 +49,11 @@ import org.firstinspires.ftc.teamcode.team10515.states.ShooterStateMachine;
 public class autoTeleop extends UGTeleOpRobot {
     private boolean iselevatorUp = false;   //elevator starts in down position
     private boolean isFlicked = false;      //flickers are inside
-    private boolean isAuto = false;          //robot is running manual
-    private boolean confirmElevatorUp = false;      //confirm elevator is up
-    private boolean confirmElevatorDown = false;    //confirm elevator is down
-    private boolean intakeServo = false;
     private boolean powershotcheck = false;
     //intake Servo activated
     private int count = 0;
-    public double upThreshold = 8.65;
-    public double downThreshold = 4.45;
+    //public double upThreshold = 8.65;
+    //public double downThreshold = 4.45;
     private int intakeChange = 0;
 
     enum FlickState {
@@ -174,8 +166,8 @@ public class autoTeleop extends UGTeleOpRobot {
             drive.robot.getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.IDLE);
         }
 
-        if (getEnhancedGamepad1().isDpadDownLast()) {
-            intakeChange = 4;
+        if (getEnhancedGamepad1().isDpadDownJustPressed()) {
+            intakeChange += 1;
             if (intakeChange > 4) intakeChange = 0;
             switch(intakeChange) {
 
@@ -202,17 +194,18 @@ public class autoTeleop extends UGTeleOpRobot {
             drive.robot.getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.INTAKE);
         }
 
-        telemetry.addLine("Intake change: " + intakeChange);
-        //Gamepad2 Intake Servo - Right Bumper
-//        if(getEnhancedGamepad2().isRightBumperLast()){
-//            getIntakeServoSubsystem().getStateMachine().updateState(IntakeServoStateMachine.State.HIT_RING);
-//            btnPressedRightBumper.reset();
-//            intakeServo = true;
-//        }
-//        if (btnPressedRightBumper.milliseconds()>700 && intakeServo){
-//            getIntakeServoSubsystem().getStateMachine().updateState(IntakeServoStateMachine.State.STANDBY);
-//            intakeServo = false;
-//        }
+        //Gamepad2 Manually move Elevator up && btnPressedA.milliseconds()>1250  && btnPressedA.milliseconds()>1250
+        if(getEnhancedGamepad2().isyLast()) {
+            drive.robot.getPulleySubsystem().getStateMachine().updateState(PulleyStateMachine.State.UP);
+            drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.SPEED1);
+            drive.robot.getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.IDLE);
+            iselevatorUp = true;    //Elevator Moved Up and shooter starts
+        } else if(getEnhancedGamepad2().isaLast()) {
+            drive.robot.getPulleySubsystem().getStateMachine().updateState(PulleyStateMachine.State.DOWN);
+            drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.IDLE);
+            drive.robot.getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.INTAKE);
+            iselevatorUp = false;   //Elevator Moved Down
+        }
 
         //Toggle Shooter
         if(getEnhancedGamepad2().isDpad_up()) {
@@ -242,19 +235,6 @@ public class autoTeleop extends UGTeleOpRobot {
             drive.robot.getFlickerSubsystem().getStateMachine().updateState(FlickerStateMachine.State.INIT);
         }
 
-        //Gamepad2 Manually move Elevator up && btnPressedA.milliseconds()>1250  && btnPressedA.milliseconds()>1250
-        if(!isAuto && getEnhancedGamepad2().isyLast()) {
-            drive.robot.getPulleySubsystem().getStateMachine().updateState(PulleyStateMachine.State.UP);
-            drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.SPEED1);
-            drive.robot.getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.IDLE);
-            iselevatorUp = true;    //Elevator Moved Up and shooter starts
-        } else if(!isAuto && getEnhancedGamepad2().isaLast()) {
-            drive.robot.getPulleySubsystem().getStateMachine().updateState(PulleyStateMachine.State.DOWN);
-            drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.IDLE);
-            drive.robot.getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.INTAKE);
-            iselevatorUp = false;   //Elevator Moved Down
-        }
-
         //WobbleGoal processing
         WobbleGoalv2();
 
@@ -264,8 +244,9 @@ public class autoTeleop extends UGTeleOpRobot {
 
         FlickThree();
 
+        telemetry.addLine("Intake change: " + intakeChange);
+        telemetry.addLine("Voltage: " + getBatteryVoltage());
         telemetry.addLine("Pose"+poseEstimate.getX()+", "+poseEstimate.getY()+", "+poseEstimate.getHeading());
-        telemetry.addLine("Auto Mode: " + isAuto);
         telemetry.addLine("Wobble Goal: " + drive.robot.getForkliftSubsystem().getForkliftMotor().getCurrentEncoderTicks());
         telemetry.addLine("Past Align: " +pastAlign);
         telemetry.addLine("Intake Output: " + drive.robot.getIntakeMotorSubsystem().getOutput());
@@ -285,7 +266,7 @@ public class autoTeleop extends UGTeleOpRobot {
                 resetFlickThree.reset();
                 break;
             case WAITFLICK:
-                if (resetFlickThree.milliseconds() > 200) {
+                if (resetFlickThree.milliseconds() > 100) {
                     FlickThree = FlickState.BACK;
                 }
                 break;
@@ -295,7 +276,7 @@ public class autoTeleop extends UGTeleOpRobot {
                 resetFlickThree.reset();
                 break;
             case WAITBACK:
-                if (resetFlickThree.milliseconds() > 300) {
+                if (resetFlickThree.milliseconds() > 250) {
                     if (NumFlicks < 2) {
                         FlickThree = FlickState.FLICK;
                     }
@@ -404,6 +385,18 @@ public class autoTeleop extends UGTeleOpRobot {
             return false;
         else
             return true;
+    }
+
+    // Computes the current battery voltage
+    double getBatteryVoltage() {
+        double result = Double.POSITIVE_INFINITY;
+        for (VoltageSensor sensor : hardwareMap.voltageSensor) {
+            double voltage = sensor.getVoltage();
+            if (voltage > 0) {
+                result = Math.min(result, voltage);
+            }
+        }
+        return result;
     }
 
 }

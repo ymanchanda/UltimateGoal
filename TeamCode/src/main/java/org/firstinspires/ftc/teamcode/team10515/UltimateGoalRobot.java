@@ -48,7 +48,7 @@ import java.util.Arrays;
 public abstract class UltimateGoalRobot extends Robot {
     //private  RevBlinkinLedDriver lights;
     private TimeProfiler matchRuntime;
-    protected static Rev2mDistanceSensor elevatorSensor;
+    //protected static Rev2mDistanceSensor elevatorSensor;
     private ExpansionHubs expansionHubs;
     private RobotStateEstimator robotStateEstimator;
     private Drive drive;
@@ -93,7 +93,7 @@ public abstract class UltimateGoalRobot extends Robot {
         });
 
         setRobotStateEstimator(new RobotStateEstimator(this, hardwareMap.get(BNO055IMU.class, "imu"), new Pose2d()));
-        setElevatorSensor(hardwareMap.get(Rev2mDistanceSensor.class, "Elevator Sensor"));
+        //setElevatorSensor(hardwareMap.get(Rev2mDistanceSensor.class, "Elevator Sensor"));
         setDrive(new Drive(getRobotStateEstimator(), getMotors()[0], getMotors()[1], getMotors()[2], getMotors()[3]));
         setStackTracker(new StackTracker());
         setShooterSubsystem(new ShooterSubsystem(getMotors()[4], getMotors()[5]));
@@ -244,9 +244,9 @@ public abstract class UltimateGoalRobot extends Robot {
         this.lights = lights;
     }*/
 
-    public void setElevatorSensor(Rev2mDistanceSensor range) {
-        this.elevatorSensor = range;
-    }
+//    public void setElevatorSensor(Rev2mDistanceSensor range) {
+//        this.elevatorSensor = range;
+//    }
 
     public TimeProfiler getMatchRuntime() {
         return matchRuntime;

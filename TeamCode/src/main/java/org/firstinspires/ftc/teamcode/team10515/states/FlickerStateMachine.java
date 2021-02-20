@@ -20,7 +20,7 @@ public class FlickerStateMachine extends TimedState<FlickerStateMachine.State> {
     }
 
     public enum State implements Namable {
-        INIT("Init", 1.0d, 0.0d), HIT("Grab", 0.7d, 0.3d);
+        INIT("Init", 1.0d, 0.0d), HIT("Hit", 0.7d, 0.3d);
 
         private final String name;
         private final double leftPosition;

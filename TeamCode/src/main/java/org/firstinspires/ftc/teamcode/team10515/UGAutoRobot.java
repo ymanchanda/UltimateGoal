@@ -47,7 +47,7 @@ import java.util.Arrays;
  */
 public class UGAutoRobot  {
     private TimeProfiler matchRuntime;
-    protected static Rev2mDistanceSensor elevatorSensor;
+    //protected static Rev2mDistanceSensor elevatorSensor;
     private ExpansionHubs expansionHubs;
     private RobotStateEstimator robotStateEstimator;
     private Drive drive;
@@ -80,7 +80,7 @@ public class UGAutoRobot  {
                 new RevServo((ExpansionHubServo)(hardwareMap.get("Flicker 2"))),
         });
 
-        setElevatorSensor(hardwareMap.get(Rev2mDistanceSensor.class, "Elevator Sensor"));
+        //setElevatorSensor(hardwareMap.get(Rev2mDistanceSensor.class, "Elevator Sensor"));
         setShooterSubsystem(new ShooterSubsystem(getMotors()[0], getMotors()[1]));
         setPulleySubsystem(new PulleySubsystem(getServos()[0]));
         setIntakeMotorSubsystem(new IntakeMotorSubsystem(getMotors()[2]));
@@ -167,9 +167,9 @@ public class UGAutoRobot  {
         this.forkliftSubsystem = forkliftSubsystem;
     }
 
-    public void setElevatorSensor(Rev2mDistanceSensor range) {
-        this.elevatorSensor = range;
-    }
+    //public void setElevatorSensor(Rev2mDistanceSensor range) {
+    //    this.elevatorSensor = range;
+    //}
 
     public TimeProfiler getMatchRuntime() {
         return matchRuntime;
