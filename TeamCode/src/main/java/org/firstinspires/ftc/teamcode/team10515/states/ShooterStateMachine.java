@@ -43,6 +43,7 @@ public class ShooterStateMachine extends SimpleState<ShooterStateMachine.State>{
 
         public void setSpeed(double pSpeed) {
             speed = pSpeed;
+            //To access function: drive.robot.getShooterSubsystem().getStateMachine().getState().getSpeed();
         }
     }
 }

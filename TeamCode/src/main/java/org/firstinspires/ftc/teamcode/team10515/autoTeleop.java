@@ -217,7 +217,6 @@ public class autoTeleop extends UGTeleOpRobot {
                     break;
                 case 3:
                     drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.HIGHGOAL);
-                    drive.robot.getShooterSubsystem().getStateMachine().getState().getSpeed();
                     break;
                 case 4:
                     drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.LOWGOAL);
@@ -416,6 +415,9 @@ public class autoTeleop extends UGTeleOpRobot {
     }
     */
     public void WobbleGoalV3(){
+        if(getEnhancedGamepad1().isbJustPressed()){
+            currentState = ArmState.PRESS;
+        }
         switch (currentState) {
             case IDLE:
                 drive.robot.getForkliftSubsystem2().getForkliftMotor().setPower(0);

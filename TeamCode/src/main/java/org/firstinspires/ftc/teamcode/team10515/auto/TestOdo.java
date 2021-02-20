@@ -76,7 +76,7 @@ public class TestOdo extends LinearOpMode {
 
         drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.IDLE);
         drive.robot.getFlickerSubsystem().getStateMachine().updateState(FlickerStateMachine.State.INIT);
-        drive.robot.getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.IDLE);
+        drive.robot.getForkliftSubsystem2().getForkliftMotor().setPower(0);//IDLE
         drive.robot.getPulleySubsystem().getStateMachine().updateState(PulleyStateMachine.State.DOWN);
         drive.robot.getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.IDLE);
 
@@ -338,7 +338,7 @@ public class TestOdo extends LinearOpMode {
             drive.getExpansionHubs().update(getDt());
             drive.robot.getShooterSubsystem().update(getDt());
             drive.robot.getFlickerSubsystem().update(getDt());
-            drive.robot.getForkliftSubsystem().update(getDt());
+            drive.robot.getForkliftSubsystem2().update(getDt());
             drive.robot.getPulleySubsystem().update(getDt());
             drive.robot.getIntakeMotorSubsystem().update(getDt());
             WobbleGoal();
@@ -367,31 +367,31 @@ public class TestOdo extends LinearOpMode {
         switch (wobbleTo) {
             case ZERO:
                 if (reachedDownPosition(50)) {
-                    drive.robot.getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.IDLE);
+                    drive.robot.getForkliftSubsystem2().getForkliftMotor().setPower(0);//IDLE
                 }
                 break;
             case TOP:
                 if (reachedUpPosition(topPosition)) {
-                    drive.robot.getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.IDLE);
+                    drive.robot.getForkliftSubsystem2().getForkliftMotor().setPower(0);//IDLE
                 }
                 break;
             case ALIGN:
                 if (reachedDownPosition(alignPosition)) {
-                    drive.robot.getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.IDLE);
+                    drive.robot.getForkliftSubsystem2().getForkliftMotor().setPower(0);//IDLE
                 }
                 break;
         }
     }
 
     public boolean reachedUpPosition(double position) {
-        if (drive.robot.getForkliftSubsystem().getForkliftMotor().getCurrentEncoderTicks() < position)
+        if (drive.robot.getForkliftSubsystem2().getForkliftMotor().getCurrentEncoderTicks() < position)
             return false;
         else
             return true;
     }
 
     public boolean reachedDownPosition(double position) {
-        if (drive.robot.getForkliftSubsystem().getForkliftMotor().getCurrentEncoderTicks() > position)
+        if (drive.robot.getForkliftSubsystem2().getForkliftMotor().getCurrentEncoderTicks() > position)
             return false;
         else
             return true;
