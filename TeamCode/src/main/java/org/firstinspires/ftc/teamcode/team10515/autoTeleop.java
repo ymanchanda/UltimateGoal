@@ -171,8 +171,8 @@ public class autoTeleop extends UGTeleOpRobot {
             drive.robot.getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.IDLE);
         }
 
-        if (getEnhancedGamepad1().isaLast()) {
-            intakeChange += 1;
+        if (getEnhancedGamepad1().isDpadDownLast()) {
+            intakeChange = 4;
             if (intakeChange > 4) intakeChange = 0;
             switch(intakeChange) {
 
@@ -194,7 +194,13 @@ public class autoTeleop extends UGTeleOpRobot {
             }
         }
 
-            //Gamepad2 Intake Servo - Right Bumper
+        if (getEnhancedGamepad1().isDpadUpLast()) {
+            intakeChange = 0;
+            drive.robot.getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.INTAKE);
+        }
+
+        telemetry.addLine("Intake change: " + intakeChange);
+        //Gamepad2 Intake Servo - Right Bumper
 //        if(getEnhancedGamepad2().isRightBumperLast()){
 //            getIntakeServoSubsystem().getStateMachine().updateState(IntakeServoStateMachine.State.HIT_RING);
 //            btnPressedRightBumper.reset();

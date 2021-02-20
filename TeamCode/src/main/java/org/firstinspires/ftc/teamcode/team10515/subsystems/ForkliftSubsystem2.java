@@ -2,15 +2,18 @@ package org.firstinspires.ftc.teamcode.team10515.subsystems;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.lib.drivers.RevMotor;
+import org.firstinspires.ftc.teamcode.team10515.control.ForkliftAngle;
 import org.firstinspires.ftc.teamcode.team10515.states.ForkliftStateMachine2;
 
 public class ForkliftSubsystem2 implements ISubsystem<ForkliftStateMachine2, ForkliftStateMachine2.State> {
     private static ForkliftStateMachine2 ForkliftStateMachine2;
     private RevMotor forkliftMotor;
+    private ForkliftAngle f;
 
     public ForkliftSubsystem2(RevMotor forkliftMotor){
         setForkliftStateMachine2(new ForkliftStateMachine2());
         setForkliftMotor(forkliftMotor);
+        f = new ForkliftAngle(0.15, 0.6, 0.7);
     }
 
     @Override
@@ -46,7 +49,16 @@ public class ForkliftSubsystem2 implements ISubsystem<ForkliftStateMachine2, For
     @Override
     public void update(double dt) {
         getStateMachine().update(dt);
-        getForkliftMotor().setPower(getStateMachine().getState().getPower(getForkliftMotor().getCurrentEncoderTicks()));
+//        getForkliftMotor().setPower(getPower(getForkliftMotor().getCurrentEncoderTicks()));
+    }
+
+    public double getPower(double ticks){
+        return f.getSpeed(ticks);
+    }
+
+    public void setCurrentTicks(double ticks){
+        ticks = f.getAngle(ticks);
+        f.setAngle(ticks, getState().getAngle());
     }
 
     public RevMotor getForkliftMotor(){
