@@ -61,4 +61,6 @@ public abstract class SimpleState<E extends Enum<E> & Namable> implements IState
     private void setDesiredState(E state) {
         desiredState = state;
     }
+
+
 }

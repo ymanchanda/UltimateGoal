@@ -5,6 +5,7 @@ import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.drive.StandardTrackingWheelLocalizer;
@@ -59,6 +60,7 @@ public class autoTeleop extends UGTeleOpRobot {
     private int count = 0;
     public double upThreshold = 8.65;
     public double downThreshold = 4.45;
+    private int intakeChange = 0;
 
     enum FlickState {
         FLICK,
@@ -169,7 +171,30 @@ public class autoTeleop extends UGTeleOpRobot {
             drive.robot.getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.IDLE);
         }
 
-        //Gamepad2 Intake Servo - Right Bumper
+        if (getEnhancedGamepad1().isaLast()) {
+            intakeChange += 1;
+            if (intakeChange > 4) intakeChange = 0;
+            switch(intakeChange) {
+
+                case 1:
+                    drive.robot.getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.INTAKE1);
+                    break;
+                case 2:
+                    drive.robot.getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.INTAKE2);
+                    break;
+                case 3:
+                    drive.robot.getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.INTAKE3);
+                    break;
+                case 4:
+                    drive.robot.getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.INTAKE4);
+                    break;
+                case 0:
+                    drive.robot.getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.INTAKE);
+                    break;
+            }
+        }
+
+            //Gamepad2 Intake Servo - Right Bumper
 //        if(getEnhancedGamepad2().isRightBumperLast()){
 //            getIntakeServoSubsystem().getStateMachine().updateState(IntakeServoStateMachine.State.HIT_RING);
 //            btnPressedRightBumper.reset();

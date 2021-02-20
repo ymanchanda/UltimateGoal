@@ -19,6 +19,10 @@ public class IntakeMotorStateMachine extends SimpleState<IntakeMotorStateMachine
         //OUTTAKE("Outtake", -0.7d);
         //use mm/sec
         INTAKE("Intake", 7000),
+        INTAKE1("Intake", 6750),
+        INTAKE2("Intake", 6500),
+        INTAKE3("Intake", 6250),
+        INTAKE4("Intake", 6000),
         OUTTAKE("Outtake", -5500);
 
         private final String name;
