@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.team10515;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.lib.drivers.RevMotor;
 import org.firstinspires.ftc.teamcode.lib.geometry.Pose2d;
 import org.firstinspires.ftc.teamcode.lib.geometry.Rotation2d;
@@ -97,14 +96,14 @@ public class GameTeleop extends UltimateGoalRobot {
 
         //Toggle Shooter
         if(getEnhancedGamepad2().isDpad_up()) {
-            getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.SPEED1);
+            getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.HIGHGOAL);
         }
 
         else if(getEnhancedGamepad2().isDpad_right()) {
-            getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.SPEED2);
+            getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.POLESHOT);
         }
         else if(getEnhancedGamepad2().isDpad_left()) {
-            getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.SPEED3);
+            getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.MIDGOAL);
         }
         else if(getEnhancedGamepad2().isDpad_down()) {
             getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.IDLE);
@@ -123,7 +122,7 @@ public class GameTeleop extends UltimateGoalRobot {
         //Gamepad2 Manually move Elevator up && btnPressedA.milliseconds()>1250  && btnPressedA.milliseconds()>1250
         if(getEnhancedGamepad2().isyLast()) {
             getPulleySubsystem().getStateMachine().updateState(PulleyStateMachine.State.UP);
-            getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.SPEED1);
+            getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.HIGHGOAL);
             getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.IDLE);
             iselevatorUp = true;    //Elevator Moved Up and shooter starts
         } else if(getEnhancedGamepad2().isaLast()) {

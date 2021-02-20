@@ -11,6 +11,7 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import org.firstinspires.ftc.teamcode.team10515.auto.UGBase;
 import org.firstinspires.ftc.teamcode.team10515.states.FlickerStateMachine;
 import org.firstinspires.ftc.teamcode.team10515.states.ForkliftStateMachine;
+import org.firstinspires.ftc.teamcode.team10515.states.ForkliftStateMachine2;
 import org.firstinspires.ftc.teamcode.team10515.states.IntakeMotorStateMachine;
 import org.firstinspires.ftc.teamcode.team10515.states.PulleyStateMachine;
 import org.firstinspires.ftc.teamcode.team10515.states.ShooterStateMachine;
@@ -55,6 +56,7 @@ public class autoTeleop extends UGTeleOpRobot {
     //public double upThreshold = 8.65;
     //public double downThreshold = 4.45;
     private int intakeChange = 0;
+    private int shooterChange = 0;
 
     enum FlickState {
         FLICK,
@@ -74,9 +76,18 @@ public class autoTeleop extends UGTeleOpRobot {
     public ElapsedTime resetFlickThree = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
 
     //Wobble goal Forklift
-    public static final int alignPosition = 650;
-    public static final int topPosition = 2220;
-    public boolean pastAlign, pastTop = false;
+//    public static final int alignPosition = 650;
+//    public static final int topPosition = 2220;
+//    public boolean pastAlign, pastTop = false;    public RevMotor forkliftMotor;
+
+    public enum ArmState {
+        IDLE,
+        PRESS,
+        MOVE
+    }
+
+    public ArmState currentState;
+
     Mode currentMode = Mode.DRIVER_CONTROL;
 
     // The coordinates we want the bot to automatically go to when we press the A button
@@ -89,6 +100,7 @@ public class autoTeleop extends UGTeleOpRobot {
     public void init() {
         drive = new UGBase(hardwareMap);
         drive.setPoseEstimate(PoseStorage.currentPose);
+        currentState = ArmState.IDLE;
 
         super.init();
     }
@@ -139,7 +151,7 @@ public class autoTeleop extends UGTeleOpRobot {
                             .splineTo(wobbleGoalDepositVector, Math.toRadians(270))
                             .build();
                     drive.followTrajectoryAsync(wobbleGoalPosition);
-                    drive.robot.getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.DOWN);
+                    drive.robot.getForkliftSubsystem2().getStateMachine().updateState(ForkliftStateMachine2.State.DOWN);
                     currentMode = Mode.AUTOMATIC_CONTROL;
                 } //hi
                 break;
@@ -170,7 +182,6 @@ public class autoTeleop extends UGTeleOpRobot {
             intakeChange += 1;
             if (intakeChange > 4) intakeChange = 0;
             switch(intakeChange) {
-
                 case 1:
                     drive.robot.getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.INTAKE1);
                     break;
@@ -194,10 +205,44 @@ public class autoTeleop extends UGTeleOpRobot {
             drive.robot.getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.INTAKE);
         }
 
+        if(getEnhancedGamepad1().isDpadLeftJustPressed()){
+            shooterChange++;
+            if(shooterChange > 6) shooterChange = 0;
+            switch(shooterChange) {
+                case 1:
+                    drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.HIGHGOAL);
+                    break;
+                case 2:
+                    drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.HIGHGOAL);
+                    break;
+                case 3:
+                    drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.HIGHGOAL);
+                    drive.robot.getShooterSubsystem().getStateMachine().getState().getSpeed();
+                    break;
+                case 4:
+                    drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.LOWGOAL);
+                    break;
+                case 5:
+                    drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.POLESHOT);
+                    break;
+                case 6:
+                    drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.POLESHOT);
+                    break;
+                case 0:
+                    drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.IDLE);
+                    break;
+            }
+        }
+
+        if(getEnhancedGamepad1().isDpadRightJustPressed()){
+            shooterChange = 0;
+            drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.IDLE);
+        }
+
         //Gamepad2 Manually move Elevator up && btnPressedA.milliseconds()>1250  && btnPressedA.milliseconds()>1250
         if(getEnhancedGamepad2().isyLast()) {
             drive.robot.getPulleySubsystem().getStateMachine().updateState(PulleyStateMachine.State.UP);
-            drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.SPEED1);
+            drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.HIGHGOAL);
             drive.robot.getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.IDLE);
             iselevatorUp = true;    //Elevator Moved Up and shooter starts
         } else if(getEnhancedGamepad2().isaLast()) {
@@ -209,16 +254,16 @@ public class autoTeleop extends UGTeleOpRobot {
 
         //Toggle Shooter
         if(getEnhancedGamepad2().isDpad_up()) {
-            drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.SPEED1);
+            drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.HIGHGOAL);
             powershotcheck=false;
         }
 
         else if(getEnhancedGamepad2().isDpad_right()) {
-            drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.SPEED2);
+            drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.POLESHOT);
             powershotcheck = true;
         }
         else if(getEnhancedGamepad2().isDpad_left()) {
-            drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.SPEED3);
+            drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.MIDGOAL);
             powershotcheck=false;
         }
         else if(getEnhancedGamepad2().isDpad_down()) {
@@ -236,7 +281,7 @@ public class autoTeleop extends UGTeleOpRobot {
         }
 
         //WobbleGoal processing
-        WobbleGoalv2();
+        WobbleGoalV3();
 
         if (getEnhancedGamepad2().isLeftBumperLast()){
             FlickThree = FlickState.FLICK;
@@ -245,10 +290,11 @@ public class autoTeleop extends UGTeleOpRobot {
         FlickThree();
 
         telemetry.addLine("Intake change: " + intakeChange);
+        telemetry.addLine("Shooter change: " + shooterChange);
         telemetry.addLine("Voltage: " + getBatteryVoltage());
         telemetry.addLine("Pose"+poseEstimate.getX()+", "+poseEstimate.getY()+", "+poseEstimate.getHeading());
-        telemetry.addLine("Wobble Goal: " + drive.robot.getForkliftSubsystem().getForkliftMotor().getCurrentEncoderTicks());
-        telemetry.addLine("Past Align: " +pastAlign);
+        telemetry.addLine("Wobble Goal: " + drive.robot.getForkliftSubsystem2().getForkliftMotor().getCurrentEncoderTicks());
+//        telemetry.addLine("Past Align: " + pastAlign);
         telemetry.addLine("Intake Output: " + drive.robot.getIntakeMotorSubsystem().getOutput());
         telemetry.addLine("Shooter Output: " + drive.robot.getShooterSubsystem().getOutput());
         telemetry.update();
@@ -327,7 +373,7 @@ public class autoTeleop extends UGTeleOpRobot {
                 break;
         }
     }
-
+    /*
     void WobbleGoalv2()
     {
         //brake 1st time when it reaches align
@@ -367,21 +413,52 @@ public class autoTeleop extends UGTeleOpRobot {
                 drive.robot.getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.DOWN);
             }
         }
-
-//        lastEncoderTicks = currentEncoderTicks;
-//        currentEncoderTicks = getForkliftSubsystem().getForkliftMotor().getCurrentEncoderTicks();
-
     }
+    */
+    public void WobbleGoalV3(){
+        switch (currentState) {
+            case IDLE:
+                drive.robot.getForkliftSubsystem2().getForkliftMotor().setPower(0);
+                break;
 
+            case PRESS:
+                drive.robot.getForkliftSubsystem2().setCurrentTicks(drive.robot.getForkliftSubsystem2().getForkliftMotor().getCurrentEncoderTicks());
+                currentState = ArmState.MOVE;
+                switch (drive.robot.getForkliftSubsystem2().getState()) {
+                    case DOWN:
+                        drive.robot.getForkliftSubsystem2().getStateMachine().updateState(ForkliftStateMachine2.State.ALIGN_UP);
+                        break;
+                    case ALIGN_UP:
+                        drive.robot.getForkliftSubsystem2().getStateMachine().updateState(ForkliftStateMachine2.State.UP);
+                        break;
+                    case UP:
+                        drive.robot.getForkliftSubsystem2().getStateMachine().updateState(ForkliftStateMachine2.State.ALIGN_DOWN);
+                        break;
+                    case ALIGN_DOWN:
+                        drive.robot.getForkliftSubsystem2().getStateMachine().updateState(ForkliftStateMachine2.State.DOWN);
+                        break;
+                }
+                break;
+
+            case MOVE:
+                double power = drive.robot.getForkliftSubsystem2().getPower(drive.robot.getForkliftSubsystem2().getForkliftMotor().getCurrentEncoderTicks());
+                drive.robot.getForkliftSubsystem2().getForkliftMotor().setPower(power);
+                telemetry.addLine("Power: " + power);
+                if(power == 0.0){
+                    currentState = ArmState.IDLE;
+                }
+                break;
+        }
+    }
     public boolean reachedUpPosition(double position) {
-        if (drive.robot.getForkliftSubsystem().getForkliftMotor().getCurrentEncoderTicks() < position)
+        if (drive.robot.getForkliftSubsystem2().getForkliftMotor().getCurrentEncoderTicks() < position)
             return false;
         else
         return true;
     }
 
     public boolean reachedDownPosition(double position) {
-        if (drive.robot.getForkliftSubsystem().getForkliftMotor().getCurrentEncoderTicks() > position)
+        if (drive.robot.getForkliftSubsystem2().getForkliftMotor().getCurrentEncoderTicks() > position)
             return false;
         else
             return true;

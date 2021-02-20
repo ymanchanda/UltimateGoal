@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.team10515.subsystems.Drive;
 import org.firstinspires.ftc.teamcode.team10515.subsystems.ExpansionHubs;
 import org.firstinspires.ftc.teamcode.team10515.subsystems.Feeder;
 import org.firstinspires.ftc.teamcode.team10515.subsystems.FlickerSubsystem;
-import org.firstinspires.ftc.teamcode.team10515.subsystems.ForkliftSubsystem;
+import org.firstinspires.ftc.teamcode.team10515.subsystems.ForkliftSubsystem2;
 import org.firstinspires.ftc.teamcode.team10515.subsystems.IntakeMotorSubsystem;
 import org.firstinspires.ftc.teamcode.team10515.subsystems.IntakeServoSubsystem;
 import org.firstinspires.ftc.teamcode.team10515.subsystems.PulleySubsystem;
@@ -78,7 +78,7 @@ public abstract class UGTeleOpRobot extends Robot {
         drive.robot.getShooterSubsystem().update(getDt());
         drive.robot.getFlickerSubsystem().update(getDt());
         drive.robot.getPulleySubsystem().update(getDt());
-        drive.robot.getForkliftSubsystem().update(getDt());
+        drive.robot.getForkliftSubsystem2().update(getDt());
     }
 
 
@@ -87,7 +87,7 @@ public abstract class UGTeleOpRobot extends Robot {
         super.stop();
         drive.getExpansionHubs().stop();
         //drive.robot.getDrive().stop();
-        drive.robot.getForkliftSubsystem().stop();
+        drive.robot.getForkliftSubsystem2().stop();
         drive.robot.getPulleySubsystem().stop();
         drive.robot.getFlickerSubsystem().stop();
         drive.robot.getShooterSubsystem().stop();

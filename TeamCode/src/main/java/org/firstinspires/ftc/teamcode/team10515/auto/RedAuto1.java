@@ -115,7 +115,7 @@ public class RedAuto1 extends LinearOpMode {
 
         while (opModeIsActive() && !isStopRequested()) {
             if (!shooterRunning) {
-                drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.SPEED2);
+                drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.POLESHOT);
                 shooterRunning = true;
             }
 

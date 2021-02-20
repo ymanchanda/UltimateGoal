@@ -15,6 +15,7 @@ import org.firstinspires.ftc.teamcode.team10515.subsystems.ExpansionHubs;
 import org.firstinspires.ftc.teamcode.team10515.subsystems.Feeder;
 import org.firstinspires.ftc.teamcode.team10515.subsystems.FlickerSubsystem;
 import org.firstinspires.ftc.teamcode.team10515.subsystems.ForkliftSubsystem;
+import org.firstinspires.ftc.teamcode.team10515.subsystems.ForkliftSubsystem2;
 import org.firstinspires.ftc.teamcode.team10515.subsystems.IntakeMotorSubsystem;
 import org.firstinspires.ftc.teamcode.team10515.subsystems.IntakeServoSubsystem;
 import org.firstinspires.ftc.teamcode.team10515.subsystems.PulleySubsystem;
@@ -56,7 +57,7 @@ public class UGAutoRobot  {
     private StackTracker stackTracker;
     private FlickerSubsystem flickerSubsystem;
     private ShooterSubsystem shooterMotors;
-    private ForkliftSubsystem forkliftSubsystem;
+    private ForkliftSubsystem2 forkliftSubsystem2;
     private IntakeMotorSubsystem intakeMotorSubsystem;
     private RevMotor[]   motors;
     private RevServo[]   servos;
@@ -84,7 +85,7 @@ public class UGAutoRobot  {
         setShooterSubsystem(new ShooterSubsystem(getMotors()[0], getMotors()[1]));
         setPulleySubsystem(new PulleySubsystem(getServos()[0]));
         setIntakeMotorSubsystem(new IntakeMotorSubsystem(getMotors()[2]));
-        setForkliftSubsystem(new ForkliftSubsystem(getMotors()[3]));
+        setForkliftSubsystem2(new ForkliftSubsystem2(getMotors()[3]));
         setFlickerSubsystem(new FlickerSubsystem(getServos()[1], getServos()[2]));
         setMatchRuntime(new TimeProfiler(false));
     }
@@ -159,12 +160,12 @@ public class UGAutoRobot  {
     }
 
 
-    public ForkliftSubsystem getForkliftSubsystem() {
-        return forkliftSubsystem;
+    public ForkliftSubsystem2 getForkliftSubsystem2() {
+        return forkliftSubsystem2;
     }
 
-    public void setForkliftSubsystem(ForkliftSubsystem forkliftSubsystem){
-        this.forkliftSubsystem = forkliftSubsystem;
+    public void setForkliftSubsystem2(ForkliftSubsystem2 forkliftSubsystem){
+        this.forkliftSubsystem2 = forkliftSubsystem;
     }
 
     //public void setElevatorSensor(Rev2mDistanceSensor range) {

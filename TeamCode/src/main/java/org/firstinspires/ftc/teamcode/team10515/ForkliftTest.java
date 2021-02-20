@@ -21,7 +21,6 @@ public class ForkliftTest extends UltimateGoalRobot{
     }
 
     public ArmState currentState;
-    public boolean isOverride;
 
     @Override
     public void start() {
@@ -45,14 +44,9 @@ public class ForkliftTest extends UltimateGoalRobot{
             btnPressedB.reset();
             currentState = ArmState.PRESS;
         }
-        else if(getEnhancedGamepad1().isX() && btnPressedX.milliseconds() > 250){
-            btnPressedX.reset();
-            currentState = ArmState.PRESS;
-            isOverride = true;
-        }
 
         WobbleGoalV3();
-//        telemetry.addLine("Current state: " + currentState);
+
         telemetry.addLine("Ticks: " + forkliftMotor.getCurrentEncoderTicks());
         telemetry.update();
 
@@ -67,11 +61,6 @@ public class ForkliftTest extends UltimateGoalRobot{
                 case PRESS:
                     getForkliftSubsystem2().setCurrentTicks(forkliftMotor.getCurrentEncoderTicks());
                     currentState = ArmState.MOVE;
-                    if (isOverride) {
-                        getForkliftSubsystem2().getStateMachine().updateState(ForkliftStateMachine2.State.DOWN);
-                        isOverride = false;
-                    }
-                    else {
                         switch (getForkliftSubsystem2().getState()) {
                             case DOWN:
                                 getForkliftSubsystem2().getStateMachine().updateState(ForkliftStateMachine2.State.ALIGN_UP);
@@ -86,8 +75,6 @@ public class ForkliftTest extends UltimateGoalRobot{
                                 getForkliftSubsystem2().getStateMachine().updateState(ForkliftStateMachine2.State.DOWN);
                                 break;
                         }
-                    }
-
                     break;
 
                 case MOVE:
