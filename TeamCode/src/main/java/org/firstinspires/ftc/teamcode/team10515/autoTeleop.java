@@ -81,7 +81,8 @@ public class autoTeleop extends UGTeleOpRobot {
 
     public enum ArmState {
         IDLE,
-        PRESS,
+        PRESS_B,
+        PRESS_X,
         MOVE
     }
 
@@ -259,7 +260,7 @@ public class autoTeleop extends UGTeleOpRobot {
         }
 
         if (getEnhancedGamepad2().isbJustPressed()){
-            currentState = ArmState.PRESS;
+            currentState = ArmState.PRESS_B;
         }
 
 
@@ -357,7 +358,7 @@ public class autoTeleop extends UGTeleOpRobot {
                 drive.robot.getForkliftSubsystem2().getForkliftMotor().setPower(0);
                 break;
 
-            case PRESS:
+            case PRESS_B:
                 drive.robot.getForkliftSubsystem2().setCurrentTicks(drive.robot.getForkliftSubsystem2().getForkliftMotor().getCurrentEncoderTicks());
                 currentState = ArmState.MOVE;
                 switch (drive.robot.getForkliftSubsystem2().getState()) {
@@ -374,6 +375,12 @@ public class autoTeleop extends UGTeleOpRobot {
                         drive.robot.getForkliftSubsystem2().getStateMachine().updateState(ForkliftStateMachine2.State.DOWN);
                         break;
                 }
+                break;
+
+            case PRESS_X:
+                drive.robot.getForkliftSubsystem2().setCurrentTicks(drive.robot.getForkliftSubsystem2().getForkliftMotor().getCurrentEncoderTicks());
+                currentState = ArmState.MOVE;
+                drive.robot.getForkliftSubsystem2().getStateMachine().updateState(ForkliftStateMachine2.State.DOWN);
                 break;
 
             case MOVE:
