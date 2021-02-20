@@ -15,8 +15,6 @@ public class ShooterStateMachine extends SimpleState<ShooterStateMachine.State>{
 
     public enum State implements Namable {
         IDLE("Idle", 0d),
-        //SPEED1("High Goal", 0.6d),
-        //SPEED2("Pole Shots", 0.53d);
         //use mm/sec
         HIGHGOAL("High Goal", 25000d),
         POLESHOT("Pole Shots", 22000d ),//23000, //24000d
@@ -27,7 +25,7 @@ public class ShooterStateMachine extends SimpleState<ShooterStateMachine.State>{
         private final String name;
         private double speed;
 
-        State(final String name, final double speed) {
+        State(final String name, double speed) {
             this.name  = name;
             this.speed = speed;
         }
@@ -38,11 +36,11 @@ public class ShooterStateMachine extends SimpleState<ShooterStateMachine.State>{
         }
 
         public double getSpeed() {
-            return speed;
+            return this.speed;
         }
 
         public void setSpeed(double pSpeed) {
-            speed = pSpeed;
+            this.speed = pSpeed;
         }
     }
 }

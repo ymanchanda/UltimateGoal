@@ -12,6 +12,7 @@ import org.firstinspires.ftc.teamcode.lib.util.TimeUnits;
 import org.firstinspires.ftc.teamcode.team10515.PoseStorage;
 import org.firstinspires.ftc.teamcode.team10515.states.FlickerStateMachine;
 import org.firstinspires.ftc.teamcode.team10515.states.ForkliftStateMachine;
+import org.firstinspires.ftc.teamcode.team10515.states.ForkliftStateMachine2;
 import org.firstinspires.ftc.teamcode.team10515.states.IntakeMotorStateMachine;
 import org.firstinspires.ftc.teamcode.team10515.states.PulleyStateMachine;
 import org.firstinspires.ftc.teamcode.team10515.states.ShooterStateMachine;
@@ -76,7 +77,7 @@ public class TestOdo extends LinearOpMode {
 
         drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.IDLE);
         drive.robot.getFlickerSubsystem().getStateMachine().updateState(FlickerStateMachine.State.INIT);
-        drive.robot.getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.IDLE);
+        drive.robot.getForkliftSubsystem2().getStateMachine().updateState(ForkliftStateMachine2.State.DOWN);
         drive.robot.getPulleySubsystem().getStateMachine().updateState(PulleyStateMachine.State.DOWN);
         drive.robot.getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.IDLE);
 
@@ -338,7 +339,7 @@ public class TestOdo extends LinearOpMode {
             drive.getExpansionHubs().update(getDt());
             drive.robot.getShooterSubsystem().update(getDt());
             drive.robot.getFlickerSubsystem().update(getDt());
-            drive.robot.getForkliftSubsystem().update(getDt());
+            drive.robot.getForkliftSubsystem2().update(getDt());
             drive.robot.getPulleySubsystem().update(getDt());
             drive.robot.getIntakeMotorSubsystem().update(getDt());
             WobbleGoal();
@@ -367,31 +368,31 @@ public class TestOdo extends LinearOpMode {
         switch (wobbleTo) {
             case ZERO:
                 if (reachedDownPosition(50)) {
-                    drive.robot.getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.IDLE);
+                    drive.robot.getForkliftSubsystem2().getStateMachine().updateState(ForkliftStateMachine2.State.DOWN);
                 }
                 break;
             case TOP:
                 if (reachedUpPosition(topPosition)) {
-                    drive.robot.getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.IDLE);
+                    drive.robot.getForkliftSubsystem2().getStateMachine().updateState(ForkliftStateMachine2.State.DOWN);
                 }
                 break;
             case ALIGN:
                 if (reachedDownPosition(alignPosition)) {
-                    drive.robot.getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.IDLE);
+                    drive.robot.getForkliftSubsystem2().getStateMachine().updateState(ForkliftStateMachine2.State.DOWN);
                 }
                 break;
         }
     }
 
     public boolean reachedUpPosition(double position) {
-        if (drive.robot.getForkliftSubsystem().getForkliftMotor().getCurrentEncoderTicks() < position)
+        if (drive.robot.getForkliftSubsystem2().getForkliftMotor().getCurrentEncoderTicks() < position)
             return false;
         else
             return true;
     }
 
     public boolean reachedDownPosition(double position) {
-        if (drive.robot.getForkliftSubsystem().getForkliftMotor().getCurrentEncoderTicks() > position)
+        if (drive.robot.getForkliftSubsystem2().getForkliftMotor().getCurrentEncoderTicks() > position)
             return false;
         else
             return true;

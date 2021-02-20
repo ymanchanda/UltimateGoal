@@ -58,8 +58,6 @@ public class ShooterSubsystem implements ISubsystem<ShooterStateMachine, Shooter
 
         //old code
         getStateMachine().update(dt);
-        //getShooterWheel1().setPower(getState().getSpeed());
-        //getShooterWheel2().setPower(getState().getSpeed());
         getShooterWheel1().setPower(output);
         getShooterWheel2().setPower(output);
 
