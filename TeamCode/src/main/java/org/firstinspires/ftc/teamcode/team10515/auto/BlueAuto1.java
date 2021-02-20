@@ -17,7 +17,7 @@ import org.firstinspires.ftc.teamcode.lib.util.TimeProfiler;
 import org.firstinspires.ftc.teamcode.lib.util.TimeUnits;
 import org.firstinspires.ftc.teamcode.team10515.PoseStorage;
 import org.firstinspires.ftc.teamcode.team10515.states.FlickerStateMachine;
-import org.firstinspires.ftc.teamcode.team10515.states.ForkliftStateMachine;
+import org.firstinspires.ftc.teamcode.team10515.states.ForkliftStateMachine2;
 import org.firstinspires.ftc.teamcode.team10515.states.IntakeMotorStateMachine;
 import org.firstinspires.ftc.teamcode.team10515.states.PulleyStateMachine;
 import org.firstinspires.ftc.teamcode.team10515.states.ShooterStateMachine;
@@ -109,7 +109,7 @@ public class BlueAuto1 extends LinearOpMode {
 
         drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.IDLE);
         drive.robot.getFlickerSubsystem().getStateMachine().updateState(FlickerStateMachine.State.INIT);
-        drive.robot.getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.IDLE);
+        drive.robot.getForkliftSubsystem2().getStateMachine().updateState(ForkliftStateMachine2.State.DOWN);
         drive.robot.getPulleySubsystem().getStateMachine().updateState(PulleyStateMachine.State.DOWN);
         drive.robot.getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.IDLE);
 
@@ -213,15 +213,15 @@ public class BlueAuto1 extends LinearOpMode {
         if (isStopRequested()) return;
 
         currentState = State.WOBBLE;
-        drive.robot.getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.AUTOUP);
-        drive.robot.getForkliftSubsystem().update(getDt());
+        drive.robot.getForkliftSubsystem2().getStateMachine().updateState(ForkliftStateMachine2.State.ALIGN_UP);
+        drive.robot.getForkliftSubsystem2().update(getDt());
 
         //currentState = State.TRAJ1;
         //drive.followTrajectoryAsync(traj1);
 
         while (opModeIsActive() && !isStopRequested()) {
             if (!shooterRunning) {
-                drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.SPEED2);
+                drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.POLESHOT);
                 shooterRunning = true;
             }
 
@@ -313,7 +313,7 @@ public class BlueAuto1 extends LinearOpMode {
                     break;
                 case GOTOZONE:
                     if (!drive.isBusy()) {
-                        drive.robot.getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.AUTODOWN);
+                        drive.robot.getForkliftSubsystem2().getStateMachine().updateState(ForkliftStateMachine2.State.ALIGN_DOWN);
                         drive.robot.getPulleySubsystem().getStateMachine().updateState(PulleyStateMachine.State.DOWN);
                         goDown = true;
 //                        if (elevatorUp) {
@@ -370,7 +370,7 @@ public class BlueAuto1 extends LinearOpMode {
                     break;
                 case SHOOT:
                     if (!drive.isBusy()) {
-                        drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.SPEED1);
+                        drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.HIGHGOAL);
                         drive.robot.getPulleySubsystem().getStateMachine().updateState(PulleyStateMachine.State.UP);
                         currentState = State.WAIT9;
                         waitTimer.reset();
@@ -479,7 +479,7 @@ public class BlueAuto1 extends LinearOpMode {
                     break;
                 case RING3:
                     if (!drive.isBusy()) {
-                        drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.BACKSHOT);
+                        drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.AUTO_EXTRA_SHOT);
                         drive.robot.getPulleySubsystem().getStateMachine().updateState(PulleyStateMachine.State.UP);
                         currentState = State.WAITSHOT1;
                         waitTimer.reset();
@@ -520,7 +520,7 @@ public class BlueAuto1 extends LinearOpMode {
                 case INTAKE:
                     if (!drive.isBusy()) {
                         drive.followTrajectoryAsync(shootRing);
-                        drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.SPEED1);
+                        drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.HIGHGOAL);
                         currentState = State.HIGHSHOT;
 
                     }
@@ -564,10 +564,9 @@ public class BlueAuto1 extends LinearOpMode {
             drive.getExpansionHubs().update(getDt());
             drive.robot.getShooterSubsystem().update(getDt());
             drive.robot.getFlickerSubsystem().update(getDt());
-            drive.robot.getForkliftSubsystem().update(getDt());
+            drive.robot.getForkliftSubsystem2().update(getDt());
             drive.robot.getPulleySubsystem().update(getDt());
             drive.robot.getIntakeMotorSubsystem().update(getDt());
-            WobbleGoal();
 
             telemetry.addLine("Output" + drive.robot.getShooterSubsystem().getOutput());
             telemetry.addLine("Speed" + drive.robot.getShooterSubsystem().getState().getSpeed());
@@ -585,43 +584,15 @@ public class BlueAuto1 extends LinearOpMode {
     public static double getDt() { return dt;}
     public static void setDt(double pdt) { dt = pdt; }
 
-    void WobbleGoal()
-    {
-        //brake 1st time when it reaches align OR when it reaches the top
-        if (reachedUpPosition(maxPosition)) {
-            drive.robot.getForkliftSubsystem().getForkliftMotor().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            drive.robot.getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.IDLE);
-        }
-
-        if (lastEncoderTicks - currentEncoderTicks > 0 && reachedUpPosition(topPosition)){
-            drive.robot.getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.HOLD);//Counteract weight of wobble goal
-            if (currentEncoderTicks < topPosition) {//Check if too low even after holding
-                drive.robot.getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.AUTOUP);
-            }
-        }
-
-        if (reachedDownPosition(0)) {//Check if forklift has reached 0 position
-            drive.robot.getForkliftSubsystem().getForkliftMotor().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            drive.robot.getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.IDLE);
-        }
-
-        if (!reachedDownPosition(0) && goDown) {
-            drive.robot.getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.DOWN);
-        }
-        lastEncoderTicks = currentEncoderTicks;
-        currentEncoderTicks = drive.robot.getForkliftSubsystem().getForkliftMotor().getCurrentEncoderTicks();
-
-    }
-
     public boolean reachedUpPosition(double position) {
-        if (drive.robot.getForkliftSubsystem().getForkliftMotor().getCurrentEncoderTicks() < position)
+        if (drive.robot.getForkliftSubsystem2().getForkliftMotor().getCurrentEncoderTicks() < position)
             return false;
         else
             return true;
     }
 
     public boolean reachedDownPosition(double position) {
-        if (drive.robot.getForkliftSubsystem().getForkliftMotor().getCurrentEncoderTicks() > position)
+        if (drive.robot.getForkliftSubsystem2().getForkliftMotor().getCurrentEncoderTicks() > position)
             return false;
         else
             return true;

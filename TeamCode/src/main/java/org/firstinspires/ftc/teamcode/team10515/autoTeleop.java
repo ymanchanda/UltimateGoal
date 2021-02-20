@@ -214,10 +214,10 @@ public class autoTeleop extends UGTeleOpRobot {
 
         //adjust shooter speed
         if(iselevatorUp && (getEnhancedGamepad1().isxJustPressed() || getEnhancedGamepad1().isbJustPressed())) {
-            if (getEnhancedGamepad1().isxJustPressed()) { shooterChange++;
+            if (getEnhancedGamepad1().isbJustPressed()) { shooterChange++;
                 if (shooterChange > 4) { shooterChange = 4; }
             }
-            else if (getEnhancedGamepad1().isbJustPressed()) { shooterChange--;
+            else if (getEnhancedGamepad1().isxJustPressed()) { shooterChange--;
                 if (shooterChange < -4) { shooterChange = -4; }
             }
 
@@ -257,6 +257,11 @@ public class autoTeleop extends UGTeleOpRobot {
         if (getEnhancedGamepad2().isLeftBumperLast()){
             FlickThree = FlickState.FLICK;
         }
+
+        if (getEnhancedGamepad2().isbJustPressed()){
+            currentState = ArmState.PRESS;
+        }
+
 
         //WobbleGoal processing
         WobbleGoalV3();
