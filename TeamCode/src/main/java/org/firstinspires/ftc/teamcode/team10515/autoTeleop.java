@@ -180,7 +180,7 @@ public class autoTeleop extends UGTeleOpRobot {
             drive.robot.getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.IDLE);
         }
 
-        if (getEnhancedGamepad1().isaJustPressed()) {
+        if (!iselevatorUp && getEnhancedGamepad1().isaJustPressed()) {
             intakeChange++;
             if (intakeChange > 4) intakeChange = 0;
             switch(intakeChange) {
@@ -299,7 +299,7 @@ public class autoTeleop extends UGTeleOpRobot {
                 resetFlickThree.reset();
                 break;
             case WAITFLICK:
-                if (resetFlickThree.milliseconds() > 100 + (NumFlicks * 10)) {
+                if (resetFlickThree.milliseconds() > 100 + (NumFlicks * 20)) {
                     FlickThree = FlickState.BACK;
                 }
                 break;
@@ -309,7 +309,7 @@ public class autoTeleop extends UGTeleOpRobot {
                 resetFlickThree.reset();
                 break;
             case WAITBACK:
-                if (resetFlickThree.milliseconds() > 250 + (NumFlicks * 25)) {
+                if (resetFlickThree.milliseconds() > 300 + (NumFlicks * 30)) {
                     if (NumFlicks < 2) {
                         FlickThree = FlickState.FLICK;
                     }

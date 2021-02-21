@@ -20,7 +20,7 @@ import org.firstinspires.ftc.teamcode.team10515.states.ShooterStateMachine;
 /*
  * This is an example of a more complex path to really test the tuning.
  */
-@Autonomous(name= "Red Auto 1", group = "drive")
+@Autonomous(name= "Red Auto 2", group = "drive")
 public class RedAuto2 extends LinearOpMode {
     UGBase drive;
 
