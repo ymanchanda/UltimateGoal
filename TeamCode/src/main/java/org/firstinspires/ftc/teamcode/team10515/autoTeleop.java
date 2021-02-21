@@ -368,7 +368,7 @@ public class autoTeleop extends UGTeleOpRobot {
                 break;
 
             case PRESS_B:
-//                drive.robot.getForkliftSubsystem2().setCurrentTicks(drive.robot.getForkliftSubsystem2().getForkliftMotor().getCurrentEncoderTicks());
+                drive.robot.getForkliftSubsystem2().setCurrentTicks(drive.robot.getForkliftSubsystem2().getForkliftMotor().getCurrentEncoderTicks());
                 switch (drive.robot.getForkliftSubsystem2().getState()) {
                     case DOWN:
                         drive.robot.getForkliftSubsystem2().getStateMachine().updateState(ForkliftStateMachine2.State.ALIGN_UP);
@@ -382,7 +382,6 @@ public class autoTeleop extends UGTeleOpRobot {
                         break;
                 }
                 currentState = ArmState.MOVE;
-                drive.robot.getForkliftSubsystem2().setCurrentTicks(drive.robot.getForkliftSubsystem2().getForkliftMotor().getCurrentEncoderTicks());
                 break;
 
             case PRESS_X:
