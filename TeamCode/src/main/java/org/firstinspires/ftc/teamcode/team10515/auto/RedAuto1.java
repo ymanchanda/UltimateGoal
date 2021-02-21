@@ -97,7 +97,7 @@ public class RedAuto1 extends LinearOpMode {    UGBase drive;
 
     State currentState = State.IDLE;
 
-    Pose2d startPose = new Pose2d(-63, -24, Math.toRadians(0));
+    Pose2d startPose = new Pose2d(-63, -23, Math.toRadians(0));
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -112,13 +112,16 @@ public class RedAuto1 extends LinearOpMode {    UGBase drive;
         drive.robot.getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.IDLE);
 
         Trajectory traj1 = drive.trajectoryBuilder(startPose)
-                .splineTo(new Vector2d(0, 8), Math.toRadians(5))
+                .splineTo(new Vector2d(2, 10), Math.toRadians(10))
                 .build();
         Trajectory traj2 = drive.trajectoryBuilder(traj1.end())
-                .strafeRight(8)
+                .strafeRight(12)
                 .build();
         Trajectory traj3 = drive.trajectoryBuilder(traj2.end())
-                .strafeRight(8)
+                .strafeRight(12)
+                .build();
+        Trajectory homeBase = drive.trajectoryBuilder(traj3.end())
+                .splineTo(new Vector2d(-63, -23), Math.toRadians(10))
                 .build();
         Trajectory zoneA = drive.trajectoryBuilder(traj3.end())
                 .splineToLinearHeading(new Pose2d(12, -38, Math.toRadians(180)), Math.toRadians(0))
@@ -129,6 +132,19 @@ public class RedAuto1 extends LinearOpMode {    UGBase drive;
         Trajectory zoneC = drive.trajectoryBuilder(traj3.end())
                 .splineToLinearHeading(new Pose2d(60, -36, Math.toRadians(180)), Math.toRadians(0))
                 .build();
+        Trajectory strafeToWall = drive.trajectoryBuilder(zoneB.end())
+                .strafeRight(20)
+                .build();
+        Trajectory comeBack = drive.trajectoryBuilder(strafeToWall.end())
+                .back(75)
+                .build();
+        Trajectory strafeToRing = drive.trajectoryBuilder(traj3.end())
+                .strafeRight(20)
+                .build();
+        Trajectory forwardIntake = drive.trajectoryBuilder(strafeToRing.end())
+                .forward(35)
+                .build();
+
 //        Trajectory parkb = drive.trajectoryBuilder(zoneB.end())
 //                .back(24)
 //                .build();
@@ -210,7 +226,7 @@ public class RedAuto1 extends LinearOpMode {    UGBase drive;
                 .build();
         waitForStart();
 
-        UGCV.numRings numRings = drive.getRingsUsingImage(true);
+        UGCV.numRings numRings = UGCV.numRings.ZERO;//drive.getRingsUsingImage(true);
         telemetry.addLine("Num Rings: " + numRings);
         telemetry.update();
 
@@ -249,8 +265,8 @@ public class RedAuto1 extends LinearOpMode {    UGBase drive;
                     }
                     break;
                 case WAIT0:
-                    if (waitTimer.milliseconds() >= 2500) {
-                        currentState = State.IDLE;
+                    if (waitTimer.milliseconds() >= 500) {
+                        currentState = State.TRAJ1;
                         drive.followTrajectoryAsync(traj1);
                     }
                     break;
@@ -308,7 +324,7 @@ public class RedAuto1 extends LinearOpMode {    UGBase drive;
 
                         } else if (numRings == UGCV.numRings.ONE) {
                             currentState = State.GOTOZONE;
-                            drive.followTrajectoryAsync(zoneB);
+                            drive.followTrajectoryAsync(strafeToRing);
                         } else {
                             currentState = State.GOTOZONE;
                             drive.followTrajectoryAsync(zoneC);
@@ -316,25 +332,33 @@ public class RedAuto1 extends LinearOpMode {    UGBase drive;
                     }
                     break;
                 case GOTOZONE:
-                    drive.robot.getForkliftSubsystem2().getStateMachine().updateState(ForkliftStateMachine2.State.ALIGN_DOWN);
-                    drive.robot.getPulleySubsystem().getStateMachine().updateState(PulleyStateMachine.State.DOWN);
-                    goDown = true;
-                    waitTimer.reset();
-                    currentState = State.WAIT4;
+                    if (!drive.isBusy()){
+                        if (numRings == UGCV.numRings.ZERO){
+                            currentState = State.IDLE;
+                        }
+                        else
+                            //drive.followTrajectoryAsync(strafeToWall);
+                            currentState = State.WAIT4;
+                    }
+                    //drive.robot.getForkliftSubsystem2().getStateMachine().updateState(ForkliftStateMachine2.State.ALIGN_DOWN);
+                    //drive.robot.getPulleySubsystem().getStateMachine().updateState(PulleyStateMachine.State.DOWN);
+                    //goDown = true;
+                    //waitTimer.reset();
                     break;
                 case WAIT4:
                     if (waitTimer.milliseconds() >= 1500) {
                         if (numRings == UGCV.numRings.ONE) {
                             currentState = State.wobble2;
-                            drive.followTrajectoryAsync(wobble2B);
+                            drive.followTrajectoryAsync(strafeToRing);
+                            //drive.followTrajectoryAsync(wobble2B);
                         } else if (numRings == UGCV.numRings.FOUR) {
                             currentState = State.MIDPOINT;
                             drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.IDLE);
                             drive.followTrajectoryAsync(midpoint);
-                        } else {
-                            currentState = State.RINGDETECTION;
-                            drive.followTrajectoryAsync(release);
-                        }
+                        } //else {
+//                            currentState = State.RINGDETECTION;
+//                            drive.followTrajectoryAsync(release);
+//                        }
                     }
                     break;
                 case RINGDETECTION:
@@ -407,24 +431,27 @@ public class RedAuto1 extends LinearOpMode {    UGBase drive;
                 case wobble2:
                     if (!drive.isBusy()) {
                         drive.robot.getPulleySubsystem().getStateMachine().updateState(PulleyStateMachine.State.DOWN);
+                        drive.robot.getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.INTAKE4);
+                        drive.turnAsync(Math.toRadians(175));
+                        //drive.followTrajectoryAsync(forwardIntake);
                         currentState = State.WAIT5;
                         waitTimer.reset();
                     }
                     break;
                 case WAIT5:
                     if (waitTimer.milliseconds() >= 200) {
+                        drive.followTrajectoryAsync(forwardIntake);
                         currentState = State.GETRINGS;
-                        drive.followTrajectoryAsync(strafe);
                     }
                     break;
                 case GETRINGS:
                     if (!drive.isBusy()) {
                         if (numRings == UGCV.numRings.ONE) {
-                            drive.robot.getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.INTAKE3);
-                            drive.robot.getPulleySubsystem().getStateMachine().updateState(PulleyStateMachine.State.DOWN);
-
-                            currentState = State.INTAKE;
-                            drive.followTrajectoryAsync(forwardB);
+                            drive.turnAsync(Math.toRadians(180));
+                            drive.robot.getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.IDLE);
+                            drive.robot.getPulleySubsystem().getStateMachine().updateState(PulleyStateMachine.State.UP);
+                            currentState = State.IDLE;
+                            //drive.followTrajectoryAsync(forwardB);
                         } else {
                             drive.robot.getPulleySubsystem().getStateMachine().updateState(PulleyStateMachine.State.DOWN);
                             currentState = State.WAIT8;

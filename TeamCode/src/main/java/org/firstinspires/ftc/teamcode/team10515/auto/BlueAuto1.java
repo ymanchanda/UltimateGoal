@@ -118,7 +118,7 @@ public class BlueAuto1 extends LinearOpMode {
                 .splineTo(new Vector2d(2, 12), Math.toRadians(10))
                 .build();
         Trajectory traj2 = drive.trajectoryBuilder(traj1.end())
-                .strafeLeft(8)
+                .strafeLeft(10)
                 .build();
         Trajectory traj3 = drive.trajectoryBuilder(traj2.end())
                 .strafeLeft(10)
@@ -514,10 +514,10 @@ public class BlueAuto1 extends LinearOpMode {
                 case WAITTOGOUP:
                     if(waitTimer.milliseconds() >= 1400)
                     {
+                        drive.robot.getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.IDLE);
                         elevatorUp = false;
                         drive.turn(Math.toRadians(10));
                         drive.robot.getPulleySubsystem().getStateMachine().updateState(PulleyStateMachine.State.UP);
-                        drive.robot.getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.IDLE);
                         currentState = State.WAITSHOT1;
                         waitTimer.reset();
                     }
