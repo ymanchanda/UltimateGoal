@@ -372,18 +372,30 @@ public class autoTeleop extends UGTeleOpRobot {
                         drive.robot.getForkliftSubsystem2().getStateMachine().updateState(ForkliftStateMachine2.State.UP);
                         break;
                     case UP:
-                        drive.robot.getForkliftSubsystem2().getStateMachine().updateState(ForkliftStateMachine2.State.ALIGN_DOWN);
+                        drive.robot.getForkliftSubsystem2().getStateMachine().updateState(ForkliftStateMachine2.State.UP);//If it's up keep it up
                         break;
-                    case ALIGN_DOWN:
-                        drive.robot.getForkliftSubsystem2().getStateMachine().updateState(ForkliftStateMachine2.State.DOWN);
-                        break;
+//                    case ALIGN_DOWN:
+//                        drive.robot.getForkliftSubsystem2().getStateMachine().updateState(ForkliftStateMachine2.State.DOWN);
+//                        break;
                 }
                 break;
 
             case PRESS_X:
                 drive.robot.getForkliftSubsystem2().setCurrentTicks(drive.robot.getForkliftSubsystem2().getForkliftMotor().getCurrentEncoderTicks());
                 currentState = ArmState.MOVE;
-                drive.robot.getForkliftSubsystem2().getStateMachine().updateState(ForkliftStateMachine2.State.DOWN);
+                switch(drive.robot.getForkliftSubsystem2().getState()) {
+                    case UP:
+                        drive.robot.getForkliftSubsystem2().getStateMachine().updateState(ForkliftStateMachine2.State.ALIGN_DOWN);
+                        break;
+
+                    case ALIGN_DOWN:
+                        drive.robot.getForkliftSubsystem2().getStateMachine().updateState(ForkliftStateMachine2.State.DOWN);
+                        break;
+
+                    case DOWN:
+                        drive.robot.getForkliftSubsystem2().getStateMachine().updateState(ForkliftStateMachine2.State.DOWN);//If it's down keep it down
+                        break;
+                }
                 break;
 
             case MOVE:
