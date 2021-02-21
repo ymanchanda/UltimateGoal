@@ -262,6 +262,9 @@ public class autoTeleop extends UGTeleOpRobot {
         if (getEnhancedGamepad2().isbJustPressed()){
             currentState = ArmState.PRESS_B;
         }
+        else if (getEnhancedGamepad2().isxJustPressed()){
+            currentState = ArmState.PRESS_X;
+        }
 
 
         //WobbleGoal processing
