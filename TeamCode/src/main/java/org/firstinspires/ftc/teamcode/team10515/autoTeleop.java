@@ -56,6 +56,8 @@ public class autoTeleop extends UGTeleOpRobot {
     private int intakeChange = 0;
     private int shooterChange = 0;
     private double currSpeed = 0;
+    int intPressedB = 0;
+    int intPressedX = 0;
 
     enum FlickState {
         FLICK,
@@ -73,6 +75,7 @@ public class autoTeleop extends UGTeleOpRobot {
     }
     public ElapsedTime resetFlicker = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
     public ElapsedTime resetFlickThree = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+    public ElapsedTime resetWobble = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
 
     //Wobble goal Forklift
 //    public static final int alignPosition = 650;
@@ -259,19 +262,22 @@ public class autoTeleop extends UGTeleOpRobot {
             FlickThree = FlickState.FLICK;
         }
 
-        if (getEnhancedGamepad2().isbJustPressed()){
+        if (gamepad2.b && resetWobble.milliseconds() > 300){
             currentState = ArmState.PRESS_B;
+            intPressedB++;
+            resetWobble.reset();
         }
-        else if (getEnhancedGamepad2().isxJustPressed()){
+        else if (gamepad2.x && resetWobble.milliseconds() > 300){
             currentState = ArmState.PRESS_X;
+            intPressedX++;
+            resetWobble.reset();
         }
-
 
         //WobbleGoal processing
         WobbleGoalV3();
         FlickThree();
 
-        telemetry.addLine("Intake change: " + intakeChange);
+        telemetry.addLine("Pressed"+intPressedX+", "+intPressedB);
         telemetry.addLine("Shooter change: " + shooterChange);
         telemetry.addLine("Voltage: " + getBatteryVoltage());
         telemetry.addLine("Pose"+poseEstimate.getX()+", "+poseEstimate.getY()+", "+poseEstimate.getHeading());
@@ -293,7 +299,7 @@ public class autoTeleop extends UGTeleOpRobot {
                 resetFlickThree.reset();
                 break;
             case WAITFLICK:
-                if (resetFlickThree.milliseconds() > 100) {
+                if (resetFlickThree.milliseconds() > 100 + (NumFlicks * 10)) {
                     FlickThree = FlickState.BACK;
                 }
                 break;
@@ -303,7 +309,7 @@ public class autoTeleop extends UGTeleOpRobot {
                 resetFlickThree.reset();
                 break;
             case WAITBACK:
-                if (resetFlickThree.milliseconds() > 250) {
+                if (resetFlickThree.milliseconds() > 250 + (NumFlicks * 25)) {
                     if (NumFlicks < 2) {
                         FlickThree = FlickState.FLICK;
                     }
@@ -363,39 +369,36 @@ public class autoTeleop extends UGTeleOpRobot {
 
             case PRESS_B:
                 drive.robot.getForkliftSubsystem2().setCurrentTicks(drive.robot.getForkliftSubsystem2().getForkliftMotor().getCurrentEncoderTicks());
-                currentState = ArmState.MOVE;
                 switch (drive.robot.getForkliftSubsystem2().getState()) {
                     case DOWN:
                         drive.robot.getForkliftSubsystem2().getStateMachine().updateState(ForkliftStateMachine2.State.ALIGN_UP);
                         break;
                     case ALIGN_UP:
+                    case ALIGN_DOWN:
                         drive.robot.getForkliftSubsystem2().getStateMachine().updateState(ForkliftStateMachine2.State.UP);
                         break;
                     case UP:
-                        drive.robot.getForkliftSubsystem2().getStateMachine().updateState(ForkliftStateMachine2.State.UP);//If it's up keep it up
+                        //drive.robot.getForkliftSubsystem2().getStateMachine().updateState(ForkliftStateMachine2.State.UP);//If it's up keep it up
                         break;
-//                    case ALIGN_DOWN:
-//                        drive.robot.getForkliftSubsystem2().getStateMachine().updateState(ForkliftStateMachine2.State.DOWN);
-//                        break;
                 }
+                currentState = ArmState.MOVE;
                 break;
 
             case PRESS_X:
                 drive.robot.getForkliftSubsystem2().setCurrentTicks(drive.robot.getForkliftSubsystem2().getForkliftMotor().getCurrentEncoderTicks());
-                currentState = ArmState.MOVE;
                 switch(drive.robot.getForkliftSubsystem2().getState()) {
                     case UP:
                         drive.robot.getForkliftSubsystem2().getStateMachine().updateState(ForkliftStateMachine2.State.ALIGN_DOWN);
                         break;
-
                     case ALIGN_DOWN:
+                    case ALIGN_UP:
                         drive.robot.getForkliftSubsystem2().getStateMachine().updateState(ForkliftStateMachine2.State.DOWN);
                         break;
-
                     case DOWN:
-                        drive.robot.getForkliftSubsystem2().getStateMachine().updateState(ForkliftStateMachine2.State.DOWN);//If it's down keep it down
+                        //drive.robot.getForkliftSubsystem2().getStateMachine().updateState(ForkliftStateMachine2.State.DOWN);//If it's down keep it down
                         break;
                 }
+                currentState = ArmState.MOVE;
                 break;
 
             case MOVE:
@@ -407,19 +410,6 @@ public class autoTeleop extends UGTeleOpRobot {
                 }
                 break;
         }
-    }
-    public boolean reachedUpPosition(double position) {
-        if (drive.robot.getForkliftSubsystem2().getForkliftMotor().getCurrentEncoderTicks() < position)
-            return false;
-        else
-        return true;
-    }
-
-    public boolean reachedDownPosition(double position) {
-        if (drive.robot.getForkliftSubsystem2().getForkliftMotor().getCurrentEncoderTicks() > position)
-            return false;
-        else
-            return true;
     }
 
     // Computes the current battery voltage

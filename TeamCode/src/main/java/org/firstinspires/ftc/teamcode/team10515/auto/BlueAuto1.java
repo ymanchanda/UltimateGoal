@@ -534,7 +534,7 @@ public class BlueAuto1 extends LinearOpMode {
                     }
                     break;
                 case WAIT6:
-                    if (waitTimer.milliseconds() >= 500) {
+                    if (waitTimer.milliseconds() >= 800) {
                         drive.robot.getFlickerSubsystem().getStateMachine().updateState(FlickerStateMachine.State.HIT);
                         currentState = State.FINISH;
                         waitTimer.reset();
