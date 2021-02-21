@@ -55,13 +55,13 @@ public class ForkliftAngle extends UltimateGoalRobot {
 
     public double getSpeed(double ticks) {
         if(initialAngle == targetAngle) {
-            return 0;
+            return 0d;
         }
         currentAngle = getAngle(ticks);
         if(initialAngle < targetAngle) {
             telemetry.addLine("Going UP");
             if(currentAngle >= targetAngle) {
-                return 0;
+                return 0d;
             }
             if((currentAngle - initialAngle) <= factorOfMS * angleDiff){
                 return maxSpeed;
@@ -73,7 +73,7 @@ public class ForkliftAngle extends UltimateGoalRobot {
         else {
             telemetry.addLine("Going DOWN");
             if(currentAngle <= targetAngle) {
-                return 0;
+                return 0d;
             }
             if((currentAngle - initialAngle) >= factorOfMS * angleDiff){
                 return -maxSpeed;

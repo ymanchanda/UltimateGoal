@@ -9,6 +9,7 @@ import com.acmerobotics.roadrunner.trajectory.constraints.MinVelocityConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.ProfileAccelerationConstraint;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.drive.DriveConstants;
@@ -113,8 +114,10 @@ public class BlueAuto2 extends LinearOpMode {
 
         drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.IDLE);
         drive.robot.getFlickerSubsystem().getStateMachine().updateState(FlickerStateMachine.State.INIT);
+        //drive.robot.getForkliftSubsystem2().getForkliftMotor().setPower(0);
         drive.robot.getForkliftSubsystem2().getStateMachine().updateState(ForkliftStateMachine2.State.DOWN);
         drive.robot.getForkliftSubsystem2().setCurrentTicks(drive.robot.getForkliftSubsystem2().getForkliftMotor().getCurrentEncoderTicks());
+
         drive.robot.getPulleySubsystem().getStateMachine().updateState(PulleyStateMachine.State.DOWN);
         drive.robot.getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.IDLE);
 
@@ -218,13 +221,12 @@ public class BlueAuto2 extends LinearOpMode {
         if (isStopRequested()) return;
 
         currentState = State.WOBBLE;
-        drive.robot.getForkliftSubsystem2().getStateMachine().updateState(ForkliftStateMachine2.State.ALIGN_UP);
-        drive.robot.getForkliftSubsystem2().update(getDt());
 
         //currentState = State.TRAJ1;
         //drive.followTrajectoryAsync(traj1);
 
         while (opModeIsActive() && !isStopRequested()) {
+
             if (!shooterRunning) {
                 drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.POLESHOT);
                 shooterRunning = true;
@@ -240,14 +242,6 @@ public class BlueAuto2 extends LinearOpMode {
                 flickerchange = false;
             }
 
-            if(powerWobbleArm){//Set this to true once you have updated state of wobble goal arm
-                double power = drive.robot.getForkliftSubsystem2().getPower(drive.robot.getForkliftSubsystem2().getForkliftMotor().getCurrentEncoderTicks());
-                drive.robot.getForkliftSubsystem2().getForkliftMotor().setPower(power);
-                if(power == 0.0){
-                    powerWobbleArm = false;
-                }
-            }
-
             //-----------------------------------------------------------------------------------------------------------
             //Template for setting wobble state to down:
             //drive.robot.getForkliftSubsystem2().getStateMachine().updateState(ForkliftStateMachine2.State.DOWN);
@@ -257,10 +251,30 @@ public class BlueAuto2 extends LinearOpMode {
 
             setDt(getUpdateRuntime().getDeltaTime(TimeUnits.SECONDS, true));
 
+            if(powerWobbleArm){//Set this to true once you have updated state of wobble goal arm
+                double power = drive.robot.getForkliftSubsystem2().getPower(drive.robot.getForkliftSubsystem2().getForkliftMotor().getCurrentEncoderTicks());
+                drive.robot.getForkliftSubsystem2().getForkliftMotor().setPower(power);
+                if(power == 0d){
+                    drive.robot.getForkliftSubsystem2().getForkliftMotor().setPower(0);
+                    drive.robot.getForkliftSubsystem2().getForkliftMotor().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+                    powerWobbleArm = false;
+                }
+                telemetry.addLine("Power Wobble " + power);
+                telemetry.update();
+            }
+
             switch (currentState) {
                 case WOBBLE:
                     if (!drive.isBusy()) {
+                        //drive.robot.getForkliftSubsystem2().setCurrentTicks(drive.robot.getForkliftSubsystem2().getForkliftMotor().getCurrentEncoderTicks());
+                        //drive.robot.getForkliftSubsystem2().getStateMachine().updateState(ForkliftStateMachine2.State.UP);
+                        drive.robot.getForkliftSubsystem2().getStateMachine().updateState(ForkliftStateMachine2.State.UP);
+                        drive.robot.getForkliftSubsystem2().setCurrentTicks(drive.robot.getForkliftSubsystem2().getForkliftMotor().getCurrentEncoderTicks());
+
+                        powerWobbleArm = true;
                         currentState = State.WAIT0;
+                        telemetry.addLine("Align Up");
+                        telemetry.update();
                         waitTimer.reset();
                     }
                     break;
@@ -333,7 +347,9 @@ public class BlueAuto2 extends LinearOpMode {
                     break;
                 case GOTOZONE:
                     if (!drive.isBusy()) {
-                        drive.robot.getForkliftSubsystem2().getStateMachine().updateState(ForkliftStateMachine2.State.ALIGN_DOWN);
+                        drive.robot.getForkliftSubsystem2().setCurrentTicks(drive.robot.getForkliftSubsystem2().getForkliftMotor().getCurrentEncoderTicks());
+                        drive.robot.getForkliftSubsystem2().getStateMachine().updateState(ForkliftStateMachine2.State.DOWN);
+                        powerWobbleArm = true;
                         drive.robot.getPulleySubsystem().getStateMachine().updateState(PulleyStateMachine.State.DOWN);
 //                        goDown = true;
 //                        if (elevatorUp) {
@@ -397,7 +413,7 @@ public class BlueAuto2 extends LinearOpMode {
                     }
                     break;
                 case WAIT9:
-                    if (waitTimer.milliseconds() >= 600) {
+                    if (waitTimer.milliseconds() >= 1000) {
                         drive.robot.getFlickerSubsystem().getStateMachine().updateState(FlickerStateMachine.State.HIT);
                         shotcount++;
                         flickerchange = true;
@@ -506,7 +522,7 @@ public class BlueAuto2 extends LinearOpMode {
                     }
                     break;
                 case WAITSHOT1:
-                    if (waitTimer.milliseconds() >= 600) {
+                    if (waitTimer.milliseconds() >= 1000) {
                         drive.robot.getFlickerSubsystem().getStateMachine().updateState(FlickerStateMachine.State.HIT);
                         flickerchange = true;
                         flickerTime.reset();
@@ -554,7 +570,7 @@ public class BlueAuto2 extends LinearOpMode {
                     }
                     break;
                 case WAIT6:
-                    if (waitTimer.milliseconds() >= 500) {
+                    if (waitTimer.milliseconds() >= 1000) {
                         drive.robot.getFlickerSubsystem().getStateMachine().updateState(FlickerStateMachine.State.HIT);
                         currentState = State.FINISH;
                         waitTimer.reset();

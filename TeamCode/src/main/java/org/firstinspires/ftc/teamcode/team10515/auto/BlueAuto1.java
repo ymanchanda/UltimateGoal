@@ -534,7 +534,7 @@ public class BlueAuto1 extends LinearOpMode {
                     }
                     break;
                 case WAIT6:
-                    if (waitTimer.milliseconds() >= 800) {
+                    if (waitTimer.milliseconds() >= 1000) {
                         drive.robot.getFlickerSubsystem().getStateMachine().updateState(FlickerStateMachine.State.HIT);
                         currentState = State.FINISH;
                         waitTimer.reset();
@@ -549,14 +549,15 @@ public class BlueAuto1 extends LinearOpMode {
                     }
                     break;
                 case IDLE:
-                    if (elevatorUp) {
-                        drive.robot.getPulleySubsystem().getStateMachine().updateState(PulleyStateMachine.State.DOWN);
-                        elevatorUp = false;
-                    }
-                    if (shooterRunning) {
-                        drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.IDLE);
-                        shooterRunning = false;
-                    }
+                    if(!drive.isBusy())
+                        if (elevatorUp) {
+                            drive.robot.getPulleySubsystem().getStateMachine().updateState(PulleyStateMachine.State.DOWN);
+                            elevatorUp = false;
+                         }
+                        if (shooterRunning) {
+                            drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.IDLE);
+                            shooterRunning = false;
+                        }
                     break;
             } //end for switch
 
