@@ -47,6 +47,7 @@ public class ForkliftTest extends UltimateGoalRobot{
 
         WobbleGoalV3();
 
+        telemetry.addLine("State: " + getForkliftSubsystem2().getState());
         telemetry.addLine("Ticks: " + forkliftMotor.getCurrentEncoderTicks());
         telemetry.update();
 
