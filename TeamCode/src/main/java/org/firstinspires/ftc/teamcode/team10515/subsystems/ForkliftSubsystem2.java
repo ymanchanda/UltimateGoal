@@ -43,6 +43,7 @@ public class ForkliftSubsystem2 implements ISubsystem<ForkliftStateMachine2, For
     @Override
     public void update(double dt) {
         getStateMachine().update(dt);
+        forkliftMotor.setPower(getPower());
     }
 
     public double getPower(){
