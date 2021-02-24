@@ -147,9 +147,14 @@ public class UGBase extends MecanumDrive {
     private VuforiaLocalizer vuforia = null;
 
     public UGBase(HardwareMap hardwareMap) {
+        this(hardwareMap, false);
+    }
+
+    public UGBase(HardwareMap hardwareMap, boolean IsteleOp) {
         super(kV, kA, kStatic, TRACK_WIDTH, TRACK_WIDTH, LATERAL_MULTIPLIER);
         robot.init(hardwareMap);
-        initVuforia(hardwareMap);
+        if (!IsteleOp)
+            initVuforia(hardwareMap);
         dashboard = FtcDashboard.getInstance();
         dashboard.setTelemetryTransmissionInterval(25);
 
@@ -453,10 +458,7 @@ public class UGBase extends MecanumDrive {
     public UGCV.numRings getRingsUsingImage(boolean red) {
 
         UGCV ugvuforia = new UGCV(vuforia);
-        UGCV.numRings position = UGCV.numRings.ZERO;
-
-        position = ugvuforia.GetPosition(true,red);
-        return position;
+        return ugvuforia.GetPosition(true,red);
     }
 
     public void initVuforia(HardwareMap hardwareMap) {
