@@ -47,7 +47,7 @@ public class ForkliftSubsystem2 implements ISubsystem<ForkliftStateMachine2, For
 
     public double getPower(){
         double power = 0d;
-        double angleDiff = getAngle() - getState().getAngle();
+        double angleDiff = getCurrentAngle() - getState().getAngle();
 
         //return +- if within 5 degrees
         if(angleDiff <= 5 || angleDiff >= -5) {
@@ -71,7 +71,7 @@ public class ForkliftSubsystem2 implements ISubsystem<ForkliftStateMachine2, For
         return power;
     }
 
-    public double getAngle() {
+    public double getCurrentAngle() {
         double encoderTicks = forkliftMotor.getCurrentEncoderTicks();
         return encoderTicks/COUNTS_PER_MOTOR_REV*180;
     }
