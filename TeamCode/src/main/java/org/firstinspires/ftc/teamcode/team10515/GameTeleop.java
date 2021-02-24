@@ -201,7 +201,7 @@ public class GameTeleop extends UltimateGoalRobot {
                 break;
 
             case PRESS:
-                getForkliftSubsystem2().setCurrentTicks(getForkliftSubsystem2().getForkliftMotor().getCurrentEncoderTicks());
+                //getForkliftSubsystem2().setCurrentTicks(getForkliftSubsystem2().getForkliftMotor().getCurrentEncoderTicks());
                 currentState = ArmState.MOVE;
                 switch (getForkliftSubsystem2().getState()) {
                     case DOWN:
@@ -220,7 +220,7 @@ public class GameTeleop extends UltimateGoalRobot {
                 break;
 
             case MOVE:
-                double power = getForkliftSubsystem2().getPower(getForkliftSubsystem2().getForkliftMotor().getCurrentEncoderTicks());
+                double power = getForkliftSubsystem2().getPower();
                 getForkliftSubsystem2().getForkliftMotor().setPower(power);
                 telemetry.addLine("Power: " + power);
                 if(power == 0.0){

@@ -368,7 +368,7 @@ public class autoTeleop extends UGTeleOpRobot {
                 break;
 
             case PRESS_B:
-                drive.robot.getForkliftSubsystem2().setCurrentTicks(drive.robot.getForkliftSubsystem2().getForkliftMotor().getCurrentEncoderTicks());
+                //drive.robot.getForkliftSubsystem2().setCurrentTicks(drive.robot.getForkliftSubsystem2().getForkliftMotor().getCurrentEncoderTicks());
                 switch (drive.robot.getForkliftSubsystem2().getState()) {
                     case DOWN:
                         drive.robot.getForkliftSubsystem2().getStateMachine().updateState(ForkliftStateMachine2.State.ALIGN_UP);
@@ -385,7 +385,7 @@ public class autoTeleop extends UGTeleOpRobot {
                 break;
 
             case PRESS_X:
-                drive.robot.getForkliftSubsystem2().setCurrentTicks(drive.robot.getForkliftSubsystem2().getForkliftMotor().getCurrentEncoderTicks());
+                //drive.robot.getForkliftSubsystem2().setCurrentTicks(drive.robot.getForkliftSubsystem2().getForkliftMotor().getCurrentEncoderTicks());
                 switch(drive.robot.getForkliftSubsystem2().getState()) {
                     case UP:
                         drive.robot.getForkliftSubsystem2().getStateMachine().updateState(ForkliftStateMachine2.State.ALIGN_DOWN);
@@ -402,7 +402,7 @@ public class autoTeleop extends UGTeleOpRobot {
                 break;
 
             case MOVE:
-                double power = drive.robot.getForkliftSubsystem2().getPower(drive.robot.getForkliftSubsystem2().getForkliftMotor().getCurrentEncoderTicks());
+                double power = drive.robot.getForkliftSubsystem2().getPower();
                 drive.robot.getForkliftSubsystem2().getForkliftMotor().setPower(power);
                 telemetry.addLine("Power: " + power);
                 if(power == 0.0){

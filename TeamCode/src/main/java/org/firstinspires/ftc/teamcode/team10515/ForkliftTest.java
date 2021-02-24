@@ -59,7 +59,7 @@ public class ForkliftTest extends UltimateGoalRobot{
                     break;
 
                 case PRESS:
-                    getForkliftSubsystem2().setCurrentTicks(forkliftMotor.getCurrentEncoderTicks());
+                   // getForkliftSubsystem2().setCurrentTicks(forkliftMotor.getCurrentEncoderTicks());
                     currentState = ArmState.MOVE;
                         switch (getForkliftSubsystem2().getState()) {
                             case DOWN:
@@ -78,7 +78,7 @@ public class ForkliftTest extends UltimateGoalRobot{
                     break;
 
                 case MOVE:
-                    double power = getForkliftSubsystem2().getPower(forkliftMotor.getCurrentEncoderTicks());
+                    double power = getForkliftSubsystem2().getPower();
                     forkliftMotor.setPower(power);
                     telemetry.addLine("Power: " + power);
                     if(power == 0.0){

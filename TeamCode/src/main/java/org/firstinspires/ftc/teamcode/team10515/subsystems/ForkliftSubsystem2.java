@@ -1,19 +1,19 @@
 package org.firstinspires.ftc.teamcode.team10515.subsystems;
 
+import org.apache.commons.math3.random.RandomGenerator;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.lib.drivers.RevMotor;
-import org.firstinspires.ftc.teamcode.team10515.control.ForkliftAngle;
 import org.firstinspires.ftc.teamcode.team10515.states.ForkliftStateMachine2;
 
 public class ForkliftSubsystem2 implements ISubsystem<ForkliftStateMachine2, ForkliftStateMachine2.State> {
     private static ForkliftStateMachine2 ForkliftStateMachine2;
     private RevMotor forkliftMotor;
-    private ForkliftAngle f;
+    final double COUNTS_PER_MOTOR_REV = 2786.0;
+    private double minSpeed = 0.15, maxSpeed = 0.6, factorOfMS = 0.7;
 
     public ForkliftSubsystem2(RevMotor forkliftMotor){
         setForkliftStateMachine2(new ForkliftStateMachine2());
         setForkliftMotor(forkliftMotor);
-        f = new ForkliftAngle(0.15, 0.6, 0.7);
     }
 
     @Override
@@ -27,14 +27,10 @@ public class ForkliftSubsystem2 implements ISubsystem<ForkliftStateMachine2, For
     }
 
     @Override
-    public void start() {
-
-    }
+    public void start() {    }
 
     @Override
-    public void stop() {
-
-    }
+    public void stop() {    }
 
     @Override
     public String getName() {
@@ -42,25 +38,43 @@ public class ForkliftSubsystem2 implements ISubsystem<ForkliftStateMachine2, For
     }
 
     @Override
-    public void writeToTelemetry(Telemetry telemetry) {
-
-    }
+    public void writeToTelemetry(Telemetry telemetry) {    }
 
     @Override
     public void update(double dt) {
         getStateMachine().update(dt);
-//        getForkliftMotor().setPower(getPower(getForkliftMotor().getCurrentEncoderTicks()));
     }
 
-    public double getPower(double ticks){
-        return f.getSpeed(ticks);
+    public double getPower(){
+        double power = 0d;
+        double angleDiff = getAngle() - getState().getAngle();
+
+        //return +- if within 5 degrees
+        if(angleDiff <= 5 || angleDiff >= -5) {
+            power = 0d;
+        }
+        else {
+           if (angleDiff > 0) {
+                if (angleDiff <= factorOfMS * angleDiff) {
+                    power = maxSpeed;
+                } else {
+                    power = (angleDiff / ((1 - factorOfMS) * angleDiff)) * (maxSpeed - minSpeed) + minSpeed;
+                }
+            } else if (angleDiff < 0) {
+                if (angleDiff >= factorOfMS * angleDiff) {
+                    power = -maxSpeed;
+                } else {
+                    power = ((angleDiff / ((1 - factorOfMS) * angleDiff)) * (maxSpeed - minSpeed) - minSpeed);
+                }
+            }
+        }
+        return power;
     }
 
-    public void setCurrentTicks(double ticks){
-        ticks = f.getAngle(ticks);
-        f.setAngle(ticks, getState().getAngle());
+    public double getAngle() {
+        double encoderTicks = forkliftMotor.getCurrentEncoderTicks();
+        return encoderTicks/COUNTS_PER_MOTOR_REV*180;
     }
-
     public RevMotor getForkliftMotor(){
         return forkliftMotor;
     }
