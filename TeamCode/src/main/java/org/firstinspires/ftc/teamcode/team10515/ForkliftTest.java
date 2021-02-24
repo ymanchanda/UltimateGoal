@@ -82,7 +82,6 @@ public class ForkliftTest extends UltimateGoalRobot{
 
                 case MOVE:
                     double power = getForkliftSubsystem2().getPower();
-                    forkliftMotor.setPower(power);
                     telemetry.addLine("Power: " + power);
                     if(power == 0.0){
                         currentState = ArmState.IDLE;
