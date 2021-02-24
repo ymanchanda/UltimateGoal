@@ -9,7 +9,7 @@ public class ShooterSubsystem implements ISubsystem<ShooterStateMachine, Shooter
     private static ShooterStateMachine shooterStateMachine;
     private RevMotor ShooterWheel;
     private RevMotor ShooterWheel2;
-    private double kP = (1/14600d);
+    private double kP = (1/10000d);//14600
     private double output = 0d;
 
     public ShooterSubsystem(RevMotor shooterMotor, RevMotor shooterMotor2){
