@@ -101,7 +101,7 @@ public class autoTeleop extends UGTeleOpRobot {
 
     @Override
     public void init() {
-        drive = new UGBase(hardwareMap);
+        drive = new UGBase(hardwareMap, true);
         drive.setPoseEstimate(PoseStorage.currentPose);
         currentState = ArmState.IDLE;
 
