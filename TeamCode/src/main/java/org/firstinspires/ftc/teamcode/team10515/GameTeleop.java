@@ -68,10 +68,10 @@ public class GameTeleop extends UltimateGoalRobot {
 //    public boolean pastAlign, pastTop = false;
     public ElapsedTime btnPressedB; //Regular button
     public ElapsedTime btnPressedX; //Override button (Sets state to DOWN)
+    boolean returnFromTop = false;
 
     public enum ArmState {
         IDLE,
-        PRESS,
         MOVE
     }
 
@@ -193,41 +193,34 @@ public class GameTeleop extends UltimateGoalRobot {
 
     public void WobbleGoalV3(){
         if(getEnhancedGamepad1().isbJustPressed()){
-            currentState = ArmState.PRESS;
+            currentState = ArmState.MOVE;
         }
         switch (currentState) {
             case IDLE:
-                getForkliftSubsystem2().getForkliftMotor().setPower(0);
-                break;
-
-            case PRESS:
-                //getForkliftSubsystem2().setCurrentTicks(getForkliftSubsystem2().getForkliftMotor().getCurrentEncoderTicks());
-                currentState = ArmState.MOVE;
-                switch (getForkliftSubsystem2().getState()) {
-                    case DOWN:
-                        getForkliftSubsystem2().getStateMachine().updateState(ForkliftStateMachine2.State.ALIGN_UP);
-                        break;
-                    case ALIGN_UP:
-                        getForkliftSubsystem2().getStateMachine().updateState(ForkliftStateMachine2.State.UP);
-                        break;
-                    case UP:
-                        getForkliftSubsystem2().getStateMachine().updateState(ForkliftStateMachine2.State.ALIGN_DOWN);
-                        break;
-                    case ALIGN_DOWN:
-                        getForkliftSubsystem2().getStateMachine().updateState(ForkliftStateMachine2.State.DOWN);
-                        break;
-                }
+                //do nothing
                 break;
 
             case MOVE:
-                double power = getForkliftSubsystem2().getPower();
-                getForkliftSubsystem2().getForkliftMotor().setPower(power);
-                telemetry.addLine("Power: " + power);
-                if(power == 0.0){
-                    currentState = ArmState.IDLE;
+                currentState = ArmState.IDLE;
+                switch (getForkliftSubsystem2().getState()) {
+                    case INIT:
+                        getForkliftSubsystem2().getStateMachine().updateState(ForkliftStateMachine2.State.ALIGN);
+                        returnFromTop = false;
+                        break;
+                    case ALIGN:
+                        if (returnFromTop)
+                            getForkliftSubsystem2().getStateMachine().updateState(ForkliftStateMachine2.State.INIT);
+                        else
+                            getForkliftSubsystem2().getStateMachine().updateState(ForkliftStateMachine2.State.TOP);
+                        break;
+                    case TOP:
+                        getForkliftSubsystem2().getStateMachine().updateState(ForkliftStateMachine2.State.ALIGN);
+                        returnFromTop = true;
+                        break;
                 }
                 break;
-        }    }
+        }
+    }
 
 //    public boolean reachedUpPosition(double position) {
 //        if (getForkliftSubsystem2().getForkliftMotor().getCurrentEncoderTicks() < position)

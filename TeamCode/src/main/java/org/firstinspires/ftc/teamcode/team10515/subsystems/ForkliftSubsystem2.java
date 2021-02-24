@@ -8,8 +8,7 @@ import org.firstinspires.ftc.teamcode.team10515.states.ForkliftStateMachine2;
 public class ForkliftSubsystem2 implements ISubsystem<ForkliftStateMachine2, ForkliftStateMachine2.State> {
     private static ForkliftStateMachine2 ForkliftStateMachine2;
     private RevMotor forkliftMotor;
-    final double COUNTS_PER_MOTOR_REV = 2786.0;
-    private double minSpeed = 0.15, maxSpeed = 0.6, factorOfMS = 0.7;
+    private boolean presetMode = true;
 
     public ForkliftSubsystem2(RevMotor forkliftMotor){
         setForkliftStateMachine2(new ForkliftStateMachine2());
@@ -43,39 +42,15 @@ public class ForkliftSubsystem2 implements ISubsystem<ForkliftStateMachine2, For
     @Override
     public void update(double dt) {
         getStateMachine().update(dt);
-        forkliftMotor.setPower(getPower());
-    }
-
-    public double getPower(){
-        double power = 0d;
-        double angleDiff = getState().getAngle() - getCurrentAngle();
-
-        //return +- if within 5 degrees
-        if(angleDiff <= 5 || angleDiff >= -5) {
-            power = 0d;
-        }
-        else {
-           if (angleDiff > 5) {
-                if (angleDiff >= factorOfMS * angleDiff) {
-                    power = maxSpeed;
-                } else {
-                    power = ((angleDiff / ((1 - factorOfMS) * angleDiff)) * (maxSpeed - minSpeed)) + minSpeed;
-                }
-            } else if (angleDiff < -5) {
-                if (angleDiff <= factorOfMS * angleDiff) {
-                    power = -maxSpeed;
-                } else {
-                    power = ((angleDiff / ((1 - factorOfMS) * angleDiff)) * (maxSpeed - minSpeed)) - minSpeed;
-                }
-            }
-        }
-        return power;
+        if (presetMode)
+            getForkliftMotor().setPower(getState().getPower(getCurrentAngle()));
     }
 
     public double getCurrentAngle() {
-        double encoderTicks = forkliftMotor.getCurrentEncoderTicks();
-        return encoderTicks/COUNTS_PER_MOTOR_REV*360;
+        double encoderTicks = getForkliftMotor().getCurrentEncoderTicks() / getForkliftMotor().getEncoderTicksPerRevolution();
+        return encoderTicks * 180;
     }
+
     public RevMotor getForkliftMotor(){
         return forkliftMotor;
     }
@@ -88,4 +63,7 @@ public class ForkliftSubsystem2 implements ISubsystem<ForkliftStateMachine2, For
         this.forkliftMotor = motor;
     }
 
+    public void setPresetMode(boolean preset){
+        this.presetMode = preset;
+    }
 }
