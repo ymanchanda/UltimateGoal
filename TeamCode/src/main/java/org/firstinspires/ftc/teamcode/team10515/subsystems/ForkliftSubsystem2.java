@@ -47,24 +47,24 @@ public class ForkliftSubsystem2 implements ISubsystem<ForkliftStateMachine2, For
 
     public double getPower(){
         double power = 0d;
-        double angleDiff = getCurrentAngle() - getState().getAngle();
+        double angleDiff = getState().getAngle() - getCurrentAngle();
 
         //return +- if within 5 degrees
         if(angleDiff <= 5 || angleDiff >= -5) {
             power = 0d;
         }
         else {
-           if (angleDiff > 0) {
-                if (angleDiff <= factorOfMS * angleDiff) {
+           if (angleDiff > 5) {
+                if (angleDiff >= factorOfMS * angleDiff) {
                     power = maxSpeed;
                 } else {
-                    power = (angleDiff / ((1 - factorOfMS) * angleDiff)) * (maxSpeed - minSpeed) + minSpeed;
+                    power = ((angleDiff / ((1 - factorOfMS) * angleDiff)) * (maxSpeed - minSpeed)) + minSpeed;
                 }
-            } else if (angleDiff < 0) {
-                if (angleDiff >= factorOfMS * angleDiff) {
+            } else if (angleDiff < -5) {
+                if (angleDiff <= factorOfMS * angleDiff) {
                     power = -maxSpeed;
                 } else {
-                    power = ((angleDiff / ((1 - factorOfMS) * angleDiff)) * (maxSpeed - minSpeed) - minSpeed);
+                    power = ((angleDiff / ((1 - factorOfMS) * angleDiff)) * (maxSpeed - minSpeed)) - minSpeed;
                 }
             }
         }
@@ -73,7 +73,7 @@ public class ForkliftSubsystem2 implements ISubsystem<ForkliftStateMachine2, For
 
     public double getCurrentAngle() {
         double encoderTicks = forkliftMotor.getCurrentEncoderTicks();
-        return encoderTicks/COUNTS_PER_MOTOR_REV*180;
+        return encoderTicks/COUNTS_PER_MOTOR_REV*360;
     }
     public RevMotor getForkliftMotor(){
         return forkliftMotor;
