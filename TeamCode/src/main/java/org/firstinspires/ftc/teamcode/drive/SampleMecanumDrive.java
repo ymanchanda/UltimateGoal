@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.drive;
 
 import androidx.annotation.NonNull;
-
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.config.Config;
@@ -33,28 +32,12 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
-
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.teamcode.team10515.control.StackTracker;
-import org.firstinspires.ftc.teamcode.team10515.subsystems.Drive;
-import org.firstinspires.ftc.teamcode.team10515.subsystems.ExpansionHubs;
-import org.firstinspires.ftc.teamcode.team10515.subsystems.Feeder;
-import org.firstinspires.ftc.teamcode.team10515.subsystems.FlickerSubsystem;
-import org.firstinspires.ftc.teamcode.team10515.subsystems.ForkliftSubsystem;
-import org.firstinspires.ftc.teamcode.team10515.subsystems.IntakeMotorSubsystem;
-import org.firstinspires.ftc.teamcode.team10515.subsystems.PulleySubsystem;
-import org.firstinspires.ftc.teamcode.team10515.subsystems.RobotStateEstimator;
-import org.firstinspires.ftc.teamcode.team10515.subsystems.ShooterSubsystem;
-import org.firstinspires.ftc.teamcode.util.AxesSigns;
-import org.firstinspires.ftc.teamcode.util.BNO055IMUUtil;
 import org.firstinspires.ftc.teamcode.util.DashboardUtil;
 import org.firstinspires.ftc.teamcode.util.LynxModuleUtil;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ACCEL;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ANG_ACCEL;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ANG_VEL;
@@ -73,10 +56,10 @@ import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kV;
 @Config
 public class SampleMecanumDrive extends MecanumDrive {
 
-    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(18, 0, 1);
-    public static PIDCoefficients HEADING_PID = new PIDCoefficients(20, 0, 0);
+    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(0, 0, 0);//18,0,1
+    public static PIDCoefficients HEADING_PID = new PIDCoefficients(0, 0, 0);//20,0,0
 
-    public static double LATERAL_MULTIPLIER = 1.6438;
+    public static double LATERAL_MULTIPLIER = 3.6876;//1.6438;
 
     public static double VX_WEIGHT = 1;
     public static double VY_WEIGHT = 1;
