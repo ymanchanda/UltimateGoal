@@ -49,12 +49,11 @@ public class StatesAutoRed extends LinearOpMode {
 
     enum State {
         WAIT0,
-        TRAJ1, //Move to the left most powershot
+        TRAJ1, //Move to the center  powershot at angle for right one
         TRAJ2, //Staffe to the middle
         TRAJ3, //Straffe to the left
         TRAJ4, //go to the wobble goal
         PARK, //park if no rings or 4 rings
-        SHOOTRING, //intake and shoot 1 ring in high goal
         IDLE,
         WAIT1,
         WAIT2,
@@ -63,7 +62,7 @@ public class StatesAutoRed extends LinearOpMode {
 
     State currentState = State.IDLE;
 
-    Pose2d startPose = new Pose2d(-60, -20, Math.toRadians(0));
+    Pose2d startPose = new Pose2d(-60, -18, Math.toRadians(0));
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -78,7 +77,7 @@ public class StatesAutoRed extends LinearOpMode {
         drive.robot.getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.IDLE);
 
         Trajectory traj1 = drive.trajectoryBuilder(startPose)
-                .splineTo(new Vector2d(2, -8), Math.toRadians(-12))
+                .splineTo(new Vector2d(5, -6), Math.toRadians(-8))
                 .build();
         Trajectory traj2 = drive.trajectoryBuilder(traj1.end())
                 .strafeLeft(7)
@@ -86,7 +85,7 @@ public class StatesAutoRed extends LinearOpMode {
         Trajectory traj3 = drive.trajectoryBuilder(traj2.end())
                 .strafeLeft(7)
                 .build();
-        Trajectory park = drive.trajectoryBuilder(traj1.end().plus(new Pose2d(0,0,-24)))
+        Trajectory park = drive.trajectoryBuilder(traj1.end())
                 .forward(10)
                 .build();
         waitForStart();
@@ -135,9 +134,10 @@ public class StatesAutoRed extends LinearOpMode {
                 case WAIT1:
                     // Check if the timer has exceeded the specified wait time
                     // If so, move on to the TURN_2 state
-                    if (waitTimer.milliseconds() >= 400) {
+                    if (waitTimer.milliseconds() >= 600) {
                         currentState = State.TRAJ2;
-                        drive.turn(Math.toRadians(12));
+                        waitTimer.reset();
+                        drive.turn(Math.toRadians(10));
                         //drive.followTrajectoryAsync(traj2);
                     }
                     break;
@@ -153,9 +153,10 @@ public class StatesAutoRed extends LinearOpMode {
                 case WAIT2:
                     // Check if the timer has exceeded the specified wait time
                     // If so, move on to the TURN_2 state
-                    if (waitTimer.milliseconds() >= 400) {
+                    if (waitTimer.milliseconds() >= 600) {
                         currentState = State.TRAJ3;
-                        drive.turn(Math.toRadians(12));
+                        waitTimer.reset();
+                        drive.turn(Math.toRadians(8));
                         //drive.followTrajectoryAsync(traj3);
                     }
                     break;
@@ -172,17 +173,6 @@ public class StatesAutoRed extends LinearOpMode {
                     if (waitTimer.milliseconds() >= 500) {
                         currentState = State.IDLE;
                         drive.followTrajectoryAsync(park);
-//                        if (numRings == UGCV.numRings.ZERO) {
-//                            currentState = State.PARK;
-//                            drive.followTrajectoryAsync(park);
-//
-//                        } else if (numRings == UGCV.numRings.ONE) {
-//                            currentState = State.PARK;
-//                            drive.followTrajectoryAsync(park);
-//                        } else {
-//                            currentState = State.PARK;
-//                            drive.followTrajectoryAsync(park);
-//                        }
                     }
                     break;
                 case PARK:
