@@ -41,7 +41,7 @@ public class ForkliftStateMachine2 extends TimedState<ForkliftStateMachine2.Stat
             if (power == 0d)
                 distance = Math.abs(getAngle() - currentAngle);
 
-            //return +- if within 0.25 degrees
+            //return +- if within 1.0 degrees
             if(absAngleDiff <= 1.0) {
                 power = 0d;
             }
