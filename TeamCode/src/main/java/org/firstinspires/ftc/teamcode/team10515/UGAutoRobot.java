@@ -16,6 +16,7 @@ import org.firstinspires.ftc.teamcode.team10515.subsystems.Feeder;
 import org.firstinspires.ftc.teamcode.team10515.subsystems.FlickerSubsystem;
 import org.firstinspires.ftc.teamcode.team10515.subsystems.ForkliftSubsystem;
 import org.firstinspires.ftc.teamcode.team10515.subsystems.ForkliftSubsystem2;
+import org.firstinspires.ftc.teamcode.team10515.subsystems.GripperSubsystem;
 import org.firstinspires.ftc.teamcode.team10515.subsystems.IntakeMotorSubsystem;
 import org.firstinspires.ftc.teamcode.team10515.subsystems.IntakeServoSubsystem;
 import org.firstinspires.ftc.teamcode.team10515.subsystems.PulleySubsystem;
@@ -56,6 +57,7 @@ public class UGAutoRobot  {
     private PulleySubsystem elevatorSubsystem;
     private StackTracker stackTracker;
     private FlickerSubsystem flickerSubsystem;
+    private GripperSubsystem gripperSubsystem;
     private ShooterSubsystem shooterMotors;
     private ForkliftSubsystem forkliftSubsystem;
     private ForkliftSubsystem2 forkliftSubsystem2;
@@ -80,6 +82,7 @@ public class UGAutoRobot  {
                 new RevServo((ExpansionHubServo)(hardwareMap.get("Elevator Servo"))),
                 new RevServo((ExpansionHubServo)(hardwareMap.get("Flicker 1"))),
                 new RevServo((ExpansionHubServo)(hardwareMap.get("Flicker 2"))),
+                new RevServo((ExpansionHubServo)(hardwareMap.get("Gripper"))),
         });
 
         //setElevatorSensor(hardwareMap.get(Rev2mDistanceSensor.class, "Elevator Sensor"));
@@ -88,6 +91,7 @@ public class UGAutoRobot  {
         setIntakeMotorSubsystem(new IntakeMotorSubsystem(getMotors()[2]));
         setForkliftSubsystem2(new ForkliftSubsystem2(getMotors()[3]));
         setFlickerSubsystem(new FlickerSubsystem(getServos()[1], getServos()[2]));
+        setGripperSubsystem(new GripperSubsystem(getServos()[3]));
         setMatchRuntime(new TimeProfiler(false));
     }
 
@@ -160,6 +164,13 @@ public class UGAutoRobot  {
         this.flickerSubsystem = flickerSubsystem;
     }
 
+    public GripperSubsystem getGripperSubsystem(){
+        return gripperSubsystem;
+    }
+
+    public void setGripperSubsystem(GripperSubsystem gripperSubsystem){
+        this.gripperSubsystem = gripperSubsystem;
+    }
 
     public ForkliftSubsystem getForkliftSubsystem() {
         return forkliftSubsystem;

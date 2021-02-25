@@ -88,7 +88,7 @@ public abstract class UltimateGoalRobot extends Robot {
                 new RevServo((ExpansionHubServo)(hardwareMap.get("Elevator Servo"))),
                 new RevServo((ExpansionHubServo)(hardwareMap.get("Flicker 1"))),
                 new RevServo((ExpansionHubServo)(hardwareMap.get("Flicker 2"))),
-
+                new RevServo((ExpansionHubServo)(hardwareMap.get("Gripper"))),
 
         });
 

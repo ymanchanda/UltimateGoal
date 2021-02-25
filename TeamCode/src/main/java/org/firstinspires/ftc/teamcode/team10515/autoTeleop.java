@@ -68,8 +68,9 @@ public class autoTeleop extends UGTeleOpRobot {
         WAITBACK,
         IDLE
     }
-    int NumFlicks = 0;
+    int NumFlicks = 0, NumFlicksThree = 0;
     FlickState FlickThree = FlickState.IDLE;
+    FlickState FlickTwoPowershots = FlickState.IDLE;
 
     enum Mode {
         DRIVER_CONTROL,
@@ -77,12 +78,9 @@ public class autoTeleop extends UGTeleOpRobot {
     }
     public ElapsedTime resetFlicker = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
     public ElapsedTime resetFlickThree = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+    public ElapsedTime resetFlickTwo = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
     public ElapsedTime resetWobble = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
-
-    //Wobble goal Forklift
-//    public static final int alignPosition = 650;
-//    public static final int topPosition = 2220;
-//    public boolean pastAlign, pastTop = false;    public RevMotor forkliftMotor;
+    public ElapsedTime compVoltage = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
 
     public enum ArmState {
         IDLE,
@@ -96,11 +94,8 @@ public class autoTeleop extends UGTeleOpRobot {
     Mode currentMode = Mode.DRIVER_CONTROL;
 
     // The coordinates we want the bot to automatically go to when we press the A button
-    //default poses
     Pose2d highShotPose = new Pose2d(0,0,10);
     double highShotHeading = Math.toRadians(10);
-    Pose2d powerShotPose = new Pose2d(0,0,10);
-    double powerShotHeading = Math.toRadians(10);
 
     @Override
     public void init() {
@@ -217,11 +212,13 @@ public class autoTeleop extends UGTeleOpRobot {
             currSpeed = drive.robot.getShooterSubsystem().getStateMachine().getState().getSpeed();
             drive.robot.getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.IDLE);
             iselevatorUp = true;    //Elevator Moved Up and shooter starts
+            compVoltage.reset();
         } else if(getEnhancedGamepad2().isaLast()) {
             drive.robot.getPulleySubsystem().getStateMachine().updateState(PulleyStateMachine.State.DOWN);
             drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.IDLE);
             drive.robot.getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.INTAKE);
             iselevatorUp = false;   //Elevator Moved Down
+            compVoltage.reset();
         }
 
         //adjust shooter speed
@@ -241,20 +238,24 @@ public class autoTeleop extends UGTeleOpRobot {
             shooterChange = 0;
             drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.HIGHGOAL);
             currSpeed = drive.robot.getShooterSubsystem().getStateMachine().getState().getSpeed();
+            compVoltage.reset();
         }
         else if(getEnhancedGamepad2().isDpadRightJustPressed()) {
             shooterChange = 0;
             drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.POLESHOT);
             currSpeed = drive.robot.getShooterSubsystem().getStateMachine().getState().getSpeed();
+            compVoltage.reset();
         }
         else if(getEnhancedGamepad2().isDpadLeftJustPressed()) {
             shooterChange = 0;
             drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.MIDGOAL);
             currSpeed = drive.robot.getShooterSubsystem().getStateMachine().getState().getSpeed();
+            compVoltage.reset();
         }
         else if(getEnhancedGamepad2().isDpadDownJustPressed()) {
             shooterChange = 0;
             drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.IDLE);
+            compVoltage.reset();
         }
 
         if(getEnhancedGamepad2().isRightBumperLast()){
@@ -275,15 +276,15 @@ public class autoTeleop extends UGTeleOpRobot {
         //automation flicking and turning for powershots
         if(gamepad1.dpad_down){
             hitMidPowerShot = true;
-            FlickThree = FlickState.BACK;
+            FlickTwoPowershots = FlickState.BACK;
         }
         if(gamepad1.dpad_left){
             hitLeftPowerShot = true;
-            FlickThree = FlickState.BACK;
+            FlickTwoPowershots = FlickState.BACK;
         }
         if(gamepad1.dpad_right){
             hitRightPowerShot = true;
-            FlickThree = FlickState.BACK;
+            FlickTwoPowershots = FlickState.BACK;
         }
 
         if (gamepad2.b && resetWobble.milliseconds() > 300){
@@ -297,9 +298,18 @@ public class autoTeleop extends UGTeleOpRobot {
             resetWobble.reset();
         }
 
+        //compensate shooter speed for changes in voltage - allow 1 second to allow for state changes
+//        if (compVoltage.milliseconds() > 1000 ){
+//            compensateVoltage();
+//        }
+
         //WobbleGoal processing
         WobbleGoalV3();
-        //FlickThree();
+
+        //High Goal or Mid Goal Shots
+        FlickThree();
+
+        //Powershots in end game
         FlickTwoPowerShots();
 
 //        telemetry.addLine("Pressed"+intPressedX+", "+intPressedB);
@@ -316,7 +326,7 @@ public class autoTeleop extends UGTeleOpRobot {
     {
         switch (FlickThree) {
             case IDLE:
-                NumFlicks = 0;
+                NumFlicksThree = 0;
                 break;
             case FLICK:
                 drive.robot.getFlickerSubsystem().getStateMachine().updateState(FlickerStateMachine.State.HIT);
@@ -324,7 +334,7 @@ public class autoTeleop extends UGTeleOpRobot {
                 resetFlickThree.reset();
                 break;
             case WAITFLICK:
-                if (resetFlickThree.milliseconds() > 100 + (NumFlicks * 20)) {
+                if (resetFlickThree.milliseconds() > 100 + (NumFlicksThree * 20)) {
                     FlickThree = FlickState.BACK;
                 }
                 break;
@@ -334,14 +344,14 @@ public class autoTeleop extends UGTeleOpRobot {
                 resetFlickThree.reset();
                 break;
             case WAITBACK:
-                if (resetFlickThree.milliseconds() > 300 + (NumFlicks * 30)) {
-                    if (NumFlicks < 2) {
+                if (resetFlickThree.milliseconds() > 300 + (NumFlicksThree * 30)) {
+                    if (NumFlicksThree < 2) {
                         FlickThree = FlickState.FLICK;
                     }
                     else {
                         FlickThree = FlickState.IDLE;
                     }
-                    NumFlicks++;
+                    NumFlicksThree++;
                 }
                 break;
         }
@@ -349,7 +359,7 @@ public class autoTeleop extends UGTeleOpRobot {
 
     void FlickTwoPowerShots()
     {
-        switch (FlickThree) {
+        switch (FlickTwoPowershots) {
             case IDLE:
                 NumFlicks = 0;
                 hitRightPowerShot = false;
@@ -358,12 +368,12 @@ public class autoTeleop extends UGTeleOpRobot {
                 break;
             case FLICK:
                 drive.robot.getFlickerSubsystem().getStateMachine().updateState(FlickerStateMachine.State.HIT);
-                FlickThree = FlickState.WAITFLICK;
-                resetFlickThree.reset();
+                FlickTwoPowershots = FlickState.WAITFLICK;
+                resetFlickTwo.reset();
                 break;
             case WAITFLICK:
-                if (resetFlickThree.milliseconds() > 500 + (NumFlicks * 50)) {
-                    FlickThree = FlickState.BACK;
+                if (resetFlickTwo.milliseconds() > 500 + (NumFlicks * 50)) {
+                    FlickTwoPowershots = FlickState.BACK;
                 }
                 break;
             case BACK:
@@ -380,16 +390,16 @@ public class autoTeleop extends UGTeleOpRobot {
                     drive.turn(Math.toRadians(12));
                 }
                 drive.robot.getFlickerSubsystem().getStateMachine().updateState(FlickerStateMachine.State.INIT);
-                FlickThree = FlickState.WAITBACK;
-                resetFlickThree.reset();
+                FlickTwoPowershots = FlickState.WAITBACK;
+                resetFlickTwo.reset();
                 break;
             case WAITBACK:
-                if (resetFlickThree.milliseconds() > 1200 + (NumFlicks * 120)){
+                if (resetFlickTwo.milliseconds() > 1200 + (NumFlicks * 120)){
                     if (NumFlicks < 1) {
-                        FlickThree = FlickState.FLICK;
+                        FlickTwoPowershots = FlickState.FLICK;
                     }
                     else {
-                        FlickThree = FlickState.IDLE;
+                        FlickTwoPowershots = FlickState.IDLE;
                     }
                     NumFlicks++;
                 }
@@ -444,6 +454,18 @@ public class autoTeleop extends UGTeleOpRobot {
         }
     }
 
+    void compensateVoltage(){
+        double voltage = getBatteryVoltage();
+        if (voltage > 13d) {
+            //adjust to lower
+            drive.robot.getShooterSubsystem().getStateMachine().getState().setSpeed(currSpeed - (200 * (voltage - 13d)));
+            telemetry.addLine("Voltage Adjusted: " + (currSpeed - (2000 * (voltage - 13d))));
+        } else if (voltage < 12.5d) {
+            //adjust to higher
+            drive.robot.getShooterSubsystem().getStateMachine().getState().setSpeed(currSpeed + (200 * (12.5d - voltage)));
+            telemetry.addLine("Voltage Adjusted: " + (currSpeed + (2000 * (12.5d - voltage))));
+        }
+    }
     // Computes the current battery voltage
     double getBatteryVoltage() {
         double result = Double.POSITIVE_INFINITY;
