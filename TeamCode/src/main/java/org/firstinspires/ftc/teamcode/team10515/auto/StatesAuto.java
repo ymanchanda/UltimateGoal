@@ -70,7 +70,7 @@ public class StatesAuto extends LinearOpMode {
 
     State currentState = State.IDLE;
 
-    Pose2d startPose = new Pose2d(-60, 18, Math.toRadians(0));
+    Pose2d startPose = new Pose2d(-60, 16, Math.toRadians(0));
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -85,7 +85,7 @@ public class StatesAuto extends LinearOpMode {
         drive.robot.getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.IDLE);
 
         Trajectory traj1 = drive.trajectoryBuilder(startPose)
-                .splineTo(new Vector2d(2, 16), Math.toRadians(0))
+                .splineTo(new Vector2d(2, 18), Math.toRadians(0))
                 .build();
         Trajectory traj2 = drive.trajectoryBuilder(traj1.end())
                 .strafeLeft(7)
@@ -97,7 +97,6 @@ public class StatesAuto extends LinearOpMode {
                 .forward(10)
                 .build();
         waitForStart();
-
         //UGCV.numRings numRings = drive.getRingsUsingImage(false);
         //telemetry.addLine("Num Rings: " + numRings);
         //telemetry.update();
@@ -163,7 +162,7 @@ public class StatesAuto extends LinearOpMode {
                     // If so, move on to the TURN_2 state
                     if (waitTimer.milliseconds() >= 400) {
                         currentState = State.TRAJ3;
-                        drive.turn(Math.toRadians(12));
+                        drive.turn(Math.toRadians(16));
                         //drive.followTrajectoryAsync(traj3);
                     }
                     break;
@@ -178,6 +177,7 @@ public class StatesAuto extends LinearOpMode {
                     break;
                 case WAIT3:
                     if (waitTimer.milliseconds() >= 500) {
+                        currentState = State.IDLE;
                         drive.followTrajectoryAsync(park);
 //                        if (numRings == UGCV.numRings.ZERO) {
 //                            currentState = State.PARK;

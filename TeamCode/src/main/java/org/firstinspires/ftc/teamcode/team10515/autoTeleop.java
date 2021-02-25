@@ -269,22 +269,22 @@ public class autoTeleop extends UGTeleOpRobot {
             drive.robot.getFlickerSubsystem().getStateMachine().updateState(FlickerStateMachine.State.INIT);
         }
 
-//        if (getEnhancedGamepad2().isLeftBumperLast()){
-//            FlickThree = FlickState.FLICK;
-//        }
+        if (getEnhancedGamepad2().isLeftBumperLast()){
+            FlickThree = FlickState.FLICK;
+        }
         //automation flicking and turning for powershots
-//        if(gamepad1.dpad_down){
-//            hitMidPowerShot = true;
-//            FlickThree = FlickState.BACK;
-//        }
-//        if(gamepad1.dpad_left){
-//            hitLeftPowerShot = true;
-//            FlickThree = FlickState.BACK;
-//        }
-//        if(gamepad1.dpad_right){
-//            hitRightPowerShot = true;
-//            FlickThree = FlickState.BACK;
-//        }
+        if(gamepad1.dpad_down){
+            hitMidPowerShot = true;
+            FlickThree = FlickState.BACK;
+        }
+        if(gamepad1.dpad_left){
+            hitLeftPowerShot = true;
+            FlickThree = FlickState.BACK;
+        }
+        if(gamepad1.dpad_right){
+            hitRightPowerShot = true;
+            FlickThree = FlickState.BACK;
+        }
 
         if (gamepad2.b && resetWobble.milliseconds() > 300){
             currentState = ArmState.PRESS_B;
@@ -299,6 +299,7 @@ public class autoTeleop extends UGTeleOpRobot {
 
         //WobbleGoal processing
         WobbleGoalV3();
+        //FlickThree();
         FlickTwoPowerShots();
 
 //        telemetry.addLine("Pressed"+intPressedX+", "+intPressedB);
@@ -361,7 +362,7 @@ public class autoTeleop extends UGTeleOpRobot {
                 resetFlickThree.reset();
                 break;
             case WAITFLICK:
-                if (resetFlickThree.milliseconds() > 300) {
+                if (resetFlickThree.milliseconds() > 500 + (NumFlicks * 50)) {
                     FlickThree = FlickState.BACK;
                 }
                 break;
@@ -383,7 +384,7 @@ public class autoTeleop extends UGTeleOpRobot {
                 resetFlickThree.reset();
                 break;
             case WAITBACK:
-                if (resetFlickThree.milliseconds() > 800){
+                if (resetFlickThree.milliseconds() > 1200 + (NumFlicks * 120)){
                     if (NumFlicks < 1) {
                         FlickThree = FlickState.FLICK;
                     }
