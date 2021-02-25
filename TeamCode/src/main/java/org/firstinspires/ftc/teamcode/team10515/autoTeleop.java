@@ -95,9 +95,10 @@ public class autoTeleop extends UGTeleOpRobot {
     Mode currentMode = Mode.DRIVER_CONTROL;
 
     // The coordinates we want the bot to automatically go to when we press the A button
-    Vector2d highShotVector = new Vector2d(2, 40);
+    //default poses
+    Pose2d highShotPose = new Pose2d(0,0,10);
     double highShotHeading = Math.toRadians(10);
-    Vector2d powerShotVector = new Vector2d(2, 20);
+    Pose2d powerShotPose = new Pose2d(0,0,10);
     double powerShotHeading = Math.toRadians(10);
 
     @Override
@@ -142,21 +143,21 @@ public class autoTeleop extends UGTeleOpRobot {
                     // If the A button is pressed on gamepad1, we generate a splineTo()
                     // trajectory on the fly and follow it
                     // We switch the state to AUTOMATIC_CONTROL
-
                     Trajectory highShotPosition = drive.trajectoryBuilder(poseEstimate)
-                            .splineToConstantHeading(highShotVector, highShotHeading)
+                            .splineTo(new Vector2d(highShotPose.getX(), highShotPose.getY()), highShotHeading)
                             .build();
 
                     drive.followTrajectoryAsync(highShotPosition);
                     currentMode = Mode.AUTOMATIC_CONTROL;
                 }
-                if(getEnhancedGamepad1().isDpadDownJustPressed()){
-                    Trajectory powerShotPosition = drive.trajectoryBuilder(poseEstimate)
-                            .splineToConstantHeading(powerShotVector, powerShotHeading)
-                            .build();
-                    drive.followTrajectoryAsync(powerShotPosition);
-                    currentMode = Mode.AUTOMATIC_CONTROL;
-                } //hi
+                //add this back if we want to use it, not highly recommended though
+//                if(getEnhancedGamepad1().isDpadDownJustPressed()){
+//                    Trajectory powerShotPosition = drive.trajectoryBuilder(poseEstimate)
+//                            .splineToConstantHeading(new Vector2d(powerShotPose.getX(), powerShotPose.getY()), powerShotHeading)
+//                            .build();
+//                    drive.followTrajectoryAsync(powerShotPosition);
+//                    currentMode = Mode.AUTOMATIC_CONTROL;
+//                }
                 break;
             case AUTOMATIC_CONTROL:
                 // If x is pressed, we break out of the automatic following
@@ -171,7 +172,12 @@ public class autoTeleop extends UGTeleOpRobot {
                 }
                 break;
         }
-
+        if(getEnhancedGamepad1().isDpadRightJustPressed()){
+            drive.turn(Math.toRadians(-12));
+        }
+        if(getEnhancedGamepad1().isDpadLeftJustPressed()){
+            drive.turn(Math.toRadians(12));
+        }
         //Gamepad2 Update flywheel intake - In:Right Trigger, Out:Left Trigger, Stop: Back
         if(getEnhancedGamepad2().getRight_trigger()>0) {
             drive.robot.getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.INTAKE);
@@ -254,6 +260,9 @@ public class autoTeleop extends UGTeleOpRobot {
             drive.robot.getFlickerSubsystem().getStateMachine().updateState(FlickerStateMachine.State.HIT);
             resetFlicker.reset();
             isFlicked = true;
+            //capture the pose
+            highShotPose = drive.getPoseEstimate();
+            highShotHeading = drive.getPoseEstimate().getHeading();
         }
         if (isFlicked && resetFlicker.milliseconds()>100){
             drive.robot.getFlickerSubsystem().getStateMachine().updateState(FlickerStateMachine.State.INIT);
