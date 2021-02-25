@@ -94,11 +94,6 @@ public class UGBase extends MecanumDrive {
 
     public UGAutoRobot robot = new UGAutoRobot();
     private UGExpansionHubs expansionHubs;
-//    private PulleySubsystem elevatorSubsystem;
-//    private FlickerSubsystem flickerSubsystem;
-//    private ShooterSubsystem shooterMotors;
-//    private ForkliftSubsystem forkliftSubsystem;
-//    private IntakeMotorSubsystem intakeMotorSubsystem;
 
     public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(18, 0, 1);
     public static PIDCoefficients HEADING_PID = new PIDCoefficients(20, 0, 0);
