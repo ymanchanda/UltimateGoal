@@ -95,10 +95,10 @@ public class UGBase extends MecanumDrive {
     public UGAutoRobot robot = new UGAutoRobot();
     private UGExpansionHubs expansionHubs;
 
-    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(18, 0, 1);
-    public static PIDCoefficients HEADING_PID = new PIDCoefficients(20, 0, 0);
+    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(9, 0, 1);
+    public static PIDCoefficients HEADING_PID = new PIDCoefficients(14, 0, 1);
 
-    public static double LATERAL_MULTIPLIER = 1.6438;
+    public static double LATERAL_MULTIPLIER = 3.6438;
 
     public static double VX_WEIGHT = 1;
     public static double VY_WEIGHT = 1;
