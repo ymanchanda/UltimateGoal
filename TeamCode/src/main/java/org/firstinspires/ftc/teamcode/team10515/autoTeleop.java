@@ -59,7 +59,8 @@ public class autoTeleop extends UGTeleOpRobot {
     private double currSpeed = 0;
     int intPressedB = 0;
     int intPressedX = 0;
-
+    boolean hitLeftPowerShot, hitRightPowerShot, hitMidPowerShot = false;
+    int powerShotCounter = 0;
     enum FlickState {
         FLICK,
         WAITFLICK,
@@ -172,10 +173,10 @@ public class autoTeleop extends UGTeleOpRobot {
                 }
                 break;
         }
-        if(getEnhancedGamepad1().isDpadRightJustPressed()){
+        if(gamepad1.right_bumper){
             drive.turn(Math.toRadians(-12));
         }
-        if(getEnhancedGamepad1().isDpadLeftJustPressed()){
+        if(gamepad1.left_bumper){
             drive.turn(Math.toRadians(12));
         }
         //Gamepad2 Update flywheel intake - In:Right Trigger, Out:Left Trigger, Stop: Back
@@ -268,9 +269,22 @@ public class autoTeleop extends UGTeleOpRobot {
             drive.robot.getFlickerSubsystem().getStateMachine().updateState(FlickerStateMachine.State.INIT);
         }
 
-        if (getEnhancedGamepad2().isLeftBumperLast()){
-            FlickThree = FlickState.FLICK;
-        }
+//        if (getEnhancedGamepad2().isLeftBumperLast()){
+//            FlickThree = FlickState.FLICK;
+//        }
+        //automation flicking and turning for powershots
+//        if(gamepad1.dpad_down){
+//            hitMidPowerShot = true;
+//            FlickThree = FlickState.BACK;
+//        }
+//        if(gamepad1.dpad_left){
+//            hitLeftPowerShot = true;
+//            FlickThree = FlickState.BACK;
+//        }
+//        if(gamepad1.dpad_right){
+//            hitRightPowerShot = true;
+//            FlickThree = FlickState.BACK;
+//        }
 
         if (gamepad2.b && resetWobble.milliseconds() > 300){
             currentState = ArmState.PRESS_B;
@@ -285,7 +299,7 @@ public class autoTeleop extends UGTeleOpRobot {
 
         //WobbleGoal processing
         WobbleGoalV3();
-        FlickThree();
+        FlickTwoPowerShots();
 
 //        telemetry.addLine("Pressed"+intPressedX+", "+intPressedB);
         telemetry.addLine("Shooter change: " + shooterChange);
@@ -332,11 +346,14 @@ public class autoTeleop extends UGTeleOpRobot {
         }
     }
 
-    void FlickThreePowerShots()
+    void FlickTwoPowerShots()
     {
         switch (FlickThree) {
             case IDLE:
                 NumFlicks = 0;
+                hitRightPowerShot = false;
+                hitLeftPowerShot = false;
+                hitMidPowerShot = false;
                 break;
             case FLICK:
                 drive.robot.getFlickerSubsystem().getStateMachine().updateState(FlickerStateMachine.State.HIT);
@@ -344,21 +361,29 @@ public class autoTeleop extends UGTeleOpRobot {
                 resetFlickThree.reset();
                 break;
             case WAITFLICK:
-                if (resetFlickThree.milliseconds() > 100) {
+                if (resetFlickThree.milliseconds() > 300) {
                     FlickThree = FlickState.BACK;
                 }
                 break;
             case BACK:
+                if(hitLeftPowerShot){
+                    drive.turn(Math.toRadians(-12));
+                }
+                else if(hitMidPowerShot && NumFlicks == 0){
+                    drive.turn(Math.toRadians(12));
+                }
+                else if(hitMidPowerShot && NumFlicks == 1){
+                    drive.turn(Math.toRadians(-24));
+                }
+                else if(hitRightPowerShot){
+                    drive.turn(Math.toRadians(12));
+                }
                 drive.robot.getFlickerSubsystem().getStateMachine().updateState(FlickerStateMachine.State.INIT);
                 FlickThree = FlickState.WAITBACK;
                 resetFlickThree.reset();
                 break;
             case WAITBACK:
-                Trajectory leftpowershot = drive.trajectoryBuilder(new Pose2d(0,0,0))
-                        .strafeLeft(-12)
-                        .build();
-                drive.followTrajectoryAsync(leftpowershot);
-                if (resetFlickThree.milliseconds() > 300) {
+                if (resetFlickThree.milliseconds() > 800){
                     if (NumFlicks < 1) {
                         FlickThree = FlickState.FLICK;
                     }
