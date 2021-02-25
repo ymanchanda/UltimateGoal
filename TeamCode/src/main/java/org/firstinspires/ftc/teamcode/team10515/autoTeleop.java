@@ -11,6 +11,7 @@ import org.firstinspires.ftc.teamcode.team10515.auto.UGBase;
 import org.firstinspires.ftc.teamcode.team10515.control.EnhancedGamepad;
 import org.firstinspires.ftc.teamcode.team10515.states.FlickerStateMachine;
 import org.firstinspires.ftc.teamcode.team10515.states.ForkliftStateMachine2;
+import org.firstinspires.ftc.teamcode.team10515.states.GripperStateMachine;
 import org.firstinspires.ftc.teamcode.team10515.states.IntakeMotorStateMachine;
 import org.firstinspires.ftc.teamcode.team10515.states.PulleyStateMachine;
 import org.firstinspires.ftc.teamcode.team10515.states.ShooterStateMachine;
@@ -49,18 +50,15 @@ import org.firstinspires.ftc.teamcode.team10515.states.ShooterStateMachine;
 public class autoTeleop extends UGTeleOpRobot {
     private boolean iselevatorUp = false;   //elevator starts in down position
     private boolean isFlicked = false;      //flickers are inside
+    private boolean isGripping = false;
 
     //intake Servo activated
     private int count = 0;
-    //public double upThreshold = 8.65;
-    //public double downThreshold = 4.45;
     private int intakeChange = 0;
     private int shooterChange = 0;
     private double currSpeed = 0;
-//    int intPressedB = 0;
-//    int intPressedX = 0;
+
     boolean hitLeftPowerShot, hitRightPowerShot, hitMidPowerShot = false;
-    int powerShotCounter = 0;
     enum FlickState {
         FLICK,
         WAITFLICK,
@@ -80,7 +78,6 @@ public class autoTeleop extends UGTeleOpRobot {
     public ElapsedTime resetFlickThree = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
     public ElapsedTime resetFlickTwo = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
     public ElapsedTime resetWobble = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
-    public ElapsedTime compVoltage = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
 
     public enum ArmState {
         IDLE,
@@ -89,7 +86,6 @@ public class autoTeleop extends UGTeleOpRobot {
     }
 
     public ArmState currentState;
-
     Mode currentMode = Mode.DRIVER_CONTROL;
 
     // The coordinates we want the bot to automatically go to when we press the A button
@@ -116,14 +112,7 @@ public class autoTeleop extends UGTeleOpRobot {
         getEnhancedGamepad1().update();
         getEnhancedGamepad2().update();
 
-//        drive.setWeightedDrivePower(
-//                new Pose2d(
-//                        -gamepad1.left_stick_y,
-//                        -gamepad1.left_stick_x,
-//                        -gamepad1.right_stick_x
-//                )
-//        );
-      Pose2d poseEstimate = drive.getPoseEstimate();
+        Pose2d poseEstimate = drive.getPoseEstimate();
         switch (currentMode) {
             case DRIVER_CONTROL:
                 drive.setWeightedDrivePower(
@@ -145,14 +134,6 @@ public class autoTeleop extends UGTeleOpRobot {
                     drive.followTrajectoryAsync(highShotPosition);
                     currentMode = Mode.AUTOMATIC_CONTROL;
                 }
-                //add this back if we want to use it, not highly recommended though
-//                if(getEnhancedGamepad1().isDpadDownJustPressed()){
-//                    Trajectory powerShotPosition = drive.trajectoryBuilder(poseEstimate)
-//                            .splineToConstantHeading(new Vector2d(powerShotPose.getX(), powerShotPose.getY()), powerShotHeading)
-//                            .build();
-//                    drive.followTrajectoryAsync(powerShotPosition);
-//                    currentMode = Mode.AUTOMATIC_CONTROL;
-//                }
                 break;
             case AUTOMATIC_CONTROL:
                 // If x is pressed, we break out of the automatic following
@@ -208,16 +189,18 @@ public class autoTeleop extends UGTeleOpRobot {
         if(getEnhancedGamepad2().isyLast()) {
             drive.robot.getPulleySubsystem().getStateMachine().updateState(PulleyStateMachine.State.UP);
             drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.HIGHGOAL);
-            currSpeed = drive.robot.getShooterSubsystem().getStateMachine().getState().getSpeed();
+            currSpeed = ShooterStateMachine.State.HIGHGOAL.getSpeed();
+            //adjust speed for battery voltage
+//            currSpeed += compensateVoltage();
+//            drive.robot.getShooterSubsystem().getStateMachine().getState().setSpeed(currSpeed);
+
             drive.robot.getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.IDLE);
             iselevatorUp = true;    //Elevator Moved Up and shooter starts
-            compVoltage.reset();
         } else if(getEnhancedGamepad2().isaLast()) {
             drive.robot.getPulleySubsystem().getStateMachine().updateState(PulleyStateMachine.State.DOWN);
             drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.IDLE);
             drive.robot.getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.INTAKE);
             iselevatorUp = false;   //Elevator Moved Down
-            compVoltage.reset();
         }
 
         //adjust shooter speed
@@ -236,25 +219,27 @@ public class autoTeleop extends UGTeleOpRobot {
         if(getEnhancedGamepad2().isDpadUpJustPressed()) {
             shooterChange = 0;
             drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.HIGHGOAL);
-            currSpeed = drive.robot.getShooterSubsystem().getStateMachine().getState().getSpeed();
-            compVoltage.reset();
+            currSpeed = ShooterStateMachine.State.HIGHGOAL.getSpeed();
+//            currSpeed += compensateVoltage();
+//            drive.robot.getShooterSubsystem().getStateMachine().getState().setSpeed(currSpeed);
         }
         else if(getEnhancedGamepad2().isDpadRightJustPressed()) {
             shooterChange = 0;
             drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.POLESHOT);
-            currSpeed = drive.robot.getShooterSubsystem().getStateMachine().getState().getSpeed();
-            compVoltage.reset();
+            currSpeed = ShooterStateMachine.State.POLESHOT.getSpeed();
+//            currSpeed += compensateVoltage();
+//            drive.robot.getShooterSubsystem().getStateMachine().getState().setSpeed(currSpeed);
         }
         else if(getEnhancedGamepad2().isDpadLeftJustPressed()) {
             shooterChange = 0;
             drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.MIDGOAL);
-            currSpeed = drive.robot.getShooterSubsystem().getStateMachine().getState().getSpeed();
-            compVoltage.reset();
+            currSpeed = ShooterStateMachine.State.MIDGOAL.getSpeed();
+//            currSpeed += compensateVoltage();
+//            drive.robot.getShooterSubsystem().getStateMachine().getState().setSpeed(currSpeed);
         }
         else if(getEnhancedGamepad2().isDpadDownJustPressed()) {
             shooterChange = 0;
             drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.IDLE);
-            compVoltage.reset();
         }
 
         if(getEnhancedGamepad2().isRightBumperLast()){
@@ -272,6 +257,7 @@ public class autoTeleop extends UGTeleOpRobot {
         if (getEnhancedGamepad2().isLeftBumperLast()){
             FlickThree = FlickState.FLICK;
         }
+
         //automation flicking and turning for powershots
         if(gamepad1.dpad_down){
             hitMidPowerShot = true;
@@ -297,11 +283,13 @@ public class autoTeleop extends UGTeleOpRobot {
             resetWobble.reset();
         }
 
-        //compensate shooter speed for changes in voltage - allow 1 second to allow for state changes
-//        if (compVoltage.milliseconds() > 1000 ){
-//            compensateVoltage();
-//        }
-
+        if (gamepad2.left_stick_button) {
+            if (!isGripping)
+                drive.robot.getGripperSubsystem().getStateMachine().updateState(GripperStateMachine.State.GRIP);
+            else
+                drive.robot.getGripperSubsystem().getStateMachine().updateState(GripperStateMachine.State.INIT);
+            isGripping = !isGripping;
+        }
         //WobbleGoal processing
         WobbleGoalV3();
 
@@ -311,9 +299,9 @@ public class autoTeleop extends UGTeleOpRobot {
         //Powershots in end game
         FlickTwoPowerShots();
 
-//        telemetry.addLine("Pressed"+intPressedX+", "+intPressedB);
+        telemetry.addLine("Gripper: "+isGripping);
         telemetry.addLine("Shooter change: " + shooterChange);
-        telemetry.addLine("Voltage: " + getBatteryVoltage());
+        telemetry.addLine("Shooter Speed: " + drive.robot.getShooterSubsystem().getStateMachine().getState().getSpeed());
         telemetry.addLine("Pose"+poseEstimate.getX()+", "+poseEstimate.getY()+", "+poseEstimate.getHeading());
 //        telemetry.addLine("Wobble Goal: " + drive.robot.getForkliftSubsystem2().getForkliftMotor().getCurrentEncoderTicks());
         telemetry.addLine("Intake Output: " + drive.robot.getIntakeMotorSubsystem().getOutput());
@@ -459,17 +447,27 @@ public class autoTeleop extends UGTeleOpRobot {
         }
     }
 
-    void compensateVoltage(){
+    double compensateVoltage(){
+        double retVal = 0d;
         double voltage = getBatteryVoltage();
+        //adjust lower if battery high
         if (voltage > 13d) {
-            //adjust to lower
-            drive.robot.getShooterSubsystem().getStateMachine().getState().setSpeed(currSpeed - (200 * (voltage - 13d)));
-            telemetry.addLine("Voltage Adjusted: " + (currSpeed - (2000 * (voltage - 13d))));
-        } else if (voltage < 12.5d) {
-            //adjust to higher
-            drive.robot.getShooterSubsystem().getStateMachine().getState().setSpeed(currSpeed + (200 * (12.5d - voltage)));
-            telemetry.addLine("Voltage Adjusted: " + (currSpeed + (2000 * (12.5d - voltage))));
+            if ((voltage - 13d) > 0.5)
+                voltage = 0.5;
+            else
+                voltage = voltage - 13d;
+
+            retVal = -(1200 * voltage);
         }
+        //adjust higher if battery low
+        else if (voltage < 12.5d)
+            if ((12.5d - voltage) > 0.5d)
+                voltage = 0.5d;
+            else
+                voltage = 12.5 - voltage;
+            retVal = (1200 * voltage);
+
+        return retVal;
     }
     // Computes the current battery voltage
     double getBatteryVoltage() {

@@ -3,28 +3,18 @@ package org.firstinspires.ftc.teamcode.team10515.auto;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
-import com.acmerobotics.roadrunner.trajectory.constraints.AngularVelocityConstraint;
-import com.acmerobotics.roadrunner.trajectory.constraints.MecanumVelocityConstraint;
-import com.acmerobotics.roadrunner.trajectory.constraints.MinVelocityConstraint;
-import com.acmerobotics.roadrunner.trajectory.constraints.ProfileAccelerationConstraint;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.drive.DriveConstants;
-import org.firstinspires.ftc.teamcode.lib.annotations.feedback.P;
 import org.firstinspires.ftc.teamcode.lib.util.TimeProfiler;
 import org.firstinspires.ftc.teamcode.lib.util.TimeUnits;
 import org.firstinspires.ftc.teamcode.team10515.PoseStorage;
 import org.firstinspires.ftc.teamcode.team10515.states.FlickerStateMachine;
-import org.firstinspires.ftc.teamcode.team10515.states.ForkliftStateMachine;
 import org.firstinspires.ftc.teamcode.team10515.states.ForkliftStateMachine2;
 import org.firstinspires.ftc.teamcode.team10515.states.IntakeMotorStateMachine;
 import org.firstinspires.ftc.teamcode.team10515.states.PulleyStateMachine;
 import org.firstinspires.ftc.teamcode.team10515.states.ShooterStateMachine;
-
-import java.util.Arrays;
 
 /*
  * This is an example of a more complex path to really test the tuning.
@@ -42,10 +32,11 @@ public class StatesAutoBlue extends LinearOpMode {
     boolean goDown = false;
     public int lastEncoderTicks;
     public int currentEncoderTicks = 0;
-//    public static final int topPosition = 430;
+    //    public static final int topPosition = 430;
     public static final int maxPosition = 2020; //max position
-//    public static final int topPosition2 = 2020;
+    //    public static final int topPosition2 = 2020;
     public static final int alignPosition = 1000;
+
     enum WobbleState {
         ZERO,
         ALIGN,
@@ -95,7 +86,7 @@ public class StatesAutoBlue extends LinearOpMode {
         Trajectory traj3 = drive.trajectoryBuilder(traj2.end())
                 .strafeLeft(7)
                 .build();
-        Trajectory park = drive.trajectoryBuilder(traj1.end().plus(new Pose2d(0,0, Math.toRadians(24))))
+        Trajectory park = drive.trajectoryBuilder(traj1.end().plus(new Pose2d(0, 0, Math.toRadians(24))))
                 .forward(10)
                 .build();
         waitForStart();
@@ -234,38 +225,20 @@ public class StatesAutoBlue extends LinearOpMode {
         PoseStorage.currentPose = drive.getPoseEstimate();
     }
 
-    public static TimeProfiler getUpdateRuntime() {return updateRuntime;}
-    public static void setUpdateRuntime(TimeProfiler updaRuntime) { updateRuntime = updaRuntime; }
-    public static double getDt() { return dt;}
-    public static void setDt(double pdt) { dt = pdt; }
-
-    void WobbleGoal()
-    {
-        //brake 1st time when it reaches align OR when it reaches the top
-        if (reachedUpPosition(maxPosition)) {
-            drive.robot.getForkliftSubsystem().getForkliftMotor().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            drive.robot.getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.IDLE);
-        }
-
-        if (reachedDownPosition(0)) {//Check if forklift has reached 0 position
-            drive.robot.getForkliftSubsystem().getForkliftMotor().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            drive.robot.getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.IDLE);
-        }
-
+    public static TimeProfiler getUpdateRuntime() {
+        return updateRuntime;
     }
 
-    public boolean reachedUpPosition(double position) {
-        if (drive.robot.getForkliftSubsystem().getForkliftMotor().getCurrentEncoderTicks() < position)
-            return false;
-        else
-            return true;
+    public static void setUpdateRuntime(TimeProfiler updaRuntime) {
+        updateRuntime = updaRuntime;
     }
 
-    public boolean reachedDownPosition(double position) {
-        if (drive.robot.getForkliftSubsystem().getForkliftMotor().getCurrentEncoderTicks() > position)
-            return false;
-        else
-            return true;
+    public static double getDt() {
+        return dt;
+    }
+
+    public static void setDt(double pdt) {
+        dt = pdt;
     }
 
 }

@@ -14,11 +14,9 @@ import org.firstinspires.ftc.teamcode.team10515.subsystems.Drive;
 import org.firstinspires.ftc.teamcode.team10515.subsystems.ExpansionHubs;
 import org.firstinspires.ftc.teamcode.team10515.subsystems.Feeder;
 import org.firstinspires.ftc.teamcode.team10515.subsystems.FlickerSubsystem;
-import org.firstinspires.ftc.teamcode.team10515.subsystems.ForkliftSubsystem;
 import org.firstinspires.ftc.teamcode.team10515.subsystems.ForkliftSubsystem2;
 import org.firstinspires.ftc.teamcode.team10515.subsystems.GripperSubsystem;
 import org.firstinspires.ftc.teamcode.team10515.subsystems.IntakeMotorSubsystem;
-import org.firstinspires.ftc.teamcode.team10515.subsystems.IntakeServoSubsystem;
 import org.firstinspires.ftc.teamcode.team10515.subsystems.PulleySubsystem;
 import org.firstinspires.ftc.teamcode.team10515.subsystems.RobotStateEstimator;
 import org.firstinspires.ftc.teamcode.team10515.subsystems.ShooterSubsystem;
@@ -59,7 +57,6 @@ public class UGAutoRobot  {
     private FlickerSubsystem flickerSubsystem;
     private GripperSubsystem gripperSubsystem;
     private ShooterSubsystem shooterMotors;
-    private ForkliftSubsystem forkliftSubsystem;
     private ForkliftSubsystem2 forkliftSubsystem2;
     private IntakeMotorSubsystem intakeMotorSubsystem;
     private RevMotor[]   motors;
@@ -170,14 +167,6 @@ public class UGAutoRobot  {
 
     public void setGripperSubsystem(GripperSubsystem gripperSubsystem){
         this.gripperSubsystem = gripperSubsystem;
-    }
-
-    public ForkliftSubsystem getForkliftSubsystem() {
-        return forkliftSubsystem;
-    }
-
-    public void setForkliftSubsystem(ForkliftSubsystem forkliftSubsystem){
-        this.forkliftSubsystem = forkliftSubsystem;
     }
 
     public ForkliftSubsystem2 getForkliftSubsystem2() {
