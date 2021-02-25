@@ -107,7 +107,7 @@ public class RedAuto1 extends LinearOpMode {    UGBase drive;
 
         drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.IDLE);
         drive.robot.getFlickerSubsystem().getStateMachine().updateState(FlickerStateMachine.State.INIT);
-        drive.robot.getForkliftSubsystem2().getStateMachine().updateState(ForkliftStateMachine2.State.DOWN);
+        drive.robot.getForkliftSubsystem2().getStateMachine().updateState(ForkliftStateMachine2.State.INIT);
         drive.robot.getPulleySubsystem().getStateMachine().updateState(PulleyStateMachine.State.DOWN);
         drive.robot.getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.IDLE);
 
@@ -226,14 +226,14 @@ public class RedAuto1 extends LinearOpMode {    UGBase drive;
                 .build();
         waitForStart();
 
-        UGCV.numRings numRings = UGCV.numRings.ZERO;//drive.getRingsUsingImage(true);
+        UGCV.numRings numRings = drive.getRingsUsingImage(true);
         telemetry.addLine("Num Rings: " + numRings);
         telemetry.update();
 
         if (isStopRequested()) return;
 
         currentState = State.WOBBLE;
-        drive.robot.getForkliftSubsystem2().getStateMachine().updateState(ForkliftStateMachine2.State.ALIGN_UP);
+        drive.robot.getForkliftSubsystem2().getStateMachine().updateState(ForkliftStateMachine2.State.ALIGN);
         drive.robot.getForkliftSubsystem2().update(getDt());
 
         //currentState = State.TRAJ1;
@@ -598,19 +598,5 @@ public class RedAuto1 extends LinearOpMode {    UGBase drive;
     public static void setUpdateRuntime(TimeProfiler updaRuntime) { updateRuntime = updaRuntime; }
     public static double getDt() { return dt;}
     public static void setDt(double pdt) { dt = pdt; }
-
-    public boolean reachedUpPosition(double position) {
-        if (drive.robot.getForkliftSubsystem2().getForkliftMotor().getCurrentEncoderTicks() < position)
-            return false;
-        else
-            return true;
-    }
-
-    public boolean reachedDownPosition(double position) {
-        if (drive.robot.getForkliftSubsystem2().getForkliftMotor().getCurrentEncoderTicks() > position)
-            return false;
-        else
-            return true;
-    }
 
 }

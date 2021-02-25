@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import org.firstinspires.ftc.teamcode.team10515.auto.UGBase;
+import org.firstinspires.ftc.teamcode.team10515.control.EnhancedGamepad;
 import org.firstinspires.ftc.teamcode.team10515.states.FlickerStateMachine;
 import org.firstinspires.ftc.teamcode.team10515.states.ForkliftStateMachine2;
 import org.firstinspires.ftc.teamcode.team10515.states.IntakeMotorStateMachine;
@@ -277,11 +278,11 @@ public class autoTeleop extends UGTeleOpRobot {
         WobbleGoalV3();
         FlickThree();
 
-        telemetry.addLine("Pressed"+intPressedX+", "+intPressedB);
+//        telemetry.addLine("Pressed"+intPressedX+", "+intPressedB);
         telemetry.addLine("Shooter change: " + shooterChange);
         telemetry.addLine("Voltage: " + getBatteryVoltage());
         telemetry.addLine("Pose"+poseEstimate.getX()+", "+poseEstimate.getY()+", "+poseEstimate.getHeading());
-        telemetry.addLine("Wobble Goal: " + drive.robot.getForkliftSubsystem2().getForkliftMotor().getCurrentEncoderTicks());
+//        telemetry.addLine("Wobble Goal: " + drive.robot.getForkliftSubsystem2().getForkliftMotor().getCurrentEncoderTicks());
         telemetry.addLine("Intake Output: " + drive.robot.getIntakeMotorSubsystem().getOutput());
         telemetry.addLine("Shooter Output: " + drive.robot.getShooterSubsystem().getOutput());
         telemetry.update();
@@ -322,7 +323,7 @@ public class autoTeleop extends UGTeleOpRobot {
         }
     }
 
-    void FlickThreeV2()
+    void FlickThreePowerShots()
     {
         switch (FlickThree) {
             case IDLE:
@@ -364,45 +365,41 @@ public class autoTeleop extends UGTeleOpRobot {
     public void WobbleGoalV3(){
         switch (currentState) {
             case IDLE:
-                drive.robot.getForkliftSubsystem2().getForkliftMotor().setPower(0);
+                //Do nothing
                 break;
 
             case PRESS_B:
-                //drive.robot.getForkliftSubsystem2().setCurrentTicks(drive.robot.getForkliftSubsystem2().getForkliftMotor().getCurrentEncoderTicks());
+                currentState = ArmState.IDLE;
                 switch (drive.robot.getForkliftSubsystem2().getState()) {
-                    case DOWN:
-                        drive.robot.getForkliftSubsystem2().getStateMachine().updateState(ForkliftStateMachine2.State.ALIGN_UP);
+                    case INIT:
+                        drive.robot.getForkliftSubsystem2().getStateMachine().updateState(ForkliftStateMachine2.State.ALIGN);
                         break;
-                    case ALIGN_UP:
-                    case ALIGN_DOWN:
-                        drive.robot.getForkliftSubsystem2().getStateMachine().updateState(ForkliftStateMachine2.State.UP);
+                    case ALIGN:
+                        drive.robot.getForkliftSubsystem2().getStateMachine().updateState(ForkliftStateMachine2.State.TOP);
                         break;
-                    case UP:
-                        //drive.robot.getForkliftSubsystem2().getStateMachine().updateState(ForkliftStateMachine2.State.UP);//If it's up keep it up
+                    case TOP:
+                        //nothing it's already at the top
                         break;
                 }
-                currentState = ArmState.MOVE;
                 break;
 
             case PRESS_X:
-                //drive.robot.getForkliftSubsystem2().setCurrentTicks(drive.robot.getForkliftSubsystem2().getForkliftMotor().getCurrentEncoderTicks());
+                currentState = ArmState.IDLE;
                 switch(drive.robot.getForkliftSubsystem2().getState()) {
-                    case UP:
-                        drive.robot.getForkliftSubsystem2().getStateMachine().updateState(ForkliftStateMachine2.State.ALIGN_DOWN);
+                    case TOP:
+                        drive.robot.getForkliftSubsystem2().getStateMachine().updateState(ForkliftStateMachine2.State.ALIGN);
                         break;
-                    case ALIGN_DOWN:
-                    case ALIGN_UP:
-                        drive.robot.getForkliftSubsystem2().getStateMachine().updateState(ForkliftStateMachine2.State.DOWN);
+                    case ALIGN:
+                        drive.robot.getForkliftSubsystem2().getStateMachine().updateState(ForkliftStateMachine2.State.INIT);
                         break;
-                    case DOWN:
-                        //drive.robot.getForkliftSubsystem2().getStateMachine().updateState(ForkliftStateMachine2.State.DOWN);//If it's down keep it down
+                    case INIT:
+                        //nothing it's already at the bottom
                         break;
                 }
-                currentState = ArmState.MOVE;
                 break;
 
             case MOVE:
-                double power = drive.robot.getForkliftSubsystem2().getPower();
+                double power = drive.robot.getForkliftSubsystem2().getState().getPower(drive.robot.getForkliftSubsystem2().getCurrentAngle());
                 drive.robot.getForkliftSubsystem2().getForkliftMotor().setPower(power);
                 telemetry.addLine("Power: " + power);
                 if(power == 0.0){
