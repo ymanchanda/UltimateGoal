@@ -3,16 +3,11 @@ package org.firstinspires.ftc.teamcode.team10515.auto;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
-import com.acmerobotics.roadrunner.trajectory.constraints.AngularVelocityConstraint;
-import com.acmerobotics.roadrunner.trajectory.constraints.MecanumVelocityConstraint;
-import com.acmerobotics.roadrunner.trajectory.constraints.MinVelocityConstraint;
-import com.acmerobotics.roadrunner.trajectory.constraints.ProfileAccelerationConstraint;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.lib.util.TimeProfiler;
 import org.firstinspires.ftc.teamcode.lib.util.TimeUnits;
 import org.firstinspires.ftc.teamcode.team10515.PoseStorage;
@@ -23,13 +18,11 @@ import org.firstinspires.ftc.teamcode.team10515.states.IntakeMotorStateMachine;
 import org.firstinspires.ftc.teamcode.team10515.states.PulleyStateMachine;
 import org.firstinspires.ftc.teamcode.team10515.states.ShooterStateMachine;
 
-import java.util.Arrays;
-
 /*
  * This is an example of a more complex path to really test the tuning.
  */
-@Autonomous(name= "States Auto", group = "drive")
-public class StatesAuto extends LinearOpMode {
+@Autonomous(name= "States Auto Red", group = "drive")
+public class StatesAutoRed extends LinearOpMode {
     UGBase drive;
     private static double dt;
     private static TimeProfiler updateRuntime;
@@ -70,7 +63,7 @@ public class StatesAuto extends LinearOpMode {
 
     State currentState = State.IDLE;
 
-    Pose2d startPose = new Pose2d(-60, 16, Math.toRadians(0));
+    Pose2d startPose = new Pose2d(-60, -20, Math.toRadians(0));
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -85,7 +78,7 @@ public class StatesAuto extends LinearOpMode {
         drive.robot.getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.IDLE);
 
         Trajectory traj1 = drive.trajectoryBuilder(startPose)
-                .splineTo(new Vector2d(2, 18), Math.toRadians(0))
+                .splineTo(new Vector2d(2, -8), Math.toRadians(12))
                 .build();
         Trajectory traj2 = drive.trajectoryBuilder(traj1.end())
                 .strafeLeft(7)
@@ -93,7 +86,7 @@ public class StatesAuto extends LinearOpMode {
         Trajectory traj3 = drive.trajectoryBuilder(traj2.end())
                 .strafeLeft(7)
                 .build();
-        Trajectory park = drive.trajectoryBuilder(traj1.end())
+        Trajectory park = drive.trajectoryBuilder(traj1.end().plus(new Pose2d(0,0,-24)))
                 .forward(10)
                 .build();
         waitForStart();
@@ -162,7 +155,7 @@ public class StatesAuto extends LinearOpMode {
                     // If so, move on to the TURN_2 state
                     if (waitTimer.milliseconds() >= 400) {
                         currentState = State.TRAJ3;
-                        drive.turn(Math.toRadians(16));
+                        drive.turn(Math.toRadians(-12));
                         //drive.followTrajectoryAsync(traj3);
                     }
                     break;
