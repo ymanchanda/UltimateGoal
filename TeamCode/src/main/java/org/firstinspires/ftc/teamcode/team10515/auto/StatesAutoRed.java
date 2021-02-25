@@ -78,7 +78,7 @@ public class StatesAutoRed extends LinearOpMode {
         drive.robot.getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.IDLE);
 
         Trajectory traj1 = drive.trajectoryBuilder(startPose)
-                .splineTo(new Vector2d(2, -8), Math.toRadians(12))
+                .splineTo(new Vector2d(2, -8), Math.toRadians(-12))
                 .build();
         Trajectory traj2 = drive.trajectoryBuilder(traj1.end())
                 .strafeLeft(7)
@@ -137,7 +137,7 @@ public class StatesAutoRed extends LinearOpMode {
                     // If so, move on to the TURN_2 state
                     if (waitTimer.milliseconds() >= 400) {
                         currentState = State.TRAJ2;
-                        drive.turn(Math.toRadians(-12));
+                        drive.turn(Math.toRadians(12));
                         //drive.followTrajectoryAsync(traj2);
                     }
                     break;
@@ -155,7 +155,7 @@ public class StatesAutoRed extends LinearOpMode {
                     // If so, move on to the TURN_2 state
                     if (waitTimer.milliseconds() >= 400) {
                         currentState = State.TRAJ3;
-                        drive.turn(Math.toRadians(-12));
+                        drive.turn(Math.toRadians(12));
                         //drive.followTrajectoryAsync(traj3);
                     }
                     break;
