@@ -57,8 +57,8 @@ public class autoTeleop extends UGTeleOpRobot {
     private int intakeChange = 0;
     private int shooterChange = 0;
     private double currSpeed = 0;
-    int intPressedB = 0;
-    int intPressedX = 0;
+//    int intPressedB = 0;
+//    int intPressedX = 0;
     boolean hitLeftPowerShot, hitRightPowerShot, hitMidPowerShot = false;
     int powerShotCounter = 0;
     enum FlickState {
@@ -85,8 +85,7 @@ public class autoTeleop extends UGTeleOpRobot {
     public enum ArmState {
         IDLE,
         PRESS_B,
-        PRESS_X,
-        MOVE
+        PRESS_X
     }
 
     public ArmState currentState;
@@ -289,12 +288,12 @@ public class autoTeleop extends UGTeleOpRobot {
 
         if (gamepad2.b && resetWobble.milliseconds() > 300){
             currentState = ArmState.PRESS_B;
-            intPressedB++;
+            //intPressedB++;
             resetWobble.reset();
         }
         else if (gamepad2.x && resetWobble.milliseconds() > 300){
             currentState = ArmState.PRESS_X;
-            intPressedX++;
+            //intPressedX++;
             resetWobble.reset();
         }
 
@@ -408,12 +407,26 @@ public class autoTeleop extends UGTeleOpRobot {
     }
 
     public void WobbleGoalV3(){
+        if(getEnhancedGamepad2().getRight_stick_y() > 0.5d){
+            drive.robot.getForkliftSubsystem2().setPresetMode(false);
+            drive.robot.getForkliftSubsystem2().getForkliftMotor().setPower(-0.3);
+        }
+        else if(getEnhancedGamepad2().getRight_stick_y() < -0.5d) {
+            drive.robot.getForkliftSubsystem2().setPresetMode(false);
+            drive.robot.getForkliftSubsystem2().getForkliftMotor().setPower(0.3);
+        }
+        else if (getEnhancedGamepad2().getRight_stick_x() > 0.5d){
+            drive.robot.getForkliftSubsystem2().setPresetMode(false);
+            drive.robot.getForkliftSubsystem2().getForkliftMotor().setPower(0);
+        }
+
         switch (currentState) {
             case IDLE:
                 //Do nothing
                 break;
 
             case PRESS_B:
+                drive.robot.getForkliftSubsystem2().setPresetMode(true);
                 currentState = ArmState.IDLE;
                 switch (drive.robot.getForkliftSubsystem2().getState()) {
                     case INIT:
@@ -429,6 +442,7 @@ public class autoTeleop extends UGTeleOpRobot {
                 break;
 
             case PRESS_X:
+                drive.robot.getForkliftSubsystem2().setPresetMode(true);
                 currentState = ArmState.IDLE;
                 switch(drive.robot.getForkliftSubsystem2().getState()) {
                     case TOP:
@@ -440,15 +454,6 @@ public class autoTeleop extends UGTeleOpRobot {
                     case INIT:
                         //nothing it's already at the bottom
                         break;
-                }
-                break;
-
-            case MOVE:
-                double power = drive.robot.getForkliftSubsystem2().getState().getPower(drive.robot.getForkliftSubsystem2().getCurrentAngle());
-                drive.robot.getForkliftSubsystem2().getForkliftMotor().setPower(power);
-                telemetry.addLine("Power: " + power);
-                if(power == 0.0){
-                    currentState = ArmState.IDLE;
                 }
                 break;
         }
