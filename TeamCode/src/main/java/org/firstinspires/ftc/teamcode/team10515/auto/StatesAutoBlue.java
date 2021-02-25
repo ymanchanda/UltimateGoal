@@ -79,6 +79,7 @@ public class StatesAutoBlue extends LinearOpMode {
         drive = new UGBase(hardwareMap);
         drive.setPoseEstimate(startPose);
 
+
         drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.IDLE);
         drive.robot.getFlickerSubsystem().getStateMachine().updateState(FlickerStateMachine.State.INIT);
         drive.robot.getForkliftSubsystem2().getStateMachine().updateState(ForkliftStateMachine2.State.INIT);
