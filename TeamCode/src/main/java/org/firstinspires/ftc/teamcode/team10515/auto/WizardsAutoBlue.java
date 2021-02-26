@@ -19,8 +19,8 @@ import org.firstinspires.ftc.teamcode.team10515.states.ShooterStateMachine;
 /*
  * This is an example of a more complex path to really test the tuning.
  */
-@Autonomous(name= "States Auto Blue", group = "drive")
-public class StatesAutoBlue extends LinearOpMode {
+@Autonomous(name= "Wizards Auto Blue", group = "drive")
+public class WizardsAutoBlue extends LinearOpMode {
     UGBase drive;
     private static double dt;
     private static TimeProfiler updateRuntime;
@@ -36,6 +36,7 @@ public class StatesAutoBlue extends LinearOpMode {
     public static final int maxPosition = 2020; //max position
     //    public static final int topPosition2 = 2020;
     public static final int alignPosition = 1000;
+    int flickerWaitTime = 400;
 
     enum WobbleState {
         ZERO,
@@ -62,7 +63,7 @@ public class StatesAutoBlue extends LinearOpMode {
 
     State currentState = State.IDLE;
 
-    Pose2d startPose = new Pose2d(-60, 16, Math.toRadians(0));
+    Pose2d startPose = new Pose2d(-62.375, 15.5, Math.toRadians(0));
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -78,7 +79,7 @@ public class StatesAutoBlue extends LinearOpMode {
         drive.robot.getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.IDLE);
 
         Trajectory traj1 = drive.trajectoryBuilder(startPose)
-                .splineTo(new Vector2d(2, 18), Math.toRadians(-8))
+                .splineTo(new Vector2d(3.5, 18), Math.toRadians(-7))
                 .build();
         Trajectory traj2 = drive.trajectoryBuilder(traj1.end())
                 .strafeLeft(7)
@@ -86,7 +87,7 @@ public class StatesAutoBlue extends LinearOpMode {
         Trajectory traj3 = drive.trajectoryBuilder(traj2.end())
                 .strafeLeft(7)
                 .build();
-        Trajectory park = drive.trajectoryBuilder(traj1.end().plus(new Pose2d(0, 0, Math.toRadians(24))))
+        Trajectory park = drive.trajectoryBuilder(traj1.end())
                 .forward(10)
                 .build();
         waitForStart();
@@ -138,11 +139,12 @@ public class StatesAutoBlue extends LinearOpMode {
                     if (waitTimer.milliseconds() >= 400) {
                         currentState = State.TRAJ2;
                         drive.turn(Math.toRadians(10));
+                        waitTimer.reset();
                         //drive.followTrajectoryAsync(traj2);
                     }
                     break;
                 case TRAJ2:
-                    if (!drive.isBusy()) {
+                    if (!drive.isBusy() && waitTimer.milliseconds() > flickerWaitTime){
                         drive.robot.getFlickerSubsystem().getStateMachine().updateState(FlickerStateMachine.State.HIT);
                         flickerchange = true;
                         flickerTime.reset();
@@ -156,11 +158,12 @@ public class StatesAutoBlue extends LinearOpMode {
                     if (waitTimer.milliseconds() >= 400) {
                         currentState = State.TRAJ3;
                         drive.turn(Math.toRadians(8));
+                        waitTimer.reset();
                         //drive.followTrajectoryAsync(traj3);
                     }
                     break;
                 case TRAJ3:
-                    if (!drive.isBusy()) {
+                    if (!drive.isBusy() && waitTimer.milliseconds() > flickerWaitTime) {
                         drive.robot.getFlickerSubsystem().getStateMachine().updateState(FlickerStateMachine.State.HIT);
                         flickerchange = true;
                         flickerTime.reset();

@@ -19,8 +19,8 @@ import org.firstinspires.ftc.teamcode.team10515.states.ShooterStateMachine;
 /*
  * This is an example of a more complex path to really test the tuning.
  */
-@Autonomous(name= "States Auto Red", group = "drive")
-public class StatesAutoRed extends LinearOpMode {
+@Autonomous(name= "Wizards Auto Red", group = "drive")
+public class WizardsAutoRed extends LinearOpMode {
     UGBase drive;
     private static double dt;
     private static TimeProfiler updateRuntime;
@@ -32,6 +32,7 @@ public class StatesAutoRed extends LinearOpMode {
     boolean goDown = false;
     public int lastEncoderTicks;
     public int currentEncoderTicks = 0;
+    int flickerWaitTime = 600;
 //    public static final int topPosition = 430;
     public static final int maxPosition = 2020; //max position
 //    public static final int topPosition2 = 2020;
@@ -60,7 +61,7 @@ public class StatesAutoRed extends LinearOpMode {
 
     State currentState = State.IDLE;
 
-    Pose2d startPose = new Pose2d(-60, -18, Math.toRadians(0));
+    Pose2d startPose = new Pose2d(-62.375, -15, Math.toRadians(0));
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -75,7 +76,7 @@ public class StatesAutoRed extends LinearOpMode {
         drive.robot.getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.IDLE);
 
         Trajectory traj1 = drive.trajectoryBuilder(startPose)
-                .splineTo(new Vector2d(5, -6), Math.toRadians(-8))
+                .splineTo(new Vector2d(3.5, -5), Math.toRadians(-6))
                 .build();
         Trajectory traj2 = drive.trajectoryBuilder(traj1.end())
                 .strafeLeft(7)
@@ -87,7 +88,7 @@ public class StatesAutoRed extends LinearOpMode {
                 .forward(10)
                 .build();
         waitForStart();
-        //UGCV.numRings numRings = drive.getRingsUsingImage(false);
+        UGCV.numRings numRings = drive.getRingsUsingImage(false);
         //telemetry.addLine("Num Rings: " + numRings);
         //telemetry.update();
 
@@ -118,6 +119,7 @@ public class StatesAutoRed extends LinearOpMode {
                     if (waitTimer.milliseconds() >= 100) {
                         currentState = State.TRAJ1;
                         drive.followTrajectoryAsync(traj1);
+                        waitTimer.reset();
                     }
                     break;
                 case TRAJ1:
@@ -134,13 +136,13 @@ public class StatesAutoRed extends LinearOpMode {
                     // If so, move on to the TURN_2 state
                     if (waitTimer.milliseconds() >= 600) {
                         currentState = State.TRAJ2;
-                        waitTimer.reset();
                         drive.turn(Math.toRadians(10));
+                        waitTimer.reset();
                         //drive.followTrajectoryAsync(traj2);
                     }
                     break;
                 case TRAJ2:
-                    if (!drive.isBusy()) {
+                    if (!drive.isBusy() && waitTimer.milliseconds() > flickerWaitTime) {
                         drive.robot.getFlickerSubsystem().getStateMachine().updateState(FlickerStateMachine.State.HIT);
                         flickerchange = true;
                         flickerTime.reset();
@@ -154,12 +156,12 @@ public class StatesAutoRed extends LinearOpMode {
                     if (waitTimer.milliseconds() >= 600) {
                         currentState = State.TRAJ3;
                         waitTimer.reset();
-                        drive.turn(Math.toRadians(8));
+                        drive.turn(Math.toRadians(9));
                         //drive.followTrajectoryAsync(traj3);
                     }
                     break;
                 case TRAJ3:
-                    if (!drive.isBusy()) {
+                    if (!drive.isBusy() && waitTimer.milliseconds() > flickerWaitTime) {
                         drive.robot.getFlickerSubsystem().getStateMachine().updateState(FlickerStateMachine.State.HIT);
                         flickerchange = true;
                         flickerTime.reset();

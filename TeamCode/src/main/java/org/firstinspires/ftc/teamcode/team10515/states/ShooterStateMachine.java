@@ -44,13 +44,15 @@ public class ShooterStateMachine extends SimpleState<ShooterStateMachine.State>{
             this.speed = pSpeed;
         }
 
-        public double getCurrSpeed() {
-            if (this.name == "Middle Goal")
+        public double getCurrSpeed(String name) {
+            if (name == "Middle")
                 return midGoal;
-            else if (this.name == "Pole Shots")
+            else if (name == "Pole")
                 return poleShot;
-            else
+            else if (name == "High")
                 return highGoal;
+            else
+                return 0;
         }
     }
 }

@@ -56,6 +56,7 @@ public class autoTeleop extends UGTeleOpRobot {
     private int intakeChange = 0;
     private int shooterChange = 0;
     private double currSpeed = 0;
+    private String name = "High Goal";
 
     boolean hitLeftPowerShot, hitRightPowerShot, hitMidPowerShot = false;
     enum FlickState {
@@ -147,25 +148,25 @@ public class autoTeleop extends UGTeleOpRobot {
                 }
                 break;
         }
-        if(gamepad1.right_bumper){
+        if (gamepad1.right_bumper) {
             drive.turn(Math.toRadians(-12));
         }
-        if(gamepad1.left_bumper){
+        if (gamepad1.left_bumper) {
             drive.turn(Math.toRadians(12));
         }
         //Gamepad2 Update flywheel intake - In:Right Trigger, Out:Left Trigger, Stop: Back
-        if(getEnhancedGamepad2().getRight_trigger()>0) {
+        if (getEnhancedGamepad2().getRight_trigger() > 0) {
             drive.robot.getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.INTAKE);
-        } else if(getEnhancedGamepad2().getLeft_trigger() > 0) {
+        } else if (getEnhancedGamepad2().getLeft_trigger() > 0) {
             drive.robot.getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.OUTTAKE);
-        } else if(getEnhancedGamepad2().isBack()) {
+        } else if (getEnhancedGamepad2().isBack()) {
             drive.robot.getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.IDLE);
         }
 
         if (!iselevatorUp && getEnhancedGamepad1().isaJustPressed()) {
             intakeChange++;
             if (intakeChange > 4) intakeChange = 0;
-            switch(intakeChange) {
+            switch (intakeChange) {
                 case 1:
                     drive.robot.getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.INTAKE1);
                     break;
@@ -185,63 +186,59 @@ public class autoTeleop extends UGTeleOpRobot {
         }
 
         //Gamepad2 Manually move Elevator up && btnPressedA.milliseconds()>1250  && btnPressedA.milliseconds()>1250
-        if(getEnhancedGamepad2().isyLast()) {
+        if (getEnhancedGamepad2().isyLast()) {
             drive.robot.getPulleySubsystem().getStateMachine().updateState(PulleyStateMachine.State.UP);
             drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.HIGHGOAL);
-            currSpeed =drive.robot.getShooterSubsystem().getStateMachine().getState().getCurrSpeed();
-            //adjust speed for battery voltage
-//            currSpeed += compensateVoltage();
-//            drive.robot.getShooterSubsystem().getStateMachine().getState().setSpeed(currSpeed);
-
+            name = "High Goal";
+            currSpeed = drive.robot.getShooterSubsystem().getStateMachine().getState().getCurrSpeed(name);
             drive.robot.getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.IDLE);
             iselevatorUp = true;    //Elevator Moved Up and shooter starts
-        } else if(getEnhancedGamepad2().isaLast()) {
+        } else if (getEnhancedGamepad2().isaLast()) {
             drive.robot.getPulleySubsystem().getStateMachine().updateState(PulleyStateMachine.State.DOWN);
             drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.IDLE);
             drive.robot.getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.INTAKE);
+            name = "Idle";
+            currSpeed = drive.robot.getShooterSubsystem().getStateMachine().getState().getCurrSpeed(name);
             iselevatorUp = false;   //Elevator Moved Down
         }
 
         //adjust shooter speed
-        if(iselevatorUp && (getEnhancedGamepad1().isxJustPressed() || getEnhancedGamepad1().isbJustPressed())) {
-            if (getEnhancedGamepad1().isbJustPressed()) { shooterChange++;
-                if (shooterChange > 4) { shooterChange = 4; }
-            }
-            else if (getEnhancedGamepad1().isxJustPressed()) { shooterChange--;
-                if (shooterChange < -4) { shooterChange = -4; }
+        if (iselevatorUp && (getEnhancedGamepad1().isxJustPressed() || getEnhancedGamepad1().isbJustPressed())) {
+            if (getEnhancedGamepad1().isbJustPressed()) {
+                shooterChange++;
+                if (shooterChange > 4) {
+                    shooterChange = 4;
+                }
+            } else if (getEnhancedGamepad1().isxJustPressed()) {
+                shooterChange--;
+                if (shooterChange < -4) {
+                    shooterChange = -4;
+                }
             }
 
             drive.robot.getShooterSubsystem().getStateMachine().getState().setSpeed(currSpeed + (600 * shooterChange));
         }
 
         //Toggle Shooter
-        if(getEnhancedGamepad2().isDpadUpJustPressed()) {
+        if (getEnhancedGamepad2().isDpadUpJustPressed()) {
             shooterChange = 0;
             drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.HIGHGOAL);
-//            currSpeed = drive.robot.getShooterSubsystem().getStateMachine().getState().getCurrSpeed();
-//            currSpeed += compensateVoltage();
-//            drive.robot.getShooterSubsystem().getStateMachine().getState().setSpeed(currSpeed);
-        }
-        else if(getEnhancedGamepad2().isDpadRightJustPressed()) {
+            name = "High";
+        } else if (getEnhancedGamepad2().isDpadRightJustPressed()) {
             shooterChange = 0;
             drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.POLESHOT);
-//            currSpeed = drive.robot.getShooterSubsystem().getStateMachine().getState().getCurrSpeed();
-//            currSpeed += compensateVoltage();
-//            drive.robot.getShooterSubsystem().getStateMachine().getState().setSpeed(currSpeed);
-        }
-        else if(getEnhancedGamepad2().isDpadLeftJustPressed()) {
+            name = "Pole";
+        } else if (getEnhancedGamepad2().isDpadLeftJustPressed()) {
             shooterChange = 0;
             drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.MIDGOAL);
-//            currSpeed = drive.robot.getShooterSubsystem().getStateMachine().getState().getCurrSpeed();
-//            currSpeed += compensateVoltage();
-//            drive.robot.getShooterSubsystem().getStateMachine().getState().setSpeed(currSpeed);
-        }
-        else if(getEnhancedGamepad2().isDpadDownJustPressed()) {
+            name = "Middle";
+        } else if (getEnhancedGamepad2().isDpadDownJustPressed()) {
             shooterChange = 0;
             drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.IDLE);
+            name = "Idle";
         }
 
-        if(getEnhancedGamepad2().isRightBumperLast()){
+        if (getEnhancedGamepad2().isRightBumperLast()) {
             drive.robot.getFlickerSubsystem().getStateMachine().updateState(FlickerStateMachine.State.HIT);
             resetFlicker.reset();
             isFlicked = true;
@@ -249,34 +246,33 @@ public class autoTeleop extends UGTeleOpRobot {
             highShotPose = drive.getPoseEstimate();
             highShotHeading = drive.getPoseEstimate().getHeading();
         }
-        if (isFlicked && resetFlicker.milliseconds()>100){
+        if (isFlicked && resetFlicker.milliseconds() > 100) {
             drive.robot.getFlickerSubsystem().getStateMachine().updateState(FlickerStateMachine.State.INIT);
         }
 
-        if (getEnhancedGamepad2().isLeftBumperLast()){
+        if (getEnhancedGamepad2().isLeftBumperLast()) {
             FlickThree = FlickState.FLICK;
         }
 
         //automation flicking and turning for powershots
-        if(gamepad1.dpad_down){
+        if (gamepad1.dpad_down) {
             hitMidPowerShot = true;
             FlickTwoPowershots = FlickState.BACK;
         }
-        if(gamepad1.dpad_left){
+        if (gamepad1.dpad_left) {
             hitLeftPowerShot = true;
             FlickTwoPowershots = FlickState.BACK;
         }
-        if(gamepad1.dpad_right){
+        if (gamepad1.dpad_right) {
             hitRightPowerShot = true;
             FlickTwoPowershots = FlickState.BACK;
         }
 
-        if (gamepad2.b && resetWobble.milliseconds() > 300){
+        if (gamepad2.b && resetWobble.milliseconds() > 300) {
             currentState = ArmState.PRESS_B;
             //intPressedB++;
             resetWobble.reset();
-        }
-        else if (gamepad2.x && resetWobble.milliseconds() > 300){
+        } else if (gamepad2.x && resetWobble.milliseconds() > 300) {
             currentState = ArmState.PRESS_X;
             //intPressedX++;
             resetWobble.reset();
@@ -287,7 +283,7 @@ public class autoTeleop extends UGTeleOpRobot {
         }
 
         if (getEnhancedGamepad2().getLeft_stick_y() < -0.5) {
-                drive.robot.getGripperSubsystem().getStateMachine().updateState(GripperStateMachine.State.INIT);
+            drive.robot.getGripperSubsystem().getStateMachine().updateState(GripperStateMachine.State.INIT);
         }
         //WobbleGoal processing
         WobbleGoalV3();
@@ -298,10 +294,14 @@ public class autoTeleop extends UGTeleOpRobot {
         //Powershots in end game
         FlickTwoPowerShots();
 
+        if (currSpeed != 0d) {
+            double newSpeed = currSpeed + compensateVoltage();
+            drive.robot.getShooterSubsystem().getStateMachine().getState().setSpeed(newSpeed);
+        }
+
         telemetry.addLine("Shooter change: " + shooterChange);
-        telemetry.addLine("Shooter Speed: " + drive.robot.getShooterSubsystem().getStateMachine().getState().getCurrSpeed());
+        telemetry.addLine("Shooter Speed: " + currSpeed);
         telemetry.addLine("Pose"+poseEstimate.getX()+", "+poseEstimate.getY()+", "+poseEstimate.getHeading());
-//        telemetry.addLine("Wobble Goal: " + drive.robot.getForkliftSubsystem2().getForkliftMotor().getCurrentEncoderTicks());
         telemetry.addLine("Intake Output: " + drive.robot.getIntakeMotorSubsystem().getOutput());
         telemetry.addLine("Shooter Output: " + drive.robot.getShooterSubsystem().getOutput());
         telemetry.update();
@@ -363,16 +363,16 @@ public class autoTeleop extends UGTeleOpRobot {
                 break;
             case BACK:
                 if(hitLeftPowerShot){
-                    drive.turn(Math.toRadians(-12));
+                    drive.turn(Math.toRadians(-8));
                 }
                 else if(hitMidPowerShot && NumFlicks == 0){
-                    drive.turn(Math.toRadians(12));
+                    drive.turn(Math.toRadians(8));
                 }
                 else if(hitMidPowerShot && NumFlicks == 1){
-                    drive.turn(Math.toRadians(-24));
+                    drive.turn(Math.toRadians(-16));
                 }
                 else if(hitRightPowerShot){
-                    drive.turn(Math.toRadians(12));
+                    drive.turn(Math.toRadians(8));
                 }
                 drive.robot.getFlickerSubsystem().getStateMachine().updateState(FlickerStateMachine.State.INIT);
                 FlickTwoPowershots = FlickState.WAITBACK;

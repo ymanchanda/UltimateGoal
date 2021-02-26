@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.team10515;
 
-import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.lib.drivers.Motor;
@@ -12,7 +10,6 @@ import org.firstinspires.ftc.teamcode.lib.util.TimeProfiler;
 import org.firstinspires.ftc.teamcode.team10515.control.StackTracker;
 import org.firstinspires.ftc.teamcode.team10515.subsystems.Drive;
 import org.firstinspires.ftc.teamcode.team10515.subsystems.ExpansionHubs;
-import org.firstinspires.ftc.teamcode.team10515.subsystems.Feeder;
 import org.firstinspires.ftc.teamcode.team10515.subsystems.FlickerSubsystem;
 import org.firstinspires.ftc.teamcode.team10515.subsystems.ForkliftSubsystem2;
 import org.firstinspires.ftc.teamcode.team10515.subsystems.GripperSubsystem;
@@ -20,11 +17,8 @@ import org.firstinspires.ftc.teamcode.team10515.subsystems.IntakeMotorSubsystem;
 import org.firstinspires.ftc.teamcode.team10515.subsystems.PulleySubsystem;
 import org.firstinspires.ftc.teamcode.team10515.subsystems.RobotStateEstimator;
 import org.firstinspires.ftc.teamcode.team10515.subsystems.ShooterSubsystem;
-import org.openftc.revextensions2.ExpansionHubEx;
 import org.openftc.revextensions2.ExpansionHubMotor;
 import org.openftc.revextensions2.ExpansionHubServo;
-
-import java.util.Arrays;
 
 /**
  * Motor naming convention:
@@ -51,9 +45,7 @@ public class UGAutoRobot  {
     private ExpansionHubs expansionHubs;
     private RobotStateEstimator robotStateEstimator;
     private Drive drive;
-    private Feeder feeder;
     private PulleySubsystem elevatorSubsystem;
-    private StackTracker stackTracker;
     private FlickerSubsystem flickerSubsystem;
     private GripperSubsystem gripperSubsystem;
     private ShooterSubsystem shooterMotors;
@@ -115,22 +107,6 @@ public class UGAutoRobot  {
 
     public void setDrive(Drive drive) {
         this.drive = drive;
-    }
-
-    public Feeder getFeeder() {
-        return feeder;
-    }
-
-    public void setFeeder(Feeder feeder) {
-        this.feeder = feeder;
-    }
-
-    public StackTracker getStackTracker() {
-        return stackTracker;
-    }
-
-    public void setStackTracker(StackTracker stackTracker) {
-        this.stackTracker = stackTracker;
     }
 
     public IntakeMotorSubsystem getIntakeMotorSubsystem() {

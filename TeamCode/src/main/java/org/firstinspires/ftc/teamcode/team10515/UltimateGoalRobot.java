@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.team10515;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 
 import org.firstinspires.ftc.teamcode.lib.drivers.Motor;
 import org.firstinspires.ftc.teamcode.lib.drivers.RevMotor;
@@ -11,12 +10,9 @@ import org.firstinspires.ftc.teamcode.lib.util.TimeProfiler;
 import org.firstinspires.ftc.teamcode.team10515.control.StackTracker;
 import org.firstinspires.ftc.teamcode.team10515.subsystems.Drive;
 import org.firstinspires.ftc.teamcode.team10515.subsystems.ExpansionHubs;
-import org.firstinspires.ftc.teamcode.team10515.subsystems.Feeder;
 import org.firstinspires.ftc.teamcode.team10515.subsystems.FlickerSubsystem;
 import org.firstinspires.ftc.teamcode.team10515.subsystems.ForkliftSubsystem2;
 import org.firstinspires.ftc.teamcode.team10515.subsystems.IntakeMotorSubsystem;
-//import org.firstinspires.ftc.teamcode.team10515.subsystems.ForkliftSubsystem;
-import org.firstinspires.ftc.teamcode.team10515.subsystems.IntakeServoSubsystem;
 import org.firstinspires.ftc.teamcode.team10515.subsystems.RobotStateEstimator;
 import org.firstinspires.ftc.teamcode.team10515.subsystems.ShooterSubsystem;
 import org.firstinspires.ftc.teamcode.team10515.subsystems.PulleySubsystem;
@@ -48,19 +44,15 @@ import java.util.Arrays;
 public abstract class UltimateGoalRobot extends Robot {
     //private  RevBlinkinLedDriver lights;
     private TimeProfiler matchRuntime;
-    //protected static Rev2mDistanceSensor elevatorSensor;
     private ExpansionHubs expansionHubs;
     private RobotStateEstimator robotStateEstimator;
     private Drive drive;
-    private Feeder feeder;
     private PulleySubsystem elevatorSubsystem;
     private StackTracker stackTracker;
     private FlickerSubsystem flickerSubsystem;
     private ShooterSubsystem shooterMotors;
-//    private ForkliftSubsystem forkliftSubsystem;
     private ForkliftSubsystem2 forkliftSubsystem;
     private IntakeMotorSubsystem intakeMotorSubsystem;
-    private IntakeServoSubsystem intakeServoSubsystem;
 
     @Override
     public void init() {
@@ -95,7 +87,6 @@ public abstract class UltimateGoalRobot extends Robot {
         setRobotStateEstimator(new RobotStateEstimator(this, hardwareMap.get(BNO055IMU.class, "imu"), new Pose2d()));
         //setElevatorSensor(hardwareMap.get(Rev2mDistanceSensor.class, "Elevator Sensor"));
         setDrive(new Drive(getRobotStateEstimator(), getMotors()[0], getMotors()[1], getMotors()[2], getMotors()[3]));
-        setStackTracker(new StackTracker());
         setShooterSubsystem(new ShooterSubsystem(getMotors()[4], getMotors()[5]));
         setPulleySubsystem(new PulleySubsystem(getServos()[0]));
         setIntakeMotorSubsystem(new IntakeMotorSubsystem(getMotors()[6]));
@@ -182,22 +173,6 @@ public abstract class UltimateGoalRobot extends Robot {
 
     public void setDrive(Drive drive) {
         this.drive = drive;
-    }
-
-    public Feeder getFeeder() {
-        return feeder;
-    }
-
-    public void setFeeder(Feeder feeder) {
-        this.feeder = feeder;
-    }
-
-    public StackTracker getStackTracker() {
-        return stackTracker;
-    }
-
-    public void setStackTracker(StackTracker stackTracker) {
-        this.stackTracker = stackTracker;
     }
 
     public IntakeMotorSubsystem getIntakeMotorSubsystem() {

@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.team10515;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -44,6 +45,7 @@ import org.firstinspires.ftc.teamcode.team10515.states.ShooterStateMachine;
  * @see UltimateGoalRobot
  */
 @TeleOp(name = "Game Tele-Op", group = "Main")
+@Disabled
 public class GameTeleop extends UltimateGoalRobot {
     private boolean iselevatorUp = false;   //elevator starts in down position
     private boolean isFlicked = false;      //flickers are inside
