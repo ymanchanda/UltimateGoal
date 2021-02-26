@@ -56,7 +56,7 @@ public class autoTeleop extends UGTeleOpRobot {
     private int intakeChange = 0;
     private int shooterChange = 0;
     private double currSpeed = 0;
-    private String name = "High Goal";
+    private String name = "Idle";
 
     boolean hitLeftPowerShot, hitRightPowerShot, hitMidPowerShot = false;
     enum FlickState {
@@ -189,7 +189,7 @@ public class autoTeleop extends UGTeleOpRobot {
         if (getEnhancedGamepad2().isyLast()) {
             drive.robot.getPulleySubsystem().getStateMachine().updateState(PulleyStateMachine.State.UP);
             drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.HIGHGOAL);
-            name = "High Goal";
+            name = "High";
             currSpeed = drive.robot.getShooterSubsystem().getStateMachine().getState().getCurrSpeed(name);
             drive.robot.getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.IDLE);
             iselevatorUp = true;    //Elevator Moved Up and shooter starts
@@ -224,18 +224,22 @@ public class autoTeleop extends UGTeleOpRobot {
             shooterChange = 0;
             drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.HIGHGOAL);
             name = "High";
+            currSpeed = drive.robot.getShooterSubsystem().getStateMachine().getState().getCurrSpeed(name);
         } else if (getEnhancedGamepad2().isDpadRightJustPressed()) {
             shooterChange = 0;
             drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.POLESHOT);
             name = "Pole";
+            currSpeed = drive.robot.getShooterSubsystem().getStateMachine().getState().getCurrSpeed(name);
         } else if (getEnhancedGamepad2().isDpadLeftJustPressed()) {
             shooterChange = 0;
             drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.MIDGOAL);
             name = "Middle";
+            currSpeed = drive.robot.getShooterSubsystem().getStateMachine().getState().getCurrSpeed(name);
         } else if (getEnhancedGamepad2().isDpadDownJustPressed()) {
             shooterChange = 0;
             drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.IDLE);
             name = "Idle";
+            currSpeed = drive.robot.getShooterSubsystem().getStateMachine().getState().getCurrSpeed(name);
         }
 
         if (getEnhancedGamepad2().isRightBumperLast()) {
@@ -294,13 +298,14 @@ public class autoTeleop extends UGTeleOpRobot {
         //Powershots in end game
         FlickTwoPowerShots();
 
-        if (currSpeed != 0d) {
-            double newSpeed = currSpeed + compensateVoltage();
-            drive.robot.getShooterSubsystem().getStateMachine().getState().setSpeed(newSpeed);
-        }
+//        if (currSpeed != 0d) {
+//            double newSpeed = currSpeed + compensateVoltage();
+//            drive.robot.getShooterSubsystem().getStateMachine().getState().setSpeed(newSpeed);
+//            telemetry.addLine("Shooter Speed: " + newSpeed);
+//        }
 
+        telemetry.addLine("Shooter speed: " + currSpeed);
         telemetry.addLine("Shooter change: " + shooterChange);
-        telemetry.addLine("Shooter Speed: " + currSpeed);
         telemetry.addLine("Pose"+poseEstimate.getX()+", "+poseEstimate.getY()+", "+poseEstimate.getHeading());
         telemetry.addLine("Intake Output: " + drive.robot.getIntakeMotorSubsystem().getOutput());
         telemetry.addLine("Shooter Output: " + drive.robot.getShooterSubsystem().getOutput());
@@ -450,21 +455,22 @@ public class autoTeleop extends UGTeleOpRobot {
         double voltage = getBatteryVoltage();
         //adjust lower if battery high
         if (voltage > 13d) {
-            if ((voltage - 13d) > 0.5)
-                voltage = 0.5;
+            if ((voltage - 13d) > 0.5d)
+                voltage = 0.5d;
             else
                 voltage = voltage - 13d;
 
-            retVal = -(1200 * voltage);
+            retVal = -(600 * voltage);
         }
         //adjust higher if battery low
-        else if (voltage < 12.5d)
+        else if (voltage < 12.5d) {
             if ((12.5d - voltage) > 0.5d)
                 voltage = 0.5d;
             else
                 voltage = 12.5 - voltage;
-            retVal = (1200 * voltage);
 
+                retVal = (600 * voltage);
+        }
         return retVal;
     }
     // Computes the current battery voltage
