@@ -243,8 +243,8 @@ public class XVRedAuto extends LinearOpMode {    UGBase drive;
 //                .build();
         waitForStart();
 
-        //UGCV.numRings numRings = drive.getRingsUsingImage(true);
-        UGCV.numRings numRings = UGCV.numRings.ZERO;
+        UGCV.numRings numRings = drive.getRingsUsingImage(true);
+        //UGCV.numRings numRings = UGCV.numRings.ZERO;
         telemetry.addLine("Num Rings: " + numRings);
         telemetry.update();
 
