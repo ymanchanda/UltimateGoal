@@ -20,7 +20,7 @@ public class GripperStateMachine extends TimedState<GripperStateMachine.State> {
     }
 
     public enum State implements Namable {
-        INIT("Init",0.2d), GRIP("Grip", 0.55d);
+        INIT("Init",0d), GRIP("Grip", 0.6d);
 
         private final String name;
         private final double Position;

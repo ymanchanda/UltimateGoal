@@ -1,28 +1,8 @@
 package org.firstinspires.ftc.teamcode.team10515;
 
-import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
-
-import org.firstinspires.ftc.teamcode.lib.drivers.Motor;
 import org.firstinspires.ftc.teamcode.lib.drivers.RevMotor;
-import org.firstinspires.ftc.teamcode.lib.drivers.RevServo;
-import org.firstinspires.ftc.teamcode.lib.geometry.Pose2d;
 import org.firstinspires.ftc.teamcode.lib.util.TimeProfiler;
 import org.firstinspires.ftc.teamcode.team10515.auto.UGBase;
-import org.firstinspires.ftc.teamcode.team10515.control.StackTracker;
-import org.firstinspires.ftc.teamcode.team10515.subsystems.Drive;
-import org.firstinspires.ftc.teamcode.team10515.subsystems.ExpansionHubs;
-import org.firstinspires.ftc.teamcode.team10515.subsystems.Feeder;
-import org.firstinspires.ftc.teamcode.team10515.subsystems.FlickerSubsystem;
-import org.firstinspires.ftc.teamcode.team10515.subsystems.ForkliftSubsystem2;
-import org.firstinspires.ftc.teamcode.team10515.subsystems.IntakeMotorSubsystem;
-import org.firstinspires.ftc.teamcode.team10515.subsystems.IntakeServoSubsystem;
-import org.firstinspires.ftc.teamcode.team10515.subsystems.PulleySubsystem;
-import org.firstinspires.ftc.teamcode.team10515.subsystems.RobotStateEstimator;
-import org.firstinspires.ftc.teamcode.team10515.subsystems.ShooterSubsystem;
-import org.openftc.revextensions2.ExpansionHubEx;
-import org.openftc.revextensions2.ExpansionHubMotor;
-import org.openftc.revextensions2.ExpansionHubServo;
 
 import java.util.Arrays;
 

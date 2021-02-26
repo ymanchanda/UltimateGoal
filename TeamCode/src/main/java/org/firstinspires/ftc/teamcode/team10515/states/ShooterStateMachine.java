@@ -17,13 +17,15 @@ public class ShooterStateMachine extends SimpleState<ShooterStateMachine.State>{
         IDLE("Idle", 0d),
         //use mm/sec
         HIGHGOAL("High Goal", 25000d),
-        POLESHOT("Pole Shots", 22500d ),//23000, //24000d
+        POLESHOT("Pole Shot", 22500d ),//23000, //24000d
         MIDGOAL("Middle Goal", 20000d),//21000
-        LOWGOAL("Low Goal", 18000d),
+        //LOWGOAL("Low Goal", 18000d),
         AUTO_EXTRA_SHOT("High Back", 24500);
 
         private final String name;
         private double speed;
+        private final double highGoal = 25000d, poleShot = 22500d, midGoal = 20000d;
+
 
         State(final String name, double speed) {
             this.name  = name;
@@ -38,9 +40,17 @@ public class ShooterStateMachine extends SimpleState<ShooterStateMachine.State>{
         public double getSpeed() {
             return this.speed;
         }
-
         public void setSpeed(double pSpeed) {
             this.speed = pSpeed;
+        }
+
+        public double getCurrSpeed() {
+            if (this.name == "Middle Goal")
+                return midGoal;
+            else if (this.name == "Pole Shots")
+                return poleShot;
+            else
+                return highGoal;
         }
     }
 }

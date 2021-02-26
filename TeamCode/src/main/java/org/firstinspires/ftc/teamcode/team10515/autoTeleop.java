@@ -50,7 +50,6 @@ import org.firstinspires.ftc.teamcode.team10515.states.ShooterStateMachine;
 public class autoTeleop extends UGTeleOpRobot {
     private boolean iselevatorUp = false;   //elevator starts in down position
     private boolean isFlicked = false;      //flickers are inside
-    private boolean isGripping = false;
 
     //intake Servo activated
     private int count = 0;
@@ -189,7 +188,7 @@ public class autoTeleop extends UGTeleOpRobot {
         if(getEnhancedGamepad2().isyLast()) {
             drive.robot.getPulleySubsystem().getStateMachine().updateState(PulleyStateMachine.State.UP);
             drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.HIGHGOAL);
-            currSpeed = ShooterStateMachine.State.HIGHGOAL.getSpeed();
+            currSpeed =drive.robot.getShooterSubsystem().getStateMachine().getState().getCurrSpeed();
             //adjust speed for battery voltage
 //            currSpeed += compensateVoltage();
 //            drive.robot.getShooterSubsystem().getStateMachine().getState().setSpeed(currSpeed);
@@ -219,21 +218,21 @@ public class autoTeleop extends UGTeleOpRobot {
         if(getEnhancedGamepad2().isDpadUpJustPressed()) {
             shooterChange = 0;
             drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.HIGHGOAL);
-            currSpeed = ShooterStateMachine.State.HIGHGOAL.getSpeed();
+//            currSpeed = drive.robot.getShooterSubsystem().getStateMachine().getState().getCurrSpeed();
 //            currSpeed += compensateVoltage();
 //            drive.robot.getShooterSubsystem().getStateMachine().getState().setSpeed(currSpeed);
         }
         else if(getEnhancedGamepad2().isDpadRightJustPressed()) {
             shooterChange = 0;
             drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.POLESHOT);
-            currSpeed = ShooterStateMachine.State.POLESHOT.getSpeed();
+//            currSpeed = drive.robot.getShooterSubsystem().getStateMachine().getState().getCurrSpeed();
 //            currSpeed += compensateVoltage();
 //            drive.robot.getShooterSubsystem().getStateMachine().getState().setSpeed(currSpeed);
         }
         else if(getEnhancedGamepad2().isDpadLeftJustPressed()) {
             shooterChange = 0;
             drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.MIDGOAL);
-            currSpeed = ShooterStateMachine.State.MIDGOAL.getSpeed();
+//            currSpeed = drive.robot.getShooterSubsystem().getStateMachine().getState().getCurrSpeed();
 //            currSpeed += compensateVoltage();
 //            drive.robot.getShooterSubsystem().getStateMachine().getState().setSpeed(currSpeed);
         }
@@ -283,12 +282,12 @@ public class autoTeleop extends UGTeleOpRobot {
             resetWobble.reset();
         }
 
-        if (gamepad2.left_stick_button) {
-            if (!isGripping)
-                drive.robot.getGripperSubsystem().getStateMachine().updateState(GripperStateMachine.State.GRIP);
-            else
+        if (getEnhancedGamepad2().getLeft_stick_y() > 0.5d) {
+            drive.robot.getGripperSubsystem().getStateMachine().updateState(GripperStateMachine.State.GRIP);
+        }
+
+        if (getEnhancedGamepad2().getLeft_stick_y() < -0.5) {
                 drive.robot.getGripperSubsystem().getStateMachine().updateState(GripperStateMachine.State.INIT);
-            isGripping = !isGripping;
         }
         //WobbleGoal processing
         WobbleGoalV3();
@@ -299,9 +298,8 @@ public class autoTeleop extends UGTeleOpRobot {
         //Powershots in end game
         FlickTwoPowerShots();
 
-        telemetry.addLine("Gripper: "+isGripping);
         telemetry.addLine("Shooter change: " + shooterChange);
-        telemetry.addLine("Shooter Speed: " + drive.robot.getShooterSubsystem().getStateMachine().getState().getSpeed());
+        telemetry.addLine("Shooter Speed: " + drive.robot.getShooterSubsystem().getStateMachine().getState().getCurrSpeed());
         telemetry.addLine("Pose"+poseEstimate.getX()+", "+poseEstimate.getY()+", "+poseEstimate.getHeading());
 //        telemetry.addLine("Wobble Goal: " + drive.robot.getForkliftSubsystem2().getForkliftMotor().getCurrentEncoderTicks());
         telemetry.addLine("Intake Output: " + drive.robot.getIntakeMotorSubsystem().getOutput());
