@@ -29,8 +29,11 @@ public class UGCV {
     public enum numRings {
         FOUR, ONE, ZERO
     }
-
     public numRings GetPosition(boolean saveBitmaps, boolean red) {
+        return GetPosition(saveBitmaps, red, false);
+    }
+
+    public numRings GetPosition(boolean saveBitmaps, boolean red, boolean useBlueCamera) {
         Image rgbImage = null;
 
         double yellowCountL = 1,yellowCount3 = 1;
@@ -106,15 +109,31 @@ public class UGCV {
             int cropStartX, cropStartY, cropWidth, cropHeight;
 
             if (red) {
-                cropStartX = (int) ((20.0 / 720.0) * bitmap.getWidth());
-                cropStartY = (int) ((330.0 / 480.0) * bitmap.getHeight());
-                cropWidth = (int) ((190.0 / 720.0) * bitmap.getWidth());
-                cropHeight = (int) ((90.0 / 480.0) * bitmap.getHeight());
-            } else {
-                cropStartX = (int) ((360.0 / 720.0) * bitmap.getWidth());
-                cropStartY = (int) ((270.0 / 480.0) * bitmap.getHeight());
-                cropWidth = (int) ((190.0 / 720.0) * bitmap.getWidth());
-                cropHeight = (int) ((80.0 / 480.0) * bitmap.getHeight());
+                if (!useBlueCamera) {
+                    cropStartX = (int) ((20.0 / 720.0) * bitmap.getWidth());
+                    cropStartY = (int) ((330.0 / 480.0) * bitmap.getHeight());
+                    cropWidth = (int) ((190.0 / 720.0) * bitmap.getWidth());
+                    cropHeight = (int) ((90.0 / 480.0) * bitmap.getHeight());
+                } else {
+                    cropStartX = (int) ((0.0 / 640.0) * bitmap.getWidth());
+                    cropStartY = (int) ((220.0 / 480.0) * bitmap.getHeight());
+                    cropWidth = (int) ((60.0 / 640.0) * bitmap.getWidth());
+                    cropHeight = (int) ((60.0 / 480.0) * bitmap.getHeight());
+                }
+            }
+            else {
+                if (!useBlueCamera) {
+                    cropStartX = (int) ((360.0 / 720.0) * bitmap.getWidth());
+                    cropStartY = (int) ((270.0 / 480.0) * bitmap.getHeight());
+                    cropWidth = (int) ((190.0 / 720.0) * bitmap.getWidth());
+                    cropHeight = (int) ((80.0 / 480.0) * bitmap.getHeight());
+                }
+                else {
+                    cropStartX = (int) ((380.0 / 640.0) * bitmap.getWidth());
+                    cropStartY = (int) ((270.0 / 480.0) * bitmap.getHeight());
+                    cropWidth = (int) ((110.0 / 640.0) * bitmap.getWidth());
+                    cropHeight = (int) ((80.0 / 480.0) * bitmap.getHeight());
+                }
             }
 
             DbgLog.msg("XV scanning "

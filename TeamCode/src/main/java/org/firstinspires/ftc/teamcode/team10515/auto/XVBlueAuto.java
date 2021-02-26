@@ -238,7 +238,8 @@ public class XVBlueAuto extends LinearOpMode {
                 .build();
         waitForStart();
 
-        UGCV.numRings numRings = drive.getRingsUsingImage(false);
+        //UGCV.numRings numRings = drive.getRingsUsingImage(false);
+        UGCV.numRings numRings = drive.getRingsUsingImageandBlueCam(false);
         telemetry.addLine("Num Rings: " + numRings);
         telemetry.update();
 

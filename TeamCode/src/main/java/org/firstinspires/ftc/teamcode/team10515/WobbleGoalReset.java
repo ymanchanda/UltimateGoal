@@ -1,8 +1,10 @@
 package org.firstinspires.ftc.teamcode.team10515;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 @TeleOp
+@Disabled
 public class WobbleGoalReset extends UltimateGoalRobot{
     @Override
     public void start() {
