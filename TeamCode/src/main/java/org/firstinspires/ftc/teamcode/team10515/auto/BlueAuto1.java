@@ -100,7 +100,7 @@ public class BlueAuto1 extends LinearOpMode {
 
     State currentState = State.IDLE;
 
-    Pose2d startPose = new Pose2d(-60, 19, Math.toRadians(0));
+    Pose2d startPose = new Pose2d(-60, 16, Math.toRadians(0));
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -115,7 +115,7 @@ public class BlueAuto1 extends LinearOpMode {
         drive.robot.getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.IDLE);
 
         Trajectory traj1 = drive.trajectoryBuilder(startPose)
-                .splineTo(new Vector2d(2, 12), Math.toRadians(10))
+                .splineTo(new Vector2d(2, 12), Math.toRadians(0))
                 .build();
         Trajectory traj2 = drive.trajectoryBuilder(traj1.end())
                 .strafeLeft(10)
