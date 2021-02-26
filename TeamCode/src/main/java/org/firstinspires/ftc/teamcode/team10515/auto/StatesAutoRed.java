@@ -5,14 +5,12 @@ import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.lib.util.TimeProfiler;
 import org.firstinspires.ftc.teamcode.lib.util.TimeUnits;
 import org.firstinspires.ftc.teamcode.team10515.PoseStorage;
 import org.firstinspires.ftc.teamcode.team10515.states.FlickerStateMachine;
-import org.firstinspires.ftc.teamcode.team10515.states.ForkliftStateMachine;
 import org.firstinspires.ftc.teamcode.team10515.states.ForkliftStateMachine2;
 import org.firstinspires.ftc.teamcode.team10515.states.IntakeMotorStateMachine;
 import org.firstinspires.ftc.teamcode.team10515.states.PulleyStateMachine;
@@ -219,34 +217,5 @@ public class StatesAutoRed extends LinearOpMode {
     public static void setUpdateRuntime(TimeProfiler updaRuntime) { updateRuntime = updaRuntime; }
     public static double getDt() { return dt;}
     public static void setDt(double pdt) { dt = pdt; }
-
-    void WobbleGoal()
-    {
-        //brake 1st time when it reaches align OR when it reaches the top
-        if (reachedUpPosition(maxPosition)) {
-            drive.robot.getForkliftSubsystem().getForkliftMotor().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            drive.robot.getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.IDLE);
-        }
-
-        if (reachedDownPosition(0)) {//Check if forklift has reached 0 position
-            drive.robot.getForkliftSubsystem().getForkliftMotor().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            drive.robot.getForkliftSubsystem().getStateMachine().updateState(ForkliftStateMachine.State.IDLE);
-        }
-
-    }
-
-    public boolean reachedUpPosition(double position) {
-        if (drive.robot.getForkliftSubsystem().getForkliftMotor().getCurrentEncoderTicks() < position)
-            return false;
-        else
-            return true;
-    }
-
-    public boolean reachedDownPosition(double position) {
-        if (drive.robot.getForkliftSubsystem().getForkliftMotor().getCurrentEncoderTicks() > position)
-            return false;
-        else
-            return true;
-    }
 
 }

@@ -27,7 +27,6 @@ import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityCons
 import com.acmerobotics.roadrunner.util.NanoClock;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.lynx.LynxModule;
-import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -38,33 +37,14 @@ import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigu
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
-import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.teamcode.drive.StandardTrackingWheelLocalizer;
-import org.firstinspires.ftc.teamcode.lib.drivers.Motor;
 import org.firstinspires.ftc.teamcode.lib.drivers.RevMotor;
 import org.firstinspires.ftc.teamcode.lib.drivers.RevServo;
-import org.firstinspires.ftc.teamcode.lib.util.TimeProfiler;
-import org.firstinspires.ftc.teamcode.team10515.Robot;
 import org.firstinspires.ftc.teamcode.team10515.UGAutoRobot;
-import org.firstinspires.ftc.teamcode.team10515.UltimateGoalRobot;
-import org.firstinspires.ftc.teamcode.team10515.control.StackTracker;
-import org.firstinspires.ftc.teamcode.team10515.subsystems.Drive;
-import org.firstinspires.ftc.teamcode.team10515.subsystems.ExpansionHubs;
-import org.firstinspires.ftc.teamcode.team10515.subsystems.FlickerSubsystem;
-import org.firstinspires.ftc.teamcode.team10515.subsystems.ForkliftSubsystem;
-import org.firstinspires.ftc.teamcode.team10515.subsystems.IntakeMotorSubsystem;
-import org.firstinspires.ftc.teamcode.team10515.subsystems.IntakeServoSubsystem;
-import org.firstinspires.ftc.teamcode.team10515.subsystems.PulleySubsystem;
-import org.firstinspires.ftc.teamcode.team10515.subsystems.RobotStateEstimator;
-import org.firstinspires.ftc.teamcode.team10515.subsystems.ShooterSubsystem;
 import org.firstinspires.ftc.teamcode.team10515.subsystems.UGExpansionHubs;
 import org.firstinspires.ftc.teamcode.util.DashboardUtil;
 import org.firstinspires.ftc.teamcode.util.LynxModuleUtil;
 import org.openftc.revextensions2.ExpansionHubEx;
-import org.openftc.revextensions2.ExpansionHubMotor;
-import org.openftc.revextensions2.ExpansionHubServo;
-
 
 
 import java.util.ArrayList;
@@ -72,7 +52,6 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.BACK;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ACCEL;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ANG_ACCEL;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ANG_VEL;

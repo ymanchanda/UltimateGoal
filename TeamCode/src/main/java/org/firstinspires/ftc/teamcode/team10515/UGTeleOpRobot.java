@@ -79,6 +79,7 @@ public abstract class UGTeleOpRobot extends Robot {
         drive.robot.getFlickerSubsystem().update(getDt());
         drive.robot.getPulleySubsystem().update(getDt());
         drive.robot.getForkliftSubsystem2().update(getDt());
+        drive.robot.getGripperSubsystem().update(getDt());
     }
 
 
@@ -92,6 +93,7 @@ public abstract class UGTeleOpRobot extends Robot {
         drive.robot.getFlickerSubsystem().stop();
         drive.robot.getShooterSubsystem().stop();
         drive.robot.getIntakeMotorSubsystem().stop();
+        drive.robot.getGripperSubsystem().stop();
     }
 
     public TimeProfiler getMatchRuntime() {
