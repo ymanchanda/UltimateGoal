@@ -19,8 +19,8 @@ import org.firstinspires.ftc.teamcode.team10515.states.ShooterStateMachine;
 /*
  * This is an example of a more complex path to really test the tuning.
  */
-@Autonomous(name= "Wizards Auto Blue", group = "drive")
-public class WizardsAutoBlue extends LinearOpMode {
+@Autonomous(name= "Wizards Auto Blue Adjusted", group = "drive")
+public class WizardsAutoBlueAdjusted extends LinearOpMode {
     UGBase drive;
     private static double dt;
     private static TimeProfiler updateRuntime;
@@ -36,7 +36,7 @@ public class WizardsAutoBlue extends LinearOpMode {
     public static final int maxPosition = 2020; //max position
     //    public static final int topPosition2 = 2020;
     public static final int alignPosition = 1000;
-    int flickerWaitTime = 700;
+    int flickerWaitTime = 400;
 
     enum WobbleState {
         ZERO,
@@ -54,11 +54,12 @@ public class WizardsAutoBlue extends LinearOpMode {
         TRAJ2, //Staffe to the middle
         TRAJ3, //Straffe to the left
         TRAJ4, //go to the wobble goal
-        PARK, //park if no rings or 4 rings, //intake and shoot 1 ring in high goal
+        PARK, //park if no rings or 4 rings
+        SHOOTRING, //intake and shoot 1 ring in high goal
         IDLE,
         WAIT1,
         WAIT2,
-        WAIT3,
+        WAIT3,//do nothing
     }
 
     State currentState = State.IDLE;
@@ -70,6 +71,7 @@ public class WizardsAutoBlue extends LinearOpMode {
         setUpdateRuntime(new TimeProfiler(false));
         drive = new UGBase(hardwareMap);
         drive.setPoseEstimate(startPose);
+        drive.closeCamera();
 
 
         drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.IDLE);
@@ -79,10 +81,16 @@ public class WizardsAutoBlue extends LinearOpMode {
         drive.robot.getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.IDLE);
 
         Trajectory initialstrafe = drive.trajectoryBuilder(startPose)
-                .strafeRight(15)
+                .strafeRight(7)
                 .build();
         Trajectory traj1 = drive.trajectoryBuilder(initialstrafe.end())
-                .splineTo(new Vector2d(2.5, 18), Math.toRadians(-7))
+                .splineTo(new Vector2d(2, 18), Math.toRadians(-7))
+                .build();
+        Trajectory traj2 = drive.trajectoryBuilder(traj1.end())
+                .strafeLeft(7)
+                .build();
+        Trajectory traj3 = drive.trajectoryBuilder(traj2.end())
+                .strafeLeft(7)
                 .build();
         Trajectory park = drive.trajectoryBuilder(traj1.end())
                 .forward(10)
@@ -90,6 +98,7 @@ public class WizardsAutoBlue extends LinearOpMode {
         Trajectory finish = drive.trajectoryBuilder(park.end())
                 .strafeRight(5)
                 .build();
+
         waitForStart();
         //UGCV.numRings numRings = drive.getRingsUsingImage(false);
         //telemetry.addLine("Num Rings: " + numRings);
@@ -125,9 +134,9 @@ public class WizardsAutoBlue extends LinearOpMode {
                         waitTimer.reset();
                     }
 
-                    break;
+                        break;
                 case WAIT0:
-                    if (waitTimer.milliseconds() >= 600) {
+                    if (waitTimer.milliseconds() >= 200) {
                         currentState = State.TRAJ1;
                         drive.followTrajectoryAsync(traj1);
                     }
@@ -146,7 +155,7 @@ public class WizardsAutoBlue extends LinearOpMode {
                     // If so, move on to the TURN_2 state
                     if (waitTimer.milliseconds() >= 400) {
                         currentState = State.TRAJ2;
-                        drive.turn(Math.toRadians(9));
+                        drive.turn(Math.toRadians(10));
                         waitTimer.reset();
                         //drive.followTrajectoryAsync(traj2);
                     }
@@ -181,7 +190,7 @@ public class WizardsAutoBlue extends LinearOpMode {
                     break;
                 case WAIT3:
                     if (waitTimer.milliseconds() >= 500) {
-                        currentState = State.IDLE;
+                        currentState = State.PARK;
                         drive.followTrajectoryAsync(park);
 //                        if (numRings == UGCV.numRings.ZERO) {
 //                            currentState = State.PARK;
@@ -198,8 +207,8 @@ public class WizardsAutoBlue extends LinearOpMode {
                     break;
                 case PARK:
                     if (!drive.isBusy()) {
-                        currentState = State.IDLE;
                         drive.followTrajectoryAsync(finish);
+                        currentState = State.IDLE;
                     }
                     break;
                 case IDLE:

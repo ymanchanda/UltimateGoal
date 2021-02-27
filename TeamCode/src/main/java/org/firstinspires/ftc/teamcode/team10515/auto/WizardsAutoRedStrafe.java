@@ -61,7 +61,7 @@ public class WizardsAutoRedStrafe extends LinearOpMode {
 
     State currentState = State.IDLE;
 
-    Pose2d startPose = new Pose2d(-62.375, -15, Math.toRadians(0));
+    Pose2d startPose = new Pose2d(-62.375, -16.5, Math.toRadians(0));
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -76,10 +76,10 @@ public class WizardsAutoRedStrafe extends LinearOpMode {
         drive.robot.getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.IDLE);
 
         Trajectory traj1 = drive.trajectoryBuilder(startPose)
-                .splineTo(new Vector2d(3.5, -10), Math.toRadians(0))
+                .splineTo(new Vector2d(2.5, -12), Math.toRadians(0))
                 .build();
         Trajectory traj2 = drive.trajectoryBuilder(traj1.end())
-                .strafeLeft(9)
+                .strafeLeft(8)
                 .build();
         Trajectory traj3 = drive.trajectoryBuilder(traj2.end())
                 .strafeLeft(8)
@@ -88,7 +88,7 @@ public class WizardsAutoRedStrafe extends LinearOpMode {
                 .forward(10)
                 .build();
         waitForStart();
-        UGCV.numRings numRings = drive.getRingsUsingImage(false);
+        //UGCV.numRings numRings = drive.getRingsUsingImage(false);
         //telemetry.addLine("Num Rings: " + numRings);
         //telemetry.update();
 

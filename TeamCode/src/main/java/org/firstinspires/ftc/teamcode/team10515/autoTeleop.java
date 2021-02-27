@@ -7,6 +7,8 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+
+import org.firstinspires.ftc.teamcode.lib.geometry.Rotation2d;
 import org.firstinspires.ftc.teamcode.team10515.auto.UGBase;
 import org.firstinspires.ftc.teamcode.team10515.control.EnhancedGamepad;
 import org.firstinspires.ftc.teamcode.team10515.states.FlickerStateMachine;
@@ -55,6 +57,7 @@ public class autoTeleop extends UGTeleOpRobot {
     private int count = 0;
     private int intakeChange = 0;
     private int shooterChange = 0;
+    public int bumper = 0;
     private double currSpeed = 0;
     private String name = "Idle";
 
@@ -252,10 +255,12 @@ public class autoTeleop extends UGTeleOpRobot {
         }
         if (isFlicked && resetFlicker.milliseconds() > 100) {
             drive.robot.getFlickerSubsystem().getStateMachine().updateState(FlickerStateMachine.State.INIT);
+            isFlicked = false;
         }
 
         if (getEnhancedGamepad2().isLeftBumperLast()) {
             FlickThree = FlickState.FLICK;
+            bumper++;
         }
 
         //automation flicking and turning for powershots
@@ -293,7 +298,7 @@ public class autoTeleop extends UGTeleOpRobot {
         WobbleGoalV3();
 
         //High Goal or Mid Goal Shots
-        FlickThree();
+        //FlickThree();
 
         //Powershots in end game
         FlickTwoPowerShots();
@@ -309,6 +314,7 @@ public class autoTeleop extends UGTeleOpRobot {
         telemetry.addLine("Pose"+poseEstimate.getX()+", "+poseEstimate.getY()+", "+poseEstimate.getHeading());
         telemetry.addLine("Intake Output: " + drive.robot.getIntakeMotorSubsystem().getOutput());
         telemetry.addLine("Shooter Output: " + drive.robot.getShooterSubsystem().getOutput());
+        telemetry.addLine("bumper" + bumper);
         telemetry.update();
     }
 
@@ -400,11 +406,16 @@ public class autoTeleop extends UGTeleOpRobot {
     public void WobbleGoalV3(){
         if(getEnhancedGamepad2().getRight_stick_y() > 0.5d){
             drive.robot.getForkliftSubsystem2().setPresetMode(false);
-            drive.robot.getForkliftSubsystem2().getForkliftMotor().setPower(-0.3);
+            drive.robot.getForkliftSubsystem2().getForkliftMotor().setPower(getEnhancedGamepad2().getRight_stick_y()* -0.6);
         }
         else if(getEnhancedGamepad2().getRight_stick_y() < -0.5d) {
             drive.robot.getForkliftSubsystem2().setPresetMode(false);
-            drive.robot.getForkliftSubsystem2().getForkliftMotor().setPower(0.3);
+            drive.robot.getForkliftSubsystem2().getForkliftMotor().setPower(-getEnhancedGamepad2().getRight_stick_y() * 0.6);
+        }
+        else if (Math.abs(getEnhancedGamepad2().getRight_stick_y()) < 0.5d )
+        {
+            drive.robot.getForkliftSubsystem2().setPresetMode(false);
+            drive.robot.getForkliftSubsystem2().getForkliftMotor().setPower(0);
         }
         else if (getEnhancedGamepad2().getRight_stick_x() > 0.5d){
             drive.robot.getForkliftSubsystem2().setPresetMode(false);

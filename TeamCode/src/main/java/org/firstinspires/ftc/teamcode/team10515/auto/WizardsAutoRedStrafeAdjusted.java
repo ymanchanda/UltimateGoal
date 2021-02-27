@@ -19,8 +19,8 @@ import org.firstinspires.ftc.teamcode.team10515.states.ShooterStateMachine;
 /*
  * This is an example of a more complex path to really test the tuning.
  */
-@Autonomous(name= "Wizards Auto Blue", group = "drive")
-public class WizardsAutoBlue extends LinearOpMode {
+@Autonomous(name= "Wizards Auto Red Strafe Adjusted", group = "drive")
+public class WizardsAutoRedStrafeAdjusted extends LinearOpMode {
     UGBase drive;
     private static double dt;
     private static TimeProfiler updateRuntime;
@@ -32,12 +32,11 @@ public class WizardsAutoBlue extends LinearOpMode {
     boolean goDown = false;
     public int lastEncoderTicks;
     public int currentEncoderTicks = 0;
-    //    public static final int topPosition = 430;
+    int flickerWaitTime = 600;
+//    public static final int topPosition = 430;
     public static final int maxPosition = 2020; //max position
-    //    public static final int topPosition2 = 2020;
+//    public static final int topPosition2 = 2020;
     public static final int alignPosition = 1000;
-    int flickerWaitTime = 700;
-
     enum WobbleState {
         ZERO,
         ALIGN,
@@ -48,22 +47,21 @@ public class WizardsAutoBlue extends LinearOpMode {
     ElapsedTime waitTimer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
 
     enum State {
-        STRAFE,
         WAIT0,
-        TRAJ1, //Move to the left most powershot
+        TRAJ1, //Move to the center  powershot at angle for right one
         TRAJ2, //Staffe to the middle
         TRAJ3, //Straffe to the left
         TRAJ4, //go to the wobble goal
-        PARK, //park if no rings or 4 rings, //intake and shoot 1 ring in high goal
+        PARK, //park if no rings or 4 rings
         IDLE,
         WAIT1,
         WAIT2,
-        WAIT3,
+        WAIT3,//do nothing
     }
 
     State currentState = State.IDLE;
 
-    Pose2d startPose = new Pose2d(-62.375, 17, Math.toRadians(0));
+    Pose2d startPose = new Pose2d(-62.375, -16.5, Math.toRadians(0));
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -71,27 +69,26 @@ public class WizardsAutoBlue extends LinearOpMode {
         drive = new UGBase(hardwareMap);
         drive.setPoseEstimate(startPose);
 
-
         drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.IDLE);
         drive.robot.getFlickerSubsystem().getStateMachine().updateState(FlickerStateMachine.State.INIT);
         drive.robot.getForkliftSubsystem2().getStateMachine().updateState(ForkliftStateMachine2.State.INIT);
         drive.robot.getPulleySubsystem().getStateMachine().updateState(PulleyStateMachine.State.DOWN);
         drive.robot.getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.IDLE);
 
-        Trajectory initialstrafe = drive.trajectoryBuilder(startPose)
-                .strafeRight(15)
+        Trajectory traj1 = drive.trajectoryBuilder(startPose)
+                .splineTo(new Vector2d(2, -10), Math.toRadians(0))
                 .build();
-        Trajectory traj1 = drive.trajectoryBuilder(initialstrafe.end())
-                .splineTo(new Vector2d(2.5, 18), Math.toRadians(-7))
+        Trajectory traj2 = drive.trajectoryBuilder(traj1.end())
+                .strafeLeft(9)
                 .build();
-        Trajectory park = drive.trajectoryBuilder(traj1.end())
+        Trajectory traj3 = drive.trajectoryBuilder(traj2.end())
+                .strafeLeft(8)
+                .build();
+        Trajectory park = drive.trajectoryBuilder(traj3.end())
                 .forward(10)
                 .build();
-        Trajectory finish = drive.trajectoryBuilder(park.end())
-                .strafeRight(5)
-                .build();
         waitForStart();
-        //UGCV.numRings numRings = drive.getRingsUsingImage(false);
+        UGCV.numRings numRings = drive.getRingsUsingImage(false);
         //telemetry.addLine("Num Rings: " + numRings);
         //telemetry.update();
 
@@ -118,18 +115,11 @@ public class WizardsAutoBlue extends LinearOpMode {
             setDt(getUpdateRuntime().getDeltaTime(TimeUnits.SECONDS, true));
 
             switch (currentState) {
-                case STRAFE:
-                    if (waitTimer.milliseconds() >= 100) {
-                        currentState = State.WAIT0;
-                        drive.followTrajectoryAsync(initialstrafe);
-                        waitTimer.reset();
-                    }
-
-                    break;
                 case WAIT0:
-                    if (waitTimer.milliseconds() >= 600) {
+                    if (waitTimer.milliseconds() >= 100) {
                         currentState = State.TRAJ1;
                         drive.followTrajectoryAsync(traj1);
+                        waitTimer.reset();
                     }
                     break;
                 case TRAJ1:
@@ -144,15 +134,15 @@ public class WizardsAutoBlue extends LinearOpMode {
                 case WAIT1:
                     // Check if the timer has exceeded the specified wait time
                     // If so, move on to the TURN_2 state
-                    if (waitTimer.milliseconds() >= 400) {
+                    if (waitTimer.milliseconds() >= 600) {
                         currentState = State.TRAJ2;
-                        drive.turn(Math.toRadians(9));
+                        //drive.turn(Math.toRadians(10));
                         waitTimer.reset();
-                        //drive.followTrajectoryAsync(traj2);
+                        drive.followTrajectoryAsync(traj2);
                     }
                     break;
                 case TRAJ2:
-                    if (!drive.isBusy() && waitTimer.milliseconds() > flickerWaitTime){
+                    if (!drive.isBusy() && waitTimer.milliseconds() > flickerWaitTime) {
                         drive.robot.getFlickerSubsystem().getStateMachine().updateState(FlickerStateMachine.State.HIT);
                         flickerchange = true;
                         flickerTime.reset();
@@ -163,11 +153,11 @@ public class WizardsAutoBlue extends LinearOpMode {
                 case WAIT2:
                     // Check if the timer has exceeded the specified wait time
                     // If so, move on to the TURN_2 state
-                    if (waitTimer.milliseconds() >= 400) {
+                    if (waitTimer.milliseconds() >= 600) {
                         currentState = State.TRAJ3;
-                        drive.turn(Math.toRadians(8));
                         waitTimer.reset();
-                        //drive.followTrajectoryAsync(traj3);
+                        //drive.turn(Math.toRadians(9));
+                        drive.followTrajectoryAsync(traj3);
                     }
                     break;
                 case TRAJ3:
@@ -183,23 +173,11 @@ public class WizardsAutoBlue extends LinearOpMode {
                     if (waitTimer.milliseconds() >= 500) {
                         currentState = State.IDLE;
                         drive.followTrajectoryAsync(park);
-//                        if (numRings == UGCV.numRings.ZERO) {
-//                            currentState = State.PARK;
-//                            drive.followTrajectoryAsync(park);
-//
-//                        } else if (numRings == UGCV.numRings.ONE) {
-//                            currentState = State.PARK;
-//                            drive.followTrajectoryAsync(park);
-//                        } else {
-//                            currentState = State.PARK;
-//                            drive.followTrajectoryAsync(park);
-//                        }
                     }
                     break;
                 case PARK:
                     if (!drive.isBusy()) {
                         currentState = State.IDLE;
-                        drive.followTrajectoryAsync(finish);
                     }
                     break;
                 case IDLE:
@@ -237,20 +215,9 @@ public class WizardsAutoBlue extends LinearOpMode {
         PoseStorage.currentPose = drive.getPoseEstimate();
     }
 
-    public static TimeProfiler getUpdateRuntime() {
-        return updateRuntime;
-    }
-
-    public static void setUpdateRuntime(TimeProfiler updaRuntime) {
-        updateRuntime = updaRuntime;
-    }
-
-    public static double getDt() {
-        return dt;
-    }
-
-    public static void setDt(double pdt) {
-        dt = pdt;
-    }
+    public static TimeProfiler getUpdateRuntime() {return updateRuntime;}
+    public static void setUpdateRuntime(TimeProfiler updaRuntime) { updateRuntime = updaRuntime; }
+    public static double getDt() { return dt;}
+    public static void setDt(double pdt) { dt = pdt; }
 
 }

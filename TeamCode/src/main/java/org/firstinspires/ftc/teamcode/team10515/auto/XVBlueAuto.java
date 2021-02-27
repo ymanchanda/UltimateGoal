@@ -105,7 +105,7 @@ public class XVBlueAuto extends LinearOpMode {
 
     State currentState = State.IDLE;
 
-    Pose2d startPose = new Pose2d(-60, 16, Math.toRadians(0));
+    Pose2d startPose = new Pose2d(-60, 17.5, Math.toRadians(0));
 
     @Override
     public void runOpMode() throws InterruptedException {

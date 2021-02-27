@@ -453,6 +453,9 @@ public class UGBase extends MecanumDrive {
 
         // Loading trackables is not necessary for the TensorFlow Object Detection engine.
     }
+    public void closeCamera(){
+        vuforia.getCamera().close();
+    }
 
     public UGExpansionHubs getExpansionHubs() {
         return expansionHubs;
