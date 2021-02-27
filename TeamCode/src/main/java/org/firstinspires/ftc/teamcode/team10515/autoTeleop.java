@@ -88,6 +88,8 @@ public class autoTeleop extends UGTeleOpRobot {
     public ElapsedTime resetFlickThree = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
     public ElapsedTime resetFlickPS = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
     public ElapsedTime resetWobble = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+    public ElapsedTime elapsedTimeFlick = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+
 
     public enum ArmState {
         IDLE,
@@ -121,6 +123,7 @@ public class autoTeleop extends UGTeleOpRobot {
         super.loop();
         getEnhancedGamepad1().update();
         getEnhancedGamepad2().update();
+
 
         Pose2d poseEstimate = drive.getPoseEstimate();
         switch (currentMode) {
@@ -265,8 +268,9 @@ public class autoTeleop extends UGTeleOpRobot {
             isFlicked = false;
         }
 
-        if (getEnhancedGamepad2().isLeftBumperLast()) {
+        if (getEnhancedGamepad2().isLeftBumperLast() && elapsedTimeFlick.milliseconds() > 200) {
             FlickThree = FlickState.FLICK;
+            elapsedTimeFlick.reset();
         }
 
         //automation flicking and turning for powershots
@@ -315,7 +319,7 @@ public class autoTeleop extends UGTeleOpRobot {
 
         telemetry.addLine("Shooter speed: " + currSpeed);
         telemetry.addLine("Shooter change: " + shooterChange);
-        telemetry.addLine("Pose"+poseEstimate.getX()+", "+poseEstimate.getY()+", "+poseEstimate.getHeading());
+        //telemetry.addLine("Pose"+poseEstimate.getX()+", "+poseEstimate.getY()+", "+poseEstimate.getHeading());
         telemetry.addLine("Intake Output: " + drive.robot.getIntakeMotorSubsystem().getOutput());
         telemetry.addLine("Shooter Output: " + drive.robot.getShooterSubsystem().getOutput());
         telemetry.addLine("bumper" + bumper);

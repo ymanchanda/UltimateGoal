@@ -9,7 +9,6 @@ import org.firstinspires.ftc.teamcode.team10515.states.ForkliftStateMachine2;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 @TeleOp(name = "Wobble Goal Test", group = "Test")
-@Disabled
 public class WobbleGoalTest extends UltimateGoalRobot{
     public RevMotor forkliftMotor;
     boolean returnFromTop = false;

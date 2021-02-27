@@ -92,54 +92,54 @@ public class GameTeleop extends UltimateGoalRobot {
         setDrivetrainPower(new Pose2d(-gamepad1.left_stick_y, -gamepad1.left_stick_x, new Rotation2d(gamepad1.right_stick_x, false)));
 
         //Gamepad2 Update flywheel intake - In:Right Trigger, Out:Left Trigger, Stop: Back
-        if(getEnhancedGamepad2().getRight_trigger()>0) {
-            getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.INTAKE);
-        } else if(getEnhancedGamepad2().getLeft_trigger() > 0) {
-            getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.OUTTAKE);
-        } else if(getEnhancedGamepad2().isBack()) {
-            getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.IDLE);
-        }
-
-        //Toggle Shooter
-        if(getEnhancedGamepad2().isDpad_up()) {
-            getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.HIGHGOAL);
-        }
-
-        else if(getEnhancedGamepad2().isDpad_right()) {
-            getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.POLESHOT);
-        }
-        else if(getEnhancedGamepad2().isDpad_left()) {
-            getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.MIDGOAL);
-        }
-        else if(getEnhancedGamepad2().isDpad_down()) {
-            getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.IDLE);
-        }
-
-        if(getEnhancedGamepad2().isRightBumperLast()){
-            getFlickerSubsystem().getStateMachine().updateState(FlickerStateMachine.State.HIT);
-            resetFlicker.reset();
-            isFlicked = true;
-        }
-        if (isFlicked && resetFlicker.milliseconds()>100){
-            getFlickerSubsystem().getStateMachine().updateState(FlickerStateMachine.State.INIT);
-
-        }
-
-        //Gamepad2 Manually move Elevator up && btnPressedA.milliseconds()>1250  && btnPressedA.milliseconds()>1250
-        if(getEnhancedGamepad2().isyLast()) {
-            getPulleySubsystem().getStateMachine().updateState(PulleyStateMachine.State.UP);
-            getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.HIGHGOAL);
-            getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.IDLE);
-            iselevatorUp = true;    //Elevator Moved Up and shooter starts
-        } else if(getEnhancedGamepad2().isaLast()) {
-            getPulleySubsystem().getStateMachine().updateState(PulleyStateMachine.State.DOWN);
-            getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.IDLE);
-            getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.INTAKE);
-            iselevatorUp = false;   //Elevator Moved Down
-        }
-
-        //WobbleGoal processing
-        WobbleGoalV3();
+//        if(getEnhancedGamepad2().getRight_trigger()>0) {
+//            getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.INTAKE);
+//        } else if(getEnhancedGamepad2().getLeft_trigger() > 0) {
+//            getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.OUTTAKE);
+//        } else if(getEnhancedGamepad2().isBack()) {
+//            getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.IDLE);
+//        }
+//
+//        //Toggle Shooter
+//        if(getEnhancedGamepad2().isDpad_up()) {
+//            getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.HIGHGOAL);
+//        }
+//
+//        else if(getEnhancedGamepad2().isDpad_right()) {
+//            getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.POLESHOT);
+//        }
+//        else if(getEnhancedGamepad2().isDpad_left()) {
+//            getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.MIDGOAL);
+//        }
+//        else if(getEnhancedGamepad2().isDpad_down()) {
+//            getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.IDLE);
+//        }
+//
+//        if(getEnhancedGamepad2().isRightBumperLast()){
+//            getFlickerSubsystem().getStateMachine().updateState(FlickerStateMachine.State.HIT);
+//            resetFlicker.reset();
+//            isFlicked = true;
+//        }
+//        if (isFlicked && resetFlicker.milliseconds()>100){
+//            getFlickerSubsystem().getStateMachine().updateState(FlickerStateMachine.State.INIT);
+//
+//        }
+//
+//        //Gamepad2 Manually move Elevator up && btnPressedA.milliseconds()>1250  && btnPressedA.milliseconds()>1250
+//        if(getEnhancedGamepad2().isyLast()) {
+//            getPulleySubsystem().getStateMachine().updateState(PulleyStateMachine.State.UP);
+//            getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.HIGHGOAL);
+//            getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.IDLE);
+//            iselevatorUp = true;    //Elevator Moved Up and shooter starts
+//        } else if(getEnhancedGamepad2().isaLast()) {
+//            getPulleySubsystem().getStateMachine().updateState(PulleyStateMachine.State.DOWN);
+//            getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.IDLE);
+//            getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.INTAKE);
+//            iselevatorUp = false;   //Elevator Moved Down
+//        }
+//
+//        //WobbleGoal processing
+//        WobbleGoalV3();
 
         telemetry.addLine("Wobble Goal: " + getForkliftSubsystem2().getForkliftMotor().getCurrentEncoderTicks());
 //        telemetry.addLine("Past Align: " +pastAlign);
