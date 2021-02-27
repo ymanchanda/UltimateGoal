@@ -436,7 +436,7 @@ public class UGBase extends MecanumDrive {
 
     public UGCV.numRings getRingsUsingImageandBlueCam(boolean red) {
         UGCV ugvuforia = new UGCV(vuforia);
-        return ugvuforia.GetPosition(false, red, true);
+        return ugvuforia.GetPosition(true, red, true);
     }
 
     public void initVuforia(HardwareMap hardwareMap) {

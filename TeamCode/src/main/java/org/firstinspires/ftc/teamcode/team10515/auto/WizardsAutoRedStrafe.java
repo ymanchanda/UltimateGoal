@@ -76,7 +76,7 @@ public class WizardsAutoRedStrafe extends LinearOpMode {
         drive.robot.getIntakeMotorSubsystem().getStateMachine().updateState(IntakeMotorStateMachine.State.IDLE);
 
         Trajectory traj1 = drive.trajectoryBuilder(startPose)
-                .splineTo(new Vector2d(2.5, -12), Math.toRadians(0))
+                .splineTo(new Vector2d(2.5, -16), Math.toRadians(0))
                 .build();
         Trajectory traj2 = drive.trajectoryBuilder(traj1.end())
                 .strafeLeft(8)

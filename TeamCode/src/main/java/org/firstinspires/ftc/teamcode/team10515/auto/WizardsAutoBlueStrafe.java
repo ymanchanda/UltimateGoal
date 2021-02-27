@@ -19,8 +19,8 @@ import org.firstinspires.ftc.teamcode.team10515.states.ShooterStateMachine;
 /*
  * This is an example of a more complex path to really test the tuning.
  */
-@Autonomous(name= "Wizards Auto Blue", group = "drive")
-public class WizardsAutoBlue extends LinearOpMode {
+@Autonomous(name= "Wizards Auto Blue Strafe", group = "drive")
+public class WizardsAutoBlueStrafe extends LinearOpMode {
     UGBase drive;
     private static double dt;
     private static TimeProfiler updateRuntime;
@@ -82,7 +82,10 @@ public class WizardsAutoBlue extends LinearOpMode {
                 .strafeRight(10)
                 .build();
         Trajectory traj1 = drive.trajectoryBuilder(initialstrafe.end())
-                .splineTo(new Vector2d(2.5, 18), Math.toRadians(-7))
+                .splineTo(new Vector2d(2.5, 12), Math.toRadians(0))
+                .build();
+        Trajectory traj2 = drive.trajectoryBuilder(traj1.end())
+                .strafeLeft(8)
                 .build();
         Trajectory park = drive.trajectoryBuilder(traj1.end())
                 .forward(10)
@@ -146,9 +149,9 @@ public class WizardsAutoBlue extends LinearOpMode {
                     // If so, move on to the TURN_2 state
                     if (waitTimer.milliseconds() >= 400) {
                         currentState = State.TRAJ2;
-                        drive.turn(Math.toRadians(9));
+                        //drive.turn(Math.toRadians(9));
                         waitTimer.reset();
-                        //drive.followTrajectoryAsync(traj2);
+                        drive.followTrajectoryAsync(traj2);
                     }
                     break;
                 case TRAJ2:
