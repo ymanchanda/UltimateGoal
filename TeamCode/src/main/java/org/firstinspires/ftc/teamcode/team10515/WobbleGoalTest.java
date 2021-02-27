@@ -13,6 +13,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class WobbleGoalTest extends UltimateGoalRobot{
     public RevMotor forkliftMotor;
     boolean returnFromTop = false;
+    int i = 0;
 
     public ElapsedTime btnPressedB; //Regular button
 
@@ -33,25 +34,28 @@ public class WobbleGoalTest extends UltimateGoalRobot{
         super.init();
         forkliftMotor = getForkliftSubsystem2().getForkliftMotor();
         btnPressedB = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
-        currentState = ArmState.IDLE;
+//        currentState = ArmState.IDLE;
         getForkliftSubsystem2().update(getDt());
     }
 
     @Override
     public void loop() {
         super.loop();
-
-        if(getEnhancedGamepad1().isB() && btnPressedB.milliseconds() > 250){
-            btnPressedB.reset();
-            currentState = ArmState.MOVE;
+//
+//        if(getEnhancedGamepad1().isB() && btnPressedB.milliseconds() > 250){
+//            btnPressedB.reset();
+//            currentState = ArmState.MOVE;
+//        }
+        if(getEnhancedGamepad2().isLeftBumperLast()){
+            i++;
         }
-
-        WobbleGoalV3();
+       // WobbleGoalV3();
 
         telemetry.addLine("State: " + getForkliftSubsystem2().getState());
         telemetry.addLine("Target Angle: " + getForkliftSubsystem2().getState().getAngle());
         telemetry.addLine("Current Angle: " + getForkliftSubsystem2().getCurrentAngle());
         telemetry.addLine("Power: " + getForkliftSubsystem2().getState().getPower(getForkliftSubsystem2().getCurrentAngle()));
+        telemetry.addLine("Counter for LeftBumper: " + i);
         telemetry.update();
     }
 

@@ -58,6 +58,7 @@ public class autoTeleop extends UGTeleOpRobot {
     private int intakeChange = 0;
     private int shooterChange = 0;
     public int bumper = 0;
+    public int nextTurn = 0;
     private double currSpeed = 0;
     private String name = "Idle";
 
@@ -67,11 +68,14 @@ public class autoTeleop extends UGTeleOpRobot {
         WAITFLICK,
         BACK,
         WAITBACK,
-        IDLE
+        IDLE,
+        TURN,
+        TURN2,
+        WAITTURN
     }
     int NumFlicks = 0, NumFlicksThree = 0;
     FlickState FlickThree = FlickState.IDLE;
-    FlickState FlickTwoPowershots = FlickState.IDLE;
+    FlickState FlickPowershots = FlickState.IDLE;
 
     enum Mode {
         DRIVER_CONTROL,
@@ -79,7 +83,7 @@ public class autoTeleop extends UGTeleOpRobot {
     }
     public ElapsedTime resetFlicker = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
     public ElapsedTime resetFlickThree = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
-    public ElapsedTime resetFlickTwo = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+    public ElapsedTime resetFlickPS = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
     public ElapsedTime resetWobble = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
 
     public enum ArmState {
@@ -260,21 +264,20 @@ public class autoTeleop extends UGTeleOpRobot {
 
         if (getEnhancedGamepad2().isLeftBumperLast()) {
             FlickThree = FlickState.FLICK;
-            bumper++;
         }
 
         //automation flicking and turning for powershots
         if (gamepad1.dpad_down) {
             hitMidPowerShot = true;
-            FlickTwoPowershots = FlickState.BACK;
+            FlickPowershots = FlickState.TURN;
         }
         if (gamepad1.dpad_left) {
             hitLeftPowerShot = true;
-            FlickTwoPowershots = FlickState.BACK;
+            FlickPowershots = FlickState.TURN;
         }
         if (gamepad1.dpad_right) {
             hitRightPowerShot = true;
-            FlickTwoPowershots = FlickState.BACK;
+            FlickPowershots = FlickState.TURN;
         }
 
         if (gamepad2.b && resetWobble.milliseconds() > 300) {
@@ -298,10 +301,10 @@ public class autoTeleop extends UGTeleOpRobot {
         WobbleGoalV3();
 
         //High Goal or Mid Goal Shots
-        //FlickThree();
+        FlickThree();
 
         //Powershots in end game
-        FlickTwoPowerShots();
+        FlickPowerShots();
 
 //        if (currSpeed != 0d) {
 //            double newSpeed = currSpeed + compensateVoltage();
@@ -353,9 +356,9 @@ public class autoTeleop extends UGTeleOpRobot {
         }
     }
 
-    void FlickTwoPowerShots()
+    void FlickPowerShots()
     {
-        switch (FlickTwoPowershots) {
+        switch (FlickPowershots) {
             case IDLE:
                 NumFlicks = 0;
                 hitRightPowerShot = false;
@@ -363,41 +366,55 @@ public class autoTeleop extends UGTeleOpRobot {
                 hitMidPowerShot = false;
                 break;
             case FLICK:
-                drive.robot.getFlickerSubsystem().getStateMachine().updateState(FlickerStateMachine.State.HIT);
-                FlickTwoPowershots = FlickState.WAITFLICK;
-                resetFlickTwo.reset();
-                break;
-            case WAITFLICK:
-                if (resetFlickTwo.milliseconds() > 500 + (NumFlicks * 50)) {
-                    FlickTwoPowershots = FlickState.BACK;
+                if(!drive.isBusy()) {
+                    drive.robot.getFlickerSubsystem().getStateMachine().updateState(FlickerStateMachine.State.HIT);
+                    FlickPowershots = FlickState.BACK;
+                    NumFlicks++;
+                    resetFlickPS.reset();
                 }
                 break;
             case BACK:
+                if (resetFlickPS.milliseconds() > 100) {
+                    isFlicked = true;
+                    resetFlicker.reset();
+                    resetFlickPS.reset();
+                    if(NumFlicks > 1) {
+                        FlickPowershots = FlickState.IDLE;
+                    }
+                    else{
+                        FlickPowershots = FlickState.TURN2;
+                    }
+                }
+                break;
+            case TURN:
                 if(hitLeftPowerShot){
                     drive.turn(Math.toRadians(-8));
+                    nextTurn = -8;
                 }
-                else if(hitMidPowerShot && NumFlicks == 0){
+                else if(hitMidPowerShot){
                     drive.turn(Math.toRadians(8));
-                }
-                else if(hitMidPowerShot && NumFlicks == 1){
-                    drive.turn(Math.toRadians(-16));
+                    nextTurn = -16;
                 }
                 else if(hitRightPowerShot){
                     drive.turn(Math.toRadians(8));
+                    nextTurn = 8;
                 }
-                drive.robot.getFlickerSubsystem().getStateMachine().updateState(FlickerStateMachine.State.INIT);
-                FlickTwoPowershots = FlickState.WAITBACK;
-                resetFlickTwo.reset();
+                FlickPowershots = FlickState.WAITTURN;
                 break;
-            case WAITBACK:
-                if (resetFlickTwo.milliseconds() > 1200 + (NumFlicks * 120)){
-                    if (NumFlicks < 1) {
-                        FlickTwoPowershots = FlickState.FLICK;
+            case TURN2:
+                if(resetFlickPS.milliseconds() > 100) {
+                    drive.turn(Math.toRadians(nextTurn));
+                    FlickPowershots = FlickState.WAITTURN;
+                }
+                break;
+            case WAITTURN:
+                if (!drive.isBusy()){
+                    if (NumFlicks < 2) {
+                        FlickPowershots = FlickState.FLICK;
                     }
                     else {
-                        FlickTwoPowershots = FlickState.IDLE;
+                        FlickPowershots = FlickState.IDLE;
                     }
-                    NumFlicks++;
                 }
                 break;
         }
