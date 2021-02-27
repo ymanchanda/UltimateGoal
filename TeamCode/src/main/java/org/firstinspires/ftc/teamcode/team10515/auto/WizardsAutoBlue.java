@@ -97,7 +97,7 @@ public class WizardsAutoBlue extends LinearOpMode {
 
         if (isStopRequested()) return;
 
-        currentState = State.WAIT0;
+        currentState = State.STRAFE;
 
         while (opModeIsActive() && !isStopRequested()) {
             if (!shooterRunning) {
