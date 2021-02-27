@@ -85,6 +85,8 @@ public class autoTeleop extends UGTeleOpRobot {
     public ElapsedTime resetFlickThree = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
     public ElapsedTime resetFlickPS = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
     public ElapsedTime resetWobble = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+    public ElapsedTime elapsedTimeFlick = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+
 
     public enum ArmState {
         IDLE,
@@ -118,45 +120,44 @@ public class autoTeleop extends UGTeleOpRobot {
         super.loop();
         getEnhancedGamepad1().update();
         getEnhancedGamepad2().update();
-        setDrivetrainPower(new org.firstinspires.ftc.teamcode.lib.geometry.Pose2d(-gamepad1.left_stick_y, -gamepad1.left_stick_x, new Rotation2d(gamepad1.right_stick_x, false)));
 
 
-//        Pose2d poseEstimate = drive.getPoseEstimate();
-//        switch (currentMode) {
-//            case DRIVER_CONTROL:
-//                drive.setWeightedDrivePower(
-//                        new Pose2d(
-//                                -gamepad1.left_stick_y,
-//                                -gamepad1.left_stick_x,
-//                                -gamepad1.right_stick_x
-//                        )
-//                );
-//
-//                if (getEnhancedGamepad1().isDpadUpJustPressed()) {
-//                    // If the A button is pressed on gamepad1, we generate a splineTo()
-//                    // trajectory on the fly and follow it
-//                    // We switch the state to AUTOMATIC_CONTROL
-//                    Trajectory highShotPosition = drive.trajectoryBuilder(poseEstimate)
-//                            .splineTo(new Vector2d(highShotPose.getX(), highShotPose.getY()), highShotHeading)
-//                            .build();
-//
-//                    drive.followTrajectoryAsync(highShotPosition);
-//                    currentMode = Mode.AUTOMATIC_CONTROL;
-//                }
-//                break;
-//            case AUTOMATIC_CONTROL:
-//                // If x is pressed, we break out of the automatic following
-//                if (gamepad1.x) {
-//                    drive.cancelFollowing();
-//                    currentMode = Mode.DRIVER_CONTROL;
-//                }
-//
-//                // If drive finishes its task, cede control to the driver
-//                if (!drive.isBusy()) {
-//                    currentMode = Mode.DRIVER_CONTROL;
-//                }
-//                break;
-//        }
+        Pose2d poseEstimate = drive.getPoseEstimate();
+        switch (currentMode) {
+            case DRIVER_CONTROL:
+                drive.setWeightedDrivePower(
+                        new Pose2d(
+                                -gamepad1.left_stick_y,
+                                -gamepad1.left_stick_x,
+                                -gamepad1.right_stick_x
+                        )
+                );
+
+                if (getEnhancedGamepad1().isDpadUpJustPressed()) {
+                    // If the A button is pressed on gamepad1, we generate a splineTo()
+                    // trajectory on the fly and follow it
+                    // We switch the state to AUTOMATIC_CONTROL
+                    Trajectory highShotPosition = drive.trajectoryBuilder(poseEstimate)
+                            .splineTo(new Vector2d(highShotPose.getX(), highShotPose.getY()), highShotHeading)
+                            .build();
+
+                    drive.followTrajectoryAsync(highShotPosition);
+                    currentMode = Mode.AUTOMATIC_CONTROL;
+                }
+                break;
+            case AUTOMATIC_CONTROL:
+                // If x is pressed, we break out of the automatic following
+                if (gamepad1.x) {
+                    drive.cancelFollowing();
+                    currentMode = Mode.DRIVER_CONTROL;
+                }
+
+                // If drive finishes its task, cede control to the driver
+                if (!drive.isBusy()) {
+                    currentMode = Mode.DRIVER_CONTROL;
+                }
+                break;
+        }
         if (gamepad1.right_bumper) {
             drive.turn(Math.toRadians(-12));
         }
@@ -264,8 +265,9 @@ public class autoTeleop extends UGTeleOpRobot {
             isFlicked = false;
         }
 
-        if (getEnhancedGamepad2().isLeftBumperLast()) {
+        if (getEnhancedGamepad2().isLeftBumperLast() && elapsedTimeFlick.milliseconds() > 200) {
             FlickThree = FlickState.FLICK;
+            elapsedTimeFlick.reset();
         }
 
         //automation flicking and turning for powershots

@@ -126,15 +126,25 @@ public class XVRedAuto extends LinearOpMode {    UGBase drive;
                 .splineTo(new Vector2d(2.5, -12), Math.toRadians(0))
                 .build();
         Trajectory traj2 = drive.trajectoryBuilder(traj1.end())
-                .strafeLeft(9)
+                .strafeLeft(8)
                 .build();
         Trajectory traj3 = drive.trajectoryBuilder(traj2.end())
-                .strafeLeft(9)
+                .strafeLeft(8)
                 .build();
         Trajectory zoneA = drive.trajectoryBuilder(traj3.end())
                 .splineToLinearHeading(new Pose2d(12, -40, Math.toRadians(180)), Math.toRadians(0))
                 .build();
+        Trajectory zoneB = drive.trajectoryBuilder(traj3.end())
+                .splineToLinearHeading(new Pose2d(36, -20, Math.toRadians(180)), Math.toRadians(0))
+                .build();
+
+//        Trajectory zoneA = drive.trajectoryBuilder(traj3.end(), true)
+//                .splineTo(new Vector2d(12, -40), Math.toRadians(0))
+//                .build();
         Trajectory wobble2a = drive.trajectoryBuilder(zoneA.end())
+                .splineTo(new Vector2d(-49.5, -19), Math.toRadians(-180))
+                .build();
+        Trajectory wobble2b = drive.trajectoryBuilder(zoneB.end())
                 .splineTo(new Vector2d(-49.5, -19), Math.toRadians(-180))
                 .build();
         Trajectory strafe = drive.trajectoryBuilder(wobble2a.end())
@@ -231,27 +241,21 @@ public class XVRedAuto extends LinearOpMode {    UGBase drive;
                         flickerchange = true;
                         flickerTime.reset();
                         waitTimer.reset();
-                        currentState = State.TURN;
-                        //drive.followTrajectoryAsync(traj2);
-                    }
-                    break;
-                case TURN:
-                    if(waitTimer.milliseconds() >= 500){
-                        drive.turnAsync(Math.toRadians(180));
                         currentState = State.WAIT3;
+                        //drive.followTrajectoryAsync(traj2);
                     }
                     break;
                 case WAIT3:
                     // Check if the timer has exceeded the specified wait time
                     // If so, move on to the TURN_2 state
-                    if (!drive.isBusy()) {
+                    if(waitTimer.milliseconds() >= 300){
                         if (numRings == UGCV.numRings.ZERO) {
                             currentState = State.GOTOZONE;
                             drive.followTrajectoryAsync(zoneA);
 
                         } else if (numRings == UGCV.numRings.ONE) {
                             currentState = State.GOTOZONE;
-                          //  drive.followTrajectoryAsync(strafeToRing);
+                            drive.followTrajectoryAsync(zoneB);
                         } else {
                             currentState = State.GOTOZONE;
                             //drive.followTrajectoryAsync(zoneC);
@@ -262,6 +266,7 @@ public class XVRedAuto extends LinearOpMode {    UGBase drive;
                     if (!drive.isBusy()) {
                         drive.robot.getForkliftSubsystem2().getStateMachine().updateState(ForkliftStateMachine2.State.ALIGN);
                         drive.robot.getPulleySubsystem().getStateMachine().updateState(PulleyStateMachine.State.DOWN);
+                        drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.IDLE);
                         goDown = true;
                         waitTimer.reset();
                         currentState = State.LETGOWOBBLE;
@@ -280,7 +285,7 @@ public class XVRedAuto extends LinearOpMode {    UGBase drive;
                         if (numRings == UGCV.numRings.ONE) {
                             currentState = State.wobble2;
                             //drive.followTrajectoryAsync(strafeToRing);
-                            //drive.followTrajectoryAsync(wobble2B);
+                            drive.followTrajectoryAsync(wobble2b);
                         } else if (numRings == UGCV.numRings.FOUR) {
                             currentState = State.MIDPOINT;
                             drive.robot.getShooterSubsystem().getStateMachine().updateState(ShooterStateMachine.State.IDLE);
@@ -360,24 +365,26 @@ public class XVRedAuto extends LinearOpMode {    UGBase drive;
                     break;
                 case wobble2:
                     if (!drive.isBusy()) {
-                        drive.robot.getPulleySubsystem().getStateMachine().updateState(PulleyStateMachine.State.DOWN);
-                        //drive.turnAsync(Math.toRadians(175));
-                        //drive.followTrajectoryAsync(forwardIntake);
-                        currentState = State.WAIT5;
-                        waitTimer.reset();
-                    }
-                    break;
-                case WAIT5:
-                    if (waitTimer.milliseconds() >= 400) {
                         if(numRings == UGCV.numRings.ONE || numRings == UGCV.numRings.ZERO ) {
                             drive.followTrajectoryAsync(strafe);
                             currentState = State.GRABWOBBLE2;
                         }
-                        else{
-                            currentState = State.GETRINGS;
-                        }
+                        //drive.turnAsync(Math.toRadians(175));
+                        //drive.followTrajectoryAsync(forwardIntake);
+                        waitTimer.reset();
                     }
-                    break;
+//                    break;
+//                case WAIT5:
+//                    if (waitTimer.milliseconds() >= 400) {
+//                        if(numRings == UGCV.numRings.ONE || numRings == UGCV.numRings.ZERO ) {
+//                            drive.followTrajectoryAsync(strafe);
+//                            currentState = State.GRABWOBBLE2;
+//                        }
+//                        else{
+//                            currentState = State.GETRINGS;
+//                        }
+//                    }
+//                    break;
                 case GRABWOBBLE2:
                     if(!drive.isBusy()){
                         drive.robot.getForkliftSubsystem2().getStateMachine().updateState(ForkliftStateMachine2.State.ALIGN);
@@ -411,7 +418,8 @@ public class XVRedAuto extends LinearOpMode {    UGBase drive;
                 case GETRINGS:
                     if(waitTimer.milliseconds() >= 500){
                         if (numRings == UGCV.numRings.ONE) {
-                           // drive.followTrajectoryAsync(forward);
+                            drive.robot.getForkliftSubsystem2().getStateMachine().updateState(ForkliftStateMachine2.State.TOP);
+                            drive.turnAsync(Math.toRadians(180));
                             currentState = State.INTAKE;
                         }
                         else if(numRings == UGCV.numRings.ZERO){
