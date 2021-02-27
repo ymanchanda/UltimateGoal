@@ -71,7 +71,10 @@ public class autoTeleop extends UGTeleOpRobot {
         IDLE,
         TURN,
         TURN2,
-        WAITTURN
+        WAITTURN,
+        FLICK2,
+        BACK2,
+        BACKNTURN
     }
     int NumFlicks = 0, NumFlicksThree = 0;
     FlickState FlickThree = FlickState.IDLE;
@@ -282,11 +285,9 @@ public class autoTeleop extends UGTeleOpRobot {
 
         if (gamepad2.b && resetWobble.milliseconds() > 300) {
             currentState = ArmState.PRESS_B;
-            //intPressedB++;
             resetWobble.reset();
         } else if (gamepad2.x && resetWobble.milliseconds() > 300) {
             currentState = ArmState.PRESS_X;
-            //intPressedX++;
             resetWobble.reset();
         }
 
@@ -365,27 +366,6 @@ public class autoTeleop extends UGTeleOpRobot {
                 hitLeftPowerShot = false;
                 hitMidPowerShot = false;
                 break;
-            case FLICK:
-                if(!drive.isBusy()) {
-                    drive.robot.getFlickerSubsystem().getStateMachine().updateState(FlickerStateMachine.State.HIT);
-                    FlickPowershots = FlickState.BACK;
-                    NumFlicks++;
-                    resetFlickPS.reset();
-                }
-                break;
-            case BACK:
-                if (resetFlickPS.milliseconds() > 100) {
-                    isFlicked = true;
-                    resetFlicker.reset();
-                    resetFlickPS.reset();
-                    if(NumFlicks > 1) {
-                        FlickPowershots = FlickState.IDLE;
-                    }
-                    else{
-                        FlickPowershots = FlickState.TURN2;
-                    }
-                }
-                break;
             case TURN:
                 if(hitLeftPowerShot){
                     drive.turn(Math.toRadians(-8));
@@ -401,20 +381,34 @@ public class autoTeleop extends UGTeleOpRobot {
                 }
                 FlickPowershots = FlickState.WAITTURN;
                 break;
-            case TURN2:
-                if(resetFlickPS.milliseconds() > 100) {
-                    drive.turn(Math.toRadians(nextTurn));
-                    FlickPowershots = FlickState.WAITTURN;
+            case WAITTURN:
+                if (!drive.isBusy()) {
+                    drive.robot.getFlickerSubsystem().getStateMachine().updateState(FlickerStateMachine.State.HIT);
+                    resetFlickPS.reset();
+                    FlickPowershots = FlickState.BACKNTURN;
                 }
                 break;
-            case WAITTURN:
-                if (!drive.isBusy()){
-                    if (NumFlicks < 2) {
-                        FlickPowershots = FlickState.FLICK;
-                    }
-                    else {
-                        FlickPowershots = FlickState.IDLE;
-                    }
+            case BACKNTURN:
+                if (resetFlickPS.milliseconds() > 100) {
+                    drive.robot.getFlickerSubsystem().getStateMachine().updateState(FlickerStateMachine.State.INIT);
+                    drive.turn(Math.toRadians(nextTurn));
+                    resetFlickPS.reset();
+                    FlickPowershots = FlickState.FLICK2;
+                }
+                break;
+            case FLICK2:
+            if(!drive.isBusy() && resetFlickPS.milliseconds() > 300) {
+                drive.robot.getFlickerSubsystem().getStateMachine().updateState(FlickerStateMachine.State.HIT);
+                NumFlicks++;
+                resetFlickPS.reset();
+                FlickPowershots = FlickState.BACK2;
+            }
+            break;
+            case BACK2:
+                if (resetFlickPS.milliseconds() > 100) {
+                    drive.robot.getFlickerSubsystem().getStateMachine().updateState(FlickerStateMachine.State.INIT);
+                    resetFlickPS.reset();
+                    FlickPowershots = FlickState.IDLE;
                 }
                 break;
         }
@@ -429,7 +423,7 @@ public class autoTeleop extends UGTeleOpRobot {
             drive.robot.getForkliftSubsystem2().setPresetMode(false);
             drive.robot.getForkliftSubsystem2().getForkliftMotor().setPower(-getEnhancedGamepad2().getRight_stick_y() * 0.6);
         }
-        else if (Math.abs(getEnhancedGamepad2().getRight_stick_y()) < 0.5d )
+        else if (Math.abs(getEnhancedGamepad2().getRight_stick_y()) < 0.5d && Math.abs(getEnhancedGamepad2().getRight_stick_y()) > 0.1d)
         {
             drive.robot.getForkliftSubsystem2().setPresetMode(false);
             drive.robot.getForkliftSubsystem2().getForkliftMotor().setPower(0);
